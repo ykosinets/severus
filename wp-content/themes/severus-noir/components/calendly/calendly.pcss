@@ -88,10 +88,12 @@
   @media (width <= 800px) {
     grid-template-columns: 1fr;
     grid-template-rows: auto minmax(0, 1fr);
+    border-radius: 0;
+    border-block: none;
   }
 
-  @media (width <= 800px) {
-    border-radius: 0;
+  @media (width <= 480px) {
+    border: none;
   }
 }
 
@@ -106,10 +108,7 @@
   overflow-y: auto;
 
   @media (width <= 800px) {
-    gap: 0.5rem;
-    padding: 1.25rem 4rem 1rem 1.25rem;
-    border-inline-end: 0;
-    border-block-end: 1px solid color-mix(in oklab, var(--hair) 70%, transparent);
+    display: none;
   }
 }
 
@@ -199,6 +198,10 @@
   position: relative;
   min-height: 0;
   background: #0d0d0d;
+
+  @media (width <= 800px) {
+    height: 100vh;
+  }
 }
 
 .booking__frame {
@@ -281,6 +284,7 @@
   & svg {
     width: 1.1rem;
     translate: 0 20px;
+    rotate: 45deg;
   }
 
   &:hover {
