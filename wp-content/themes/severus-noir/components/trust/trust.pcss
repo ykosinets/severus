@@ -1,5 +1,5 @@
 .trust {
-  overflow: visible;
+  overflow: clip;
   view-timeline-name: --trustline;
 }
 
@@ -12,6 +12,13 @@
   opacity: 0.3;
   pointer-events: none;
   scale: .75;
+
+  @media (width <= 640px) {
+    width: min(100vw, 720px);
+    inset-inline-end: auto;
+    scale: 1;
+    opacity: 0.5;
+  }
 
   /* Parallax: over the section's whole pass through the viewport the mark
      drifts down against it, so it reads as further back than the copy.
