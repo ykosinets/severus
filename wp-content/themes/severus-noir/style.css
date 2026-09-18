@@ -1,0 +1,16 @@
+/*
+Theme Name: Severus Noir
+Theme URI: https://severus.co/
+Author: Severus
+Description: Dark corporate theme for Severus — obsidian ground, emerald and silver edges. Component-based assets built with PostCSS and esbuild.
+Version: 1.0.0
+Requires at least: 6.5
+Requires PHP: 8.1
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: severus-noir
+Tags: business, dark, custom-colors, block-styles, wide-blocks
+*/
+
+/* Styles live in assets/dist/main.css, built from components/ and src/styles/.
+   Run `npm run build` after changing anything under those folders. */

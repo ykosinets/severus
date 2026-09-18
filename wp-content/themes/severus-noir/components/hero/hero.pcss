@@ -1,0 +1,394 @@
+/* Layout and proportions follow the previous theme's hero, which the client
+   asked to keep; colours, type and buttons come from this theme. Sizes that
+   the old sheet stepped through breakpoints are fluid here, pinned to the old
+   values at 1920 and 1440. */
+
+.hero {
+  position: relative;
+  z-index: 2;
+  padding-block: clamp(1.5625rem, 2.35vw, 2.8125rem) clamp(1.875rem, 1.8vw, 2.125rem);
+  overflow: clip;
+
+  /* On wide screens, at least the first screen under the header; --head is
+     the measured header height, published by site-head.js. */
+  @media (width > 1600px) {
+    min-block-size: calc(100svh - var(--head));
+  }
+}
+
+.hero__title {
+  font-size: clamp(2.25rem, 4.48vw, 5.375rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-block-end: clamp(1.25rem, 1.5vw, 1.8rem);
+}
+
+/* The accent is a gradient fill here, as it was, rather than the flat shift
+   the other display headings use. */
+.hero .hero__title :is(em, span):not(:where([class^="snake-arrow"])) {
+  background: linear-gradient(90deg, var(--jade) 0%, var(--jade-deep) 48%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--jade);
+  padding: 0;
+}
+
+.hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.875rem;
+  align-items: start;
+
+  @media (width <= 1200px) {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+
+  @media (width <= 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hero__lede {
+  padding-block-start: 2.2rem;
+
+  & p {
+    max-width: 39rem;
+    font-size: clamp(1.125rem, 1.67vw, 2rem);
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--ash);
+  }
+
+  @media (width <= 1024px) {
+    padding-block-start: 0;
+  }
+}
+
+/* Highlights in the lede are plain white, not the underlined accent. */
+.hero .hero__lede :is(em, span):not(:where([class^="snake-arrow"])) {
+  background: none;
+  padding: 0;
+  color: var(--bone);
+}
+
+.hero .hero__lede b {
+  color: var(--bone);
+  font-weight: 600;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-block-start: clamp(1.875rem, 2.1vw, 2.5rem);
+
+  @media (width <= 640px) {
+    flex-direction: column;
+
+    & .btn {
+      justify-content: center;
+    }
+  }
+}
+
+/* ── Video card ───────────────────────────────────────────────────────────── */
+.hero__media {
+  display: flex;
+  justify-content: flex-end;
+
+  @media (width <= 1024px) {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+}
+
+/* Rings and the play button are sized off the card, so they keep their
+   proportions as it scales. */
+.stage {
+  position: relative;
+  width: clamp(20rem, 28vw, 30rem);
+  container-type: inline-size;
+
+  @media (width <= 1024px) {
+    width: 100%;
+  }
+}
+
+.stage__glow,
+.stage__ring {
+  position: absolute;
+  border-radius: 50%;
+  translate: -50% -50%;
+  pointer-events: none;
+}
+
+.stage__glow,
+.stage__ring--lg,
+.stage__ring--md {
+  inset-block-start: 50%;
+  inset-inline-start: 0;
+
+  @media (width <= 1024px) {
+    display: none;
+  }
+}
+
+.stage__glow {
+  width: 240cqi;
+  aspect-ratio: 1 / 1.02;
+  background: radial-gradient(circle, color-mix(in oklab, var(--jade-deep) 20%, transparent) 0%, transparent 70%);
+  opacity: 0.8;
+}
+
+.stage__ring {
+  aspect-ratio: 1;
+  transition-duration: .4s;
+  transition-timing-function: var(--ease);
+  transition-property: filter, opacity, scale;
+  will-change: filter, opacity, scale;
+}
+
+.stage__ring--lg {
+  width: 102cqi;
+  background: color-mix(in oklab, var(--jade-deep) 8%, transparent);
+  transition-delay: 0s;
+}
+
+.stage__ring--md {
+  width: 68cqi;
+  background: color-mix(in oklab, var(--jade-deep) 16%, transparent);
+  transition-delay: 0.1s;
+}
+
+.stage__ring--sm {
+  z-index: -1;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  width: 156%;
+  background: color-mix(in oklab, var(--jade-deep) 20%, transparent);
+  transition-delay: 0.25s;
+}
+
+.stage__card {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  padding: clamp(0.75rem, 1.25vw, 1.5rem);
+  border: 2px solid var(--jade-deep);
+  border-radius: var(--r-lg);
+  background: var(--pit);
+  transition: border-color 0.4s var(--ease);
+
+  &:hover {
+    border-color: var(--jade);
+  }
+
+  &:hover .stage__play::before {
+    background-image: linear-gradient(270deg, var(--deep), var(--jade-deep));
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--jade);
+    outline-offset: 4px;
+  }
+}
+
+.stage__frame {
+  position: relative;
+  display: block;
+}
+
+.stage__poster {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--r-sm);
+}
+
+.stage__tag {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.95em;
+  padding: 0.28em 1.1em;
+  border-radius: var(--r-pill);
+  background: color-mix(in oklab, var(--bone) 10%, transparent);
+  backdrop-filter: blur(19px);
+  color: var(--bone);
+  font-size: clamp(0.8125rem, 0.94vw, 1.125rem);
+  line-height: 1;
+
+  & i {
+    width: 0.83em;
+    height: 0.83em;
+    margin-inline-end: 0.5em;
+    border-radius: 50%;
+    background: var(--jade-deep);
+  }
+}
+
+.stage__tag--view {
+  inset-block-start: 0.7rem;
+  inset-inline-end: 0.8rem;
+}
+
+.stage__tag--time {
+  inset-block-end: 0.75rem;
+  inset-inline-start: 0.95rem;
+  min-width: 3.95em;
+  justify-content: center;
+  padding-inline: 0.55em;
+}
+
+.stage__play {
+  position: absolute;
+  z-index: 3;
+  inset-block-start: 50%;
+  inset-inline-start: 0;
+  translate: -50% -50%;
+  display: grid;
+  place-items: center;
+  width: 23cqi;
+  aspect-ratio: 1;
+  isolation: isolate;
+  color: var(--bone);
+
+  /* The disc sits on a pseudo-element so the small ring can go under it. */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background-image: linear-gradient(270deg, color-mix(in oklab, var(--jade-dim) 55%, var(--pit)), var(--jade));
+  }
+
+  & svg {
+    position: relative;
+    width: 33%;
+    height: auto;
+    margin-inline-start: 6%;
+  }
+
+  @media (width <= 1024px) {
+    inset-inline-start: 50%;
+  }
+
+  @media (width <= 640px) {
+    width: 16cqi;
+  }
+}
+
+.stage:has(.stage__card:hover) .stage__ring {
+  @media (prefers-reduced-motion: no-preference) {
+    scale: 1.24;
+    opacity: .5;
+  }
+
+  &.stage__ring--lg {
+    @media (prefers-reduced-motion: no-preference) {
+      transition-delay: 0.17s;
+    }
+  }
+
+  &.stage__ring--md {
+    @media (prefers-reduced-motion: no-preference) {
+      transition-delay: 0.05s;
+    }
+  }
+
+  &.stage__ring--sm {
+    @media (prefers-reduced-motion: no-preference) {
+      transition-delay: 0s;
+    }
+  }
+}
+
+/* ── Stats strip ──────────────────────────────────────────────────────────── */
+.stats {
+  position: relative;
+  display: flex;
+  margin-block-start: clamp(3.125rem, 7vw, 8.4375rem);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  padding: 2px;
+
+  /* A 1px gradient border that survives the rounded corners. */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, var(--hair), var(--jade-deep));
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  @media (width <= 640px) {
+    flex-direction: column;
+  }
+}
+
+.stats__item {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(3.4375rem, 3.9vw, 4.6875rem);
+  padding-inline: 0.75rem;
+  text-align: center;
+  margin-inline-end: 2px;
+  background: #060A0F;
+  /* The strip's radius less its 2px border. */
+  --r-inner: calc(var(--r-md) - 2px);
+
+  &:first-child {
+    border-radius: var(--r-inner) 0 0 var(--r-inner);
+  }
+
+  &:last-child {
+    margin-inline-end: 0;
+    border-radius: 0 var(--r-inner) var(--r-inner) 0;
+  }
+
+  & p {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 0.3em;
+    margin: 0;
+    color: var(--bone);
+    font-size: clamp(1.125rem, 1.4vw, 1.6875rem);
+    font-weight: 300;
+    line-height: 1.9;
+  }
+
+  & span {
+    color: var(--jade);
+  }
+
+  & a {
+    display: inline-flex;
+  }
+
+  & img {
+    width: clamp(1.875rem, 2.5vw, 3rem);
+    height: auto;
+  }
+
+  @media (width <= 640px) {
+    margin-inline-end: 0;
+    margin-block-end: 2px;
+
+    &:first-child {
+      border-radius: var(--r-inner) var(--r-inner) 0 0;
+    }
+
+    &:last-child {
+      border-radius: 0 0 var(--r-inner) var(--r-inner);
+      margin-block-end: 0;
+    }
+  }
+}

@@ -1,0 +1,194 @@
+/* A short band that scrolls normally. The timeline lives on the section; for
+   a box shorter than the viewport, `contain` runs from the moment it is fully
+   in view to the moment it starts to leave. */
+.turn {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  view-timeline-name: --turnline;
+  --cue-gap: clamp(0.5rem, 1.5vh, 1rem);
+  --cue-size: 4.25rem;
+}
+
+.turn__pin {
+  position: relative;
+}
+
+/* In flow, so the band is as tall as the copy needs (30svh at least); the
+   bottom padding leaves room for the cue, which sits outside the mask. */
+.turn__reveal {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-block-size: 30svh;
+  padding-block: clamp(1.5rem, 3vw, 2.5rem) calc(var(--cue-gap) * 2 + var(--cue-size));
+  --mark: 20vw;
+  --fill: 0%;
+  mask-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 49'%3E%3Cpath fill='%23fff' d='M19.5586 7.43359L28.332 16.2031C29.4941 17.3672 28.0645 19.2266 26.6201 18.4297L21.8662 15.8164C21.3057 15.5078 20.6064 15.6055 20.1553 16.0547L14.7871 21.4062C14.2354 21.9531 14.2354 22.8398 14.7861 23.3906L21.751 30.3516C22.3096 30.9102 23.2227 30.9102 23.7832 30.3516L53.2305 1.01172C53.7891 0.453125 54.7012 0.453125 55.2607 1.01172L78.7881 24.4531C79.3398 25.0039 79.3398 25.8906 78.7881 26.4414L57.6367 47.5156C57.0771 48.0703 56.165 48.0703 55.6055 47.5156L47.3086 39.25C46.0801 38.0234 47.7227 36.1055 49.1484 37.1016L52.6631 39.5508C53.2334 39.9492 54.0117 39.8828 54.5029 39.3945L63.9395 29.9922C64.4912 29.4414 64.4912 28.5547 63.9395 28.0039L55.2607 19.3555C54.7012 18.8008 53.7891 18.8008 53.2305 19.3555L24.9453 47.5391C24.3955 48.0859 23.502 48.0977 22.9395 47.5625L0.583984 26.3477C0.0078125 25.8047 -0.00292969 24.8984 0.558594 24.3359L17.5264 7.43359C18.0859 6.875 18.999 6.875 19.5586 7.43359Z'/%3E%3C/svg%3E"),
+    radial-gradient(circle at 50% 50%, #000 0 100%);
+  mask-repeat: no-repeat, no-repeat;
+  mask-position: center, center;
+  mask-size: var(--mark) auto, var(--fill) var(--fill);
+  mask-composite: add;
+}
+
+/* Out of sight: drop the mask and the loop so later scrolling stays cheap. */
+.turn.is-idle .turn__reveal {
+  mask-image: none;
+  animation: none;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* The mark is fully open with the last fifth of the stretch to spare. */
+    .turn__reveal {
+      animation: mark-zoom linear both;
+      animation-timeline: --turnline;
+      animation-range: contain 0% contain 80%;
+    }
+
+    .turn__text {
+      animation: copy-in linear both;
+      animation-timeline: --turnline;
+      animation-range: contain 32% contain 48%;
+    }
+  }
+}
+
+@supports not (animation-timeline: view()) {
+  .turn__reveal {
+    --mark: 900vw;
+    --fill: 340%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .turn__reveal {
+    --mark: 900vw;
+    --fill: 340%;
+  }
+}
+
+/* No holds at either end: the band is only in full view for a short
+   stretch, so the mark moves for the whole of it. */
+@keyframes mark-zoom {
+  0% {
+    --mark: 20vw;
+    --fill: 0%;
+  }
+
+  20% {
+    --mark: 30vw;
+    --fill: 0%;
+  }
+
+  50% {
+    --mark: 140vw;
+    --fill: 0%;
+  }
+
+  80% {
+    --mark: 460vw;
+    --fill: 0%;
+  }
+
+  100% {
+    --mark: 900vw;
+    --fill: 340%;
+  }
+}
+
+@keyframes copy-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Fades out at the edges so the opened mask doesn't end on a hard rectangle. */
+.turn__glow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: radial-gradient(115% 100% at 50% 50%, var(--deep), transparent 80%);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: .3;
+    background:
+      radial-gradient(58% 62% at 50% 50%, color-mix(in oklab, var(--jade) 30%, transparent), transparent 72%),
+      radial-gradient(46% 34% at 50% 50%, color-mix(in oklab, var(--pit) 72%, transparent), transparent 78%);
+  }
+}
+
+.turn__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* The source clip is watermarked bottom-right; the overscan crops it away. */
+  scale: 1.18;
+  opacity: 0.5;
+  filter: saturate(1.15) contrast(1.05);
+  mask-image: radial-gradient(105% 92% at 50% 50%, #000 45%, transparent 82%);
+}
+
+.turn__text {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3.6vw, 3.4rem);
+  line-height: 1.14;
+  letter-spacing: -0.035em;
+  /* Wide measure keeps the band short. */
+  max-width: 24em;
+  margin-inline: auto;
+  color: color-mix(in oklab, var(--bone) 72%, var(--ash));
+
+  & em {
+    display: block;
+    margin-block-start: 0.4em;
+  }
+
+  /* Firefox only: lift the copy over the masked backdrop.
+     -moz-appearance is recognised by Firefox alone. */
+  @supports (-moz-appearance: none) {
+    position: relative;
+    z-index: 20;
+  }
+}
+
+.turn__cue {
+  position: absolute;
+  z-index: 2;
+  inset-block-end: var(--cue-gap);
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  display: inline-grid;
+  place-items: center;
+  width: var(--cue-size);
+  height: var(--cue-size);
+  border-radius: 50%;
+  color: var(--jade);
+  transition:
+    color 0.3s var(--ease),
+    background-color 0.4s var(--ease);
+
+  & .snake-arrow {
+    rotate: 90deg;
+    width: 30px;
+    height: 24px;
+  }
+
+  &:hover {
+    color: var(--ice);
+    background: color-mix(in oklab, var(--jade) 10%, transparent);
+  }
+
+}

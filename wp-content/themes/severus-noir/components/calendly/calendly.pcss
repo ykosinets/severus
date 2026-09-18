@@ -1,0 +1,290 @@
+/* Calendly booking dialog (calendly.js).
+
+   The booking page's colours are set here. Calendly takes them as hex in the
+   URL; the script converts whatever is written below, tokens included. They
+   take effect on a paid Calendly plan only.
+
+   On the free plan the calendar is white and blue, so it is recoloured with a
+   filter on the iframe: inverted to dark, then turned back towards jade. It
+   repaints everything, images included — which is why Calendly's own details
+   column (with the host photo) is hidden and shown in our panel instead.
+   On a paid plan set --booking-filter to none and the colours above apply. */
+.booking {
+  --booking-bg: var(--pit);
+  --booking-text: var(--bone);
+  --booking-primary: var(--jade);
+  --booking-filter: invert(1) hue-rotate(180deg) saturate(0.9) hue-rotate(-45deg) brightness(0.95) contrast(1.05);
+  //--booking-filter: invert(1) hue-rotate(180deg) saturate(1) hue-rotate(-75deg) brightness(1.25) contrast(1);
+  //--booking-filter: invert(1) hue-rotate(180deg) saturate(1) hue-rotate(-75deg) brightness(0.95) contrast(0.9);
+
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: clamp(0.75rem, 3vw, 2.5rem);
+  border: 0;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+
+  &:not([open]) {
+    display: none;
+  }
+
+  &::backdrop {
+    background: oklch(0.08 0.012 172 / 0.9);
+    backdrop-filter: blur(14px);
+  }
+
+  &.is-open {
+    opacity: 1;
+  }
+
+  @media (width <= 800px) {
+    padding: 0;
+  }
+}
+
+.has-booking {
+  overflow: hidden;
+}
+
+/* The shell holds the panel and, on larger screens, the close button just
+   above its corner — clear of Calendly's "Powered by" ribbon. */
+.booking__shell {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  height: 770px;
+  translate: 0 1.5rem;
+  transition: translate 0.45s var(--ease-out);
+
+  .booking.is-open & {
+    translate: none;
+  }
+
+  @media (width <= 800px) {
+    width: 100%;
+    height: 100%;
+    max-width: 480px;
+    margin: 0;
+  }
+}
+
+.booking__panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(16rem, 22rem) minmax(0, 1fr);
+  width: 100%;
+  height: 100%;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+
+  @media (width <= 800px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  @media (width <= 800px) {
+    border-radius: 0;
+  }
+}
+
+/* Our side of the dialog: who the call is with and what it is. */
+.booking__aside {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  width: 360px;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border-inline-end: 1px solid color-mix(in oklab, var(--hair) 70%, transparent);
+  overflow-y: auto;
+
+  @media (width <= 800px) {
+    gap: 0.5rem;
+    padding: 1.25rem 4rem 1rem 1.25rem;
+    border-inline-end: 0;
+    border-block-end: 1px solid color-mix(in oklab, var(--hair) 70%, transparent);
+  }
+}
+
+.booking__photo {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid color-mix(in oklab, var(--jade) 40%, transparent);
+
+  @media (width <= 800px) {
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+.booking__host {
+  color: var(--ash);
+  font-size: 1.2rem;
+}
+
+.booking__title {
+  font-size: clamp(1.3rem, 2vw, 1.7rem);
+  line-height: 1.2;
+  color: var(--bone);
+}
+
+.booking__facts {
+  display: grid;
+  gap: 0.7rem;
+  margin-block-start: 0.4rem;
+  color: var(--ash);
+  font-size: 1rem;
+
+  & li {
+    display: grid;
+    grid-template-columns: 1.25rem minmax(0, 1fr);
+    gap: 0.6rem;
+    align-items: start;
+  }
+
+  & svg {
+    width: 1.25rem;
+    color: var(--jade);
+  }
+
+  @media (width <= 800px) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 1.25rem;
+    margin: 0;
+    font-size: 0.82rem;
+
+    & li {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    & svg {
+      width: 1rem;
+    }
+  }
+}
+
+.booking__legal {
+  margin-block-start: auto;
+  padding-block-start: 1rem;
+  color: var(--dust);
+  font-size: 0.78rem;
+
+  & a {
+    color: var(--ash);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  & a:hover {
+    color: var(--jade);
+  }
+
+  @media (width <= 800px) {
+    padding-block-start: 0.25rem;
+  }
+}
+
+.booking__calendar {
+  position: relative;
+  min-height: 0;
+  background: #0d0d0d;
+}
+
+.booking__frame {
+  position: absolute;
+  inset: 0;
+
+  & .calendly-inline-widget,
+  & iframe {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+  }
+
+  & iframe {
+    max-width: 640px;
+    filter: var(--booking-filter);
+    width: 100%;
+    min-width: 360px;
+    border-left: 1px solid #0000ff22;
+  }
+}
+
+.calendly-spinner {
+  display: none !important;
+}
+/* A soft pulse while Calendly's page is on its way. */
+.booking.is-loading .booking__calendar::after {
+  content: "";
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  width: 2.75rem;
+  aspect-ratio: 1;
+  margin: -1.375rem 0 0 -1.375rem;
+  border-radius: 50%;
+  border: 2px solid color-mix(in oklab, var(--jade) 25%, transparent);
+  border-block-start-color: var(--jade);
+  animation: booking-spin 0.9s linear infinite;
+}
+
+@keyframes booking-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+.booking__state {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline: 2rem;
+  translate: 0 -50%;
+  text-align: center;
+  color: var(--ash);
+
+  & a {
+    color: var(--jade);
+  }
+}
+
+.booking__close {
+  position: absolute;
+  inset-block-start: -1.75rem;
+  inset-inline-end: -3.75rem;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  /* A band laid across the corner, over Calendly's ribbon. */
+  width: 160px;
+  height: 100px;
+  rotate: 45deg;
+  border: none;
+  border-radius: 0;
+  color: var(--bone);
+  background: color-mix(in oklab, var(--pit) 80%, transparent);
+  backdrop-filter: blur(8px);
+  transition:
+    color 0.3s var(--ease),
+    background-color 0.3s var(--ease);
+
+  & svg {
+    width: 1.1rem;
+    translate: 0 20px;
+  }
+
+  &:hover {
+    color: var(--pit);
+    background: var(--jade);
+  }
+}

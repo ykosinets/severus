@@ -1,0 +1,78 @@
+/* The hero video, opened without a library: a <dialog> holds one <video> that
+   is flown from the thumbnail to its full size and back. */
+.lightbox {
+  /* 32px as a squircle, 16px round — keep in step with media-lightbox.js. */
+  --r-video: calc(var(--r-md) * 8 / 7);
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+
+  &::backdrop {
+    background: oklch(0.08 0.012 172 / 0.92);
+    backdrop-filter: blur(14px);
+    opacity: 0;
+    transition: opacity 0.45s var(--ease);
+  }
+
+  &.is-open::backdrop {
+    opacity: 1;
+  }
+}
+
+.lightbox__video,
+.lightbox__poster {
+  position: fixed;
+  margin: 0;
+  object-fit: cover;
+  background: var(--pit);
+  box-shadow: 0 50px 120px -40px oklch(0 0 0 / 0.9);
+  /* Geometry and radius are written by the script; both are animated. */
+  will-change: width, height, top, left, border-radius;
+}
+
+/* While the flight is running the controls would only get in the way. */
+.lightbox:not(.is-open) .lightbox__video::-webkit-media-controls {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lightbox::backdrop {
+    transition: none;
+  }
+}
+
+.lightbox__video {
+  opacity: 0;
+  transition: opacity 0.45s var(--ease);
+  border-radius: var(--r-video);
+}
+
+.lightbox__poster {
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.45s var(--ease);
+}
+
+.lightbox:is(.is-playing, .show-controls) {
+  & .lightbox__video {
+    opacity: 1;
+  }
+
+  & .lightbox__poster {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lightbox__video,
+  .lightbox__poster {
+    transition: none;
+  }
+}

@@ -1,0 +1,107 @@
+.form {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.5rem, 3vw, 2.75rem);
+  border-radius: var(--r-lg);
+  background: rgba(0 0 0 / .55);
+
+  &.is-sending {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+}
+
+.form__note {
+  font-size: 0.85rem;
+  color: var(--jade);
+  padding: 0.7rem 1rem;
+  border-radius: var(--r-xs);
+  background: color-mix(in oklab, var(--jade) 10%, transparent);
+
+  &.is-bad {
+    color: oklch(0.78 0.15 25);
+    background: color-mix(in oklab, oklch(0.78 0.15 25) 12%, transparent);
+  }
+}
+
+.field {
+  position: relative;
+
+  & > :is(input, textarea) {
+    width: 100%;
+    padding: 1.6rem 1.15rem 0.7rem;
+    border: var(--edge) solid transparent;
+    background-image:
+      linear-gradient(color-mix(in oklab, var(--pit) 92%, transparent), color-mix(in oklab, var(--pit) 92%, transparent)),
+      linear-gradient(120deg, color-mix(in oklab, var(--hair) 90%, transparent), color-mix(in oklab, var(--pewter) 22%, transparent) 70%, transparent);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    border-radius: var(--r-sm);
+    color: var(--bone);
+    font-size: 1rem;
+    transition: background-image 0.3s var(--ease);
+  }
+
+  & > textarea {
+    resize: vertical;
+    min-height: 7.5rem;
+    field-sizing: content;
+  }
+
+  & > :is(input, textarea):focus {
+    outline: none;
+    background-image:
+      linear-gradient(var(--pit), var(--pit)),
+      linear-gradient(120deg, var(--jade), var(--ice) 65%, color-mix(in oklab, var(--pewter) 50%, transparent));
+  }
+
+  & > :is(input, textarea).is-bad {
+    background-image:
+      linear-gradient(color-mix(in oklab, var(--pit) 96%, transparent), color-mix(in oklab, var(--pit) 96%, transparent)),
+      linear-gradient(120deg, oklch(0.7 0.16 25), color-mix(in oklab, oklch(0.7 0.16 25) 40%, transparent));
+  }
+
+  & > label {
+    position: absolute;
+    inset-block-start: 1.05rem;
+    inset-inline-start: 1.2rem;
+    color: var(--dust);
+    font-size: 1rem;
+    pointer-events: none;
+    transition:
+      translate 0.25s var(--ease),
+      font-size 0.25s var(--ease),
+      color 0.25s var(--ease);
+  }
+
+  & > label span {
+    color: var(--jade);
+  }
+}
+
+.field:has(> :is(input, textarea):focus) > label,
+.field:has(> :is(input, textarea):not(:placeholder-shown)) > label {
+  translate: 0 -0.72rem;
+  font-size: 0.72rem;
+  color: var(--ash);
+}
+
+.field--trap {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.field__count {
+  position: absolute;
+  inset-block-end: 0.7rem;
+  inset-inline-end: 1.1rem;
+  font-size: 0.72rem;
+  color: var(--dust);
+}
+
+.form .btn {
+  margin-block-start: 0.5rem;
+}

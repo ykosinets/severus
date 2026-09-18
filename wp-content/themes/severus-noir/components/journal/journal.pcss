@@ -1,0 +1,74 @@
+.journal__title {
+  font-size: clamp(2rem, 4.2vw, 4.2rem);
+  max-width: 15.77em;
+}
+
+.journal__grid {
+  margin-block-start: clamp(2.5rem, 5vw, 5rem);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: clamp(1.5rem, 3vw, 3rem);
+  align-items: stretch;
+}
+
+.post {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 1.3rem;
+
+  &:hover .post__art img {
+    filter: saturate(0.95) brightness(1);
+    scale: 1.05;
+  }
+
+  &:hover .post__title {
+    color: color-mix(in oklab, var(--facet) 60%, var(--jade));
+  }
+}
+
+.post__art {
+  display: block;
+  border-radius: var(--r-md);
+  overflow: hidden;
+
+  /* One height for every card, whatever the source crop. */
+  & img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    filter: saturate(0.5) brightness(0.82);
+    transition:
+      filter 0.7s var(--ease),
+      scale 0.7s var(--ease-out);
+  }
+}
+
+.post__title {
+  font-size: clamp(1.1rem, 1.35vw, 1.4rem);
+  line-height: 1.24;
+  transition: color 0.3s var(--ease);
+}
+
+.post__meta {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block-start: 1.15rem;
+  color: var(--dust);
+  font-size: 0.875rem;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    height: 2px;
+    background: linear-gradient(90deg, color-mix(in oklab, var(--jade) 55%, transparent), transparent 72%);
+  }
+}
+
+.journal__foot {
+  margin-block-start: clamp(2rem, 4vw, 3.5rem);
+}

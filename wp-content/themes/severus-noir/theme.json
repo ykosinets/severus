@@ -1,0 +1,135 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "settings": {
+    "appearanceTools": true,
+    "useRootPaddingAwareAlignments": true,
+    "layout": {
+      "contentSize": "1140px",
+      "wideSize": "1520px"
+    },
+    "color": {
+      "defaultPalette": false,
+      "defaultGradients": false,
+      "custom": true,
+      "palette": [
+        { "slug": "void", "name": "Void", "color": "var(--void)" },
+        { "slug": "pit", "name": "Pit", "color": "var(--pit)" },
+        { "slug": "slate", "name": "Slate", "color": "var(--slate)" },
+        { "slug": "deep", "name": "Bottle green", "color": "var(--deep)" },
+        { "slug": "abyss", "name": "Blue black", "color": "var(--abyss)" },
+        { "slug": "jade", "name": "Jade", "color": "var(--jade)" },
+        { "slug": "ice", "name": "Ice", "color": "var(--ice)" },
+        { "slug": "pewter", "name": "Pewter", "color": "var(--pewter)" },
+        { "slug": "facet", "name": "Facet", "color": "var(--facet)" },
+        { "slug": "bone", "name": "Bone", "color": "var(--bone)" },
+        { "slug": "ash", "name": "Ash", "color": "var(--ash)" },
+        { "slug": "dust", "name": "Dust", "color": "var(--dust)" }
+      ],
+      "gradients": [
+        {
+          "slug": "emerald-silver",
+          "name": "Emerald to silver",
+          "gradient": "linear-gradient(112deg, var(--jade), var(--ice))"
+        },
+        {
+          "slug": "well",
+          "name": "Well",
+          "gradient": "linear-gradient(158deg, var(--slate), var(--pit))"
+        }
+      ]
+    },
+    "typography": {
+      "fluid": true,
+      "customFontSize": true,
+      "dropCap": false,
+      "fontFamilies": [
+        {
+          "slug": "body",
+          "name": "Body",
+          "fontFamily": "var(--font)"
+        },
+        {
+          "slug": "display",
+          "name": "Display",
+          "fontFamily": "var(--font-display)"
+        }
+      ],
+      "fontSizes": [
+        { "slug": "small", "name": "Small", "size": "0.875rem" },
+        { "slug": "medium", "name": "Medium", "size": "1.0625rem" },
+        { "slug": "large", "name": "Large", "size": "clamp(1.15rem, 1.4vw, 1.5rem)" },
+        { "slug": "x-large", "name": "Extra large", "size": "clamp(2rem, 4.2vw, 4.2rem)" },
+        { "slug": "xx-large", "name": "Display", "size": "clamp(2.4rem, 6.2vw, 6.2rem)" }
+      ]
+    },
+    "spacing": {
+      "units": ["px", "rem", "%", "vw", "svh"],
+      "spacingSizes": [
+        { "slug": "20", "name": "Tight", "size": "clamp(0.75rem, 1vw, 1rem)" },
+        { "slug": "30", "name": "Small", "size": "clamp(1.25rem, 2vw, 2rem)" },
+        { "slug": "40", "name": "Medium", "size": "clamp(2rem, 3.5vw, 3.5rem)" },
+        { "slug": "50", "name": "Large", "size": "clamp(3rem, 5vw, 5rem)" },
+        { "slug": "60", "name": "Bay", "size": "clamp(3.5rem, 6.5vw, 7.75rem)" }
+      ]
+    },
+    "border": { "color": true, "radius": true, "style": true, "width": true },
+    "blocks": {
+      "core/button": {
+        "border": { "radius": true }
+      }
+    }
+  },
+  "styles": {
+    "color": {
+      "background": "var(--void)",
+      "text": "var(--bone)"
+    },
+    "typography": {
+      "fontFamily": "var(--font)",
+      "fontSize": "clamp(1rem, 0.35vw + 0.92rem, 1.125rem)",
+      "lineHeight": "1.62"
+    },
+    "spacing": {
+      "blockGap": "clamp(1.25rem, 2vw, 2rem)",
+      "padding": { "left": "var(--gut)", "right": "var(--gut)" }
+    },
+    "elements": {
+      "link": {
+        "color": { "text": "var(--jade)" },
+        ":hover": { "color": { "text": "var(--ice)" } }
+      },
+      "heading": {
+        "typography": {
+          "fontFamily": "var(--font-display)",
+          "fontWeight": "400",
+          "lineHeight": "1.05",
+          "letterSpacing": "-0.035em"
+        },
+        "color": { "text": "var(--bone)" }
+      },
+      "button": {
+        "color": { "background": "var(--jade)", "text": "var(--pit)" },
+        "border": { "radius": "var(--r-pill)" },
+        "typography": { "fontWeight": "500" },
+        ":hover": { "color": { "background": "var(--ice)", "text": "var(--pit)" } }
+      }
+    },
+    "blocks": {
+      "core/separator": {
+        "color": { "text": "var(--hair)" }
+      },
+      "core/quote": {
+        "color": { "text": "var(--bone)" },
+        "typography": { "fontSize": "clamp(1rem, 0.4vw + 0.92rem, 1.12rem)" }
+      },
+      "core/code": {
+        "color": { "background": "var(--pit)", "text": "var(--ash)" },
+        "border": { "radius": "var(--r-sm)" }
+      },
+      "core/table": {
+        "color": { "text": "var(--ash)" }
+      }
+    }
+  }
+}

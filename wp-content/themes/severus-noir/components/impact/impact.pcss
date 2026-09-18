@@ -1,0 +1,410 @@
+.impact {
+  position: relative;
+  z-index: 2;
+  height: 320svh;
+
+  @media (width <= 1024px) {
+    height: auto;
+  }
+}
+
+.impact__pin {
+  --stage-h: min(100svh - var(--head) - 5rem, 42rem);
+  position: sticky;
+  inset-block-start: 0;
+  height: 100svh;
+  display: grid;
+  align-items: center;
+  /* Centre in the space below the site header. */
+  padding-block-start: var(--head);
+  overflow: clip;
+
+  @media (width <= 1024px) {
+    position: static;
+    top: 0px;
+    height: auto;
+    padding: 0;
+    /* The orbit is deliberately off-canvas to the right; clip only that axis,
+       or it drags a horizontal scrollbar across the whole page. */
+    overflow-x: clip;
+    overflow-y: visible;
+  }
+}
+
+.impact__orbit {
+  position: absolute;
+  inset-block-start: var(--head);
+  inset-inline-end: -6vw;
+  translate: 0;
+  width: clamp(30rem, 30vw, 36rem);
+  aspect-ratio: 1;
+  z-index: 0;
+
+  @media (width <= 1024px) {
+    display: none;
+  }
+}
+
+.impact__in {
+  --copy-pad: clamp(1.35rem, 5vw, 2rem);
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: center;
+
+  & .lead {
+    margin-block-end: clamp(1.5rem, 3vw, 2.75rem);
+
+    /* Edge to edge: the copy's padding is pulled back out and restated
+       inside, so the text keeps the copy's inset. */
+    @media (width <= 1024px) {
+      //position: sticky;
+      //top: var(--head);
+      //z-index: 3;
+      //background: rgba(0 0 0 / .2);
+      //backdrop-filter: blur(10px);
+      max-width: none;
+      margin-block-end: 0;
+      margin-inline: calc(-1 * var(--copy-pad));
+      padding: 0 var(--copy-pad);
+      //box-shadow: 0 0 24px rgba(0 0 0 / .5);
+    }
+  }
+
+  & .lead__title {
+    font-size: clamp(1.9rem, 3.4vw, 3.4rem);
+  }
+
+  & .lead__text {
+    max-width: 26.28em;
+    font-size: 1rem;
+    margin-block-start: 1rem;
+  }
+
+  @media (width <= 1024px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 0;
+  }
+}
+
+@media (width <= 1024px) {
+  .shell.impact__in {
+    width: 100%;
+    height: auto;
+    padding-inline: 0;
+  }
+}
+
+/* Desktop: the copy is as tall as the stage beside it, with the heading at
+   the top and the accordion at the foot.
+   Mobile: one cell, two layers — the copy reads over the slider. */
+.impact__copy {
+  @media (width > 1024px) {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: clamp(1.5rem, 3vw, 2.75rem);
+
+    & .lead {
+      margin-block-end: 0;
+    }
+  }
+
+  @media (width <= 1024px) {
+    grid-area: 1 / 1;
+    z-index: 2;
+    align-self: start;
+    padding-block: 0;
+    padding-inline: var(--copy-pad);
+    /* Taps fall through to the stage link; the copy's own links and title
+       buttons still take. */
+    pointer-events: none;
+
+    & a,
+    & button {
+      pointer-events: auto;
+    }
+  }
+}
+
+.verticals {
+  position: relative;
+}
+
+/* Desktop: an accordion. Every title shows; the item the slider is on opens
+   (grid rows 0fr → 1fr, so the height animates without measuring). */
+.vert {
+  padding-block: clamp(0.7rem, 1.1vw, 1rem);
+
+  &:first-child:before {
+    display: none;
+  }
+
+  & .vert__body {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition:
+      grid-template-rows 0.55s var(--ease),
+      opacity 0.45s var(--ease);
+  }
+
+  & .vert__inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  &.is-active .vert__body {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  & p {
+    color: var(--ash);
+    max-width: 30.22em;
+    font-size: clamp(0.94rem, 0.3vw + 0.87rem, 1.02rem);
+  }
+
+  & p + p {
+    margin-block-start: 0.75rem;
+  }
+
+  & .vert__inner > :first-child {
+    margin-block-start: 0.9rem;
+  }
+
+  & .vert__btn {
+    margin-block-start: 1.25rem;
+    margin-block-end: 0.25rem;
+  }
+}
+
+@media (width <= 1024px) {
+  .vert {
+    position: relative;
+    padding-block: var(--head) 3rem;
+
+    /* Stacked and fully open; the article scrolls over the stage. */
+    &::before {
+      display: none;
+    }
+
+    & .vert__body {
+      grid-template-rows: 1fr;
+      opacity: 1;
+      transition: none;
+    }
+
+    /* The whole article is the link; the stage link is hidden. The button
+       is positioned (and blurred) for its own effects; release both here, or
+       its overlay would span only the button. */
+    & .vert__btn {
+      position: static;
+      backdrop-filter: none;
+    }
+
+    & .vert__btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+    }
+  }
+}
+
+.vert__title {
+  font-size: clamp(1.5rem, 2.1vw, 2.2rem);
+}
+
+.vert__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  text-align: start;
+  color: var(--dust);
+  transition: color 0.4s var(--ease);
+
+  .vert.is-active &,
+  &:hover {
+    color: var(--bone);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--jade);
+    outline-offset: 4px;
+  }
+
+  /* On mobile the article is one big link; the title sits above it so a tap
+     there still scrolls rather than navigates. */
+  @media (width <= 1024px) {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* Plus that turns into a minus while the item is open. */
+.vert__sign {
+  position: relative;
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 0;
+    width: 100%;
+    height: 2px;
+    margin-block-start: -1px;
+    border-radius: 2px;
+    background: var(--jade);
+    transition: rotate 0.4s var(--ease);
+  }
+
+  &::after {
+    rotate: 90deg;
+  }
+
+  .vert.is-active &::after {
+    rotate: 0deg;
+  }
+
+  @media (width <= 1024px) {
+    display: none;
+  }
+}
+
+.impact__stage {
+  position: relative;
+  block-size: var(--stage-h);
+  aspect-ratio: 3 / 4;
+  justify-self: center;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  /* No plate: the slides are keyed out of their black (crystal-slider.js). */
+
+  @media (width <= 1024px) {
+    grid-area: 1 / 1;
+    z-index: 0;
+    inline-size: 100%;
+    position: sticky;
+    top: 0;
+    block-size: 100vh;
+    aspect-ratio: auto;
+    justify-self: stretch;
+    align-self: start;
+    border-radius: 0;
+    mask-image: linear-gradient(to right, transparent, rgba(0 0 0 / .1) 50%, black 80%);
+
+    /* Keeps the copy legible over whatever the crystal is showing. */
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: linear-gradient(
+        200deg,
+        color-mix(in oklab, var(--void) 88%, transparent) 12%,
+        color-mix(in oklab, var(--void) 62%, transparent) 58%,
+        color-mix(in oklab, var(--pit) 70%, transparent) 100%
+      );
+    }
+  }
+}
+
+/* Scroll drives the slider, so the canvas never takes pointer events. */
+.crystal,
+.cs-fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.crystal {
+  opacity: 0;
+  transition: opacity 0.8s var(--ease);
+
+  &.is-ready {
+    opacity: 1;
+  }
+}
+
+.cs-fallback img {
+  mix-blend-mode: screen;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.7s var(--ease);
+
+  &.is-active {
+    opacity: 1;
+  }
+}
+
+.impact__link {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+
+  &:focus-visible {
+    outline-offset: -6px;
+  }
+
+  @media (width <= 1024px) {
+    display: none;
+  }
+}
+
+.impact__ticks {
+  position: absolute;
+  inset-block-end: 1.25rem;
+  inset-inline-start: 1.25rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 3;
+
+  @media (width <= 1024px) {
+    display: none;
+  }
+
+  & i {
+    width: 2.25rem;
+    height: 3px;
+    border-radius: 2px;
+    background: color-mix(in oklab, var(--bone) 22%, transparent);
+    transition:
+      background 0.4s var(--ease),
+      box-shadow 0.4s var(--ease);
+  }
+
+  & i.is-active {
+    background: linear-gradient(90deg, var(--jade), var(--ice));
+    box-shadow: 0 0 14px color-mix(in oklab, var(--jade) 60%, transparent);
+  }
+}
+
+/* Enabled only once the scroll renderer is initialized. */
+.impact.is-scroll-driven .impact__pin {
+  position: sticky;
+
+  @media (width <= 1024px) {
+    position: relative;
+  }
+}

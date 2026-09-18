@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "site-proxy",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [".claude/proxy.mjs"],
+      "port": 4173
+    }
+  ]
+}

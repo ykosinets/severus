@@ -1,0 +1,26 @@
+# WordPress lives in the repo root; only the new theme and the project tooling
+# are tracked. Everything else at the root (core, wp-config, uploads, plugins,
+# the old theme, dumps) stays out.
+/*
+!/.gitignore
+!/.claude/
+!/.ddev/
+!/deploy-staging.sh
+/design
+
+!/wp-content/
+/wp-content/*
+!/wp-content/themes/
+/wp-content/themes/*
+!/wp-content/themes/severus-noir/
+
+# never commit database dumps or local IDE/OS files
+*.sql
+*.sql.gz
+.idea/
+.DS_Store
+
+# ddev: generated files and snapshots (.ddev/.gitignore covers the rest)
+/.ddev/.*
+!/.ddev/.gitignore
+/.ddev/db_snapshots/

@@ -1,0 +1,138 @@
+/* ── Motion ───────────────────────────────────────────────────────────────── */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(2.2rem);
+    filter: blur(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@keyframes bar {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes pop {
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+/* Scroll-driven reveal. Never applied to sticky elements or their children — a
+   view() timeline stalls while an element is pinned and the animation would
+   freeze half-way. Those sections measure scroll in JS instead. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 26%;
+    }
+  }
+}
+
+/* Fine grain, so the flat blacks don't band. */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
+}
+
+.readbar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 60;
+  height: 2px;
+  background: color-mix(in oklab, var(--hair) 55%, transparent);
+  pointer-events: none;
+
+  & i {
+    display: block;
+    height: 100%;
+    width: 100%;
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    background: linear-gradient(90deg, var(--jade-deep), var(--jade) 45%, var(--ice) 78%, var(--facet));
+  }
+
+  @supports (animation-timeline: scroll()) {
+    & i {
+      animation: bar linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+
+/* The theme's arrow, printed on the side of a small drum. The faces sit a
+   radius out from the axis, a quarter-turn apart; the drum is pulled back by
+   the same radius so the front face rests exactly where a flat arrow would.
+   --turn is driven by snake-arrow.js: a steady spin while hovered, settling
+   on a face when the pointer leaves. Sizes come from
+   whatever sets the width/height of .snake-arrow, via container units. */
+.snake-arrow {
+  --radius: 80cqw;
+  position: relative;
+  display: block;
+  width: 19px;
+  height: 15px;
+  flex: 0 0 auto;
+  color: inherit;
+  container-type: size;
+  perspective: 90px;
+}
+
+.snake-arrow__drum {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: translateZ(calc(var(--radius) * -1)) rotateY(var(--turn, 0deg));
+}
+
+.snake-arrow__face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  backface-visibility: hidden;
+  transform: rotateY(calc(var(--face) * -90deg)) translateZ(var(--radius));
+
+  /* At rest only the front face shows; snake-arrow.js fades them by angle. */
+  &:not(:first-child) {
+    opacity: 0;
+  }
+}
+
+[data-snake-arrow] {
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

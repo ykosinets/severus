@@ -1,0 +1,39 @@
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 1rem clamp(1.5rem, 3vw, 3rem);
+  margin: 0 0 clamp(2rem, 4vw, 3.5rem);
+  padding-block: clamp(1.25rem, 2vw, 1.75rem);
+  border-block: 1px solid var(--hair);
+}
+
+.facts__row {
+  display: grid;
+  gap: 0.4rem;
+
+  & dt {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dust);
+  }
+
+  & dd {
+    margin: 0;
+    color: var(--bone);
+    font-size: 1.05rem;
+  }
+}
+
+.facts__row dd a {
+  color: var(--bone);
+  background: linear-gradient(90deg, var(--jade), var(--ice)) 0 100% / 0 1px no-repeat;
+  transition:
+    color 0.3s var(--ease),
+    background-size 0.4s var(--ease-out);
+
+  &:hover {
+    color: var(--ice);
+    background-size: 100% 1px;
+  }
+}

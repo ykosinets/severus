@@ -1,0 +1,125 @@
+.voices__in {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  gap: clamp(2.5rem, 6vw, 6rem);
+  align-items: start;
+
+  @media (width <= 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.voices__side {
+  position: sticky;
+  inset-block-start: clamp(6rem, 12vw, 10rem);
+  display: grid;
+  gap: 1.2rem;
+  justify-items: start;
+
+  & .btn {
+    margin-block-start: 0.75rem;
+  }
+
+  @media (width <= 1024px) {
+    position: static;
+  }
+}
+
+.voices__stars {
+  color: oklch(0.8 0.14 76.42);
+  letter-spacing: 0.3em;
+  font-size: 0.9rem;
+}
+
+.voices__title {
+  font-size: clamp(2rem, 3.8vw, 3.8rem);
+}
+
+.voices__kicker {
+  font-size: clamp(1.15rem, 1.5vw, 1.5rem);
+  color: var(--bone);
+  margin-block-start: 1.25rem;
+}
+
+.voices__text {
+  color: var(--ash);
+  max-width: 22.34em;
+}
+
+.voices__rail {
+  display: grid;
+  gap: clamp(1rem, 1.6vw, 1.5rem);
+}
+
+.quote {
+  padding: clamp(1.5rem, 2.8vw, 2.5rem);
+  border-radius: var(--r-lg);
+  border: var(--edge) solid transparent;
+  background-image:
+    linear-gradient(158deg, color-mix(in oklab, var(--slate) 78%, transparent), color-mix(in oklab, var(--pit) 92%, transparent)),
+    linear-gradient(
+      148deg,
+      color-mix(in oklab, var(--jade) 62%, transparent) 0%,
+      color-mix(in oklab, var(--pewter) 40%, transparent) 34%,
+      color-mix(in oklab, var(--hair) 55%, transparent) 62%,
+      transparent 92%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+
+  & blockquote p {
+    font-size: clamp(1rem, 0.4vw + 1rem, 1.2rem);
+    color: var(--bone);
+    line-height: 1.55;
+  }
+
+  & blockquote::before {
+    content: "";
+    display: block;
+    width: 2rem;
+    height: 2px;
+    background: linear-gradient(90deg, var(--jade), var(--ice));
+    margin-block-end: 1.35rem;
+  }
+}
+
+.quote figcaption {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-block-start: 1.6rem;
+  padding-block-start: 1.4rem;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    height: 2px;
+    background: linear-gradient(90deg, color-mix(in oklab, var(--pewter) 45%, transparent), transparent 70%);
+  }
+
+  & img {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    object-fit: cover;
+    flex: none;
+  }
+
+  & span {
+    display: grid;
+  }
+
+  & b {
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  & i {
+    font-style: normal;
+    color: var(--dust);
+    font-size: 0.875rem;
+  }
+}

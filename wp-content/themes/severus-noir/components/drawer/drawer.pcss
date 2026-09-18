@@ -1,0 +1,174 @@
+.drawer {
+  position: fixed;
+  inset-block-start: var(--head);
+  inset-inline: 0;
+  block-size: calc(100svh - var(--head));
+  z-index: 49;
+  background: color-mix(in oklab, var(--void) 95%, transparent);
+  backdrop-filter: blur(22px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* Unrolls down from under the header; drawer.js toggles .is-open and only
+     sets [hidden] once the roll-up has finished. */
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 0.55s var(--ease-out);
+
+  &.is-open {
+    clip-path: inset(0 0 0 0);
+  }
+
+  &[hidden] {
+    display: none;
+  }
+
+  /* A jade edge rides the bottom of the curtain as it unrolls. */
+  &::before {
+    content: "";
+    position: sticky;
+    inset-block-start: 0;
+    display: block;
+    height: 1px;
+    margin-block-end: -1px;
+    background: linear-gradient(90deg, transparent, var(--jade), transparent);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease);
+  }
+
+  &.is-open::before {
+    opacity: 0.6;
+  }
+}
+
+/* The items rise in after the curtain, one behind another. */
+.drawer__list > li,
+.drawer__note {
+  opacity: 0;
+  translate: 0 1.25rem;
+  transition:
+    opacity 0.3s var(--ease),
+    translate 0.3s var(--ease);
+
+  .drawer.is-open & {
+    opacity: 1;
+    translate: 0;
+    transition:
+      opacity 0.5s var(--ease) calc(0.12s + var(--i, 0) * 0.06s),
+      translate 0.6s var(--ease-out) calc(0.12s + var(--i, 0) * 0.06s);
+  }
+}
+
+.drawer__in {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem var(--gut) 2.5rem;
+}
+
+.drawer__list {
+  display: grid;
+  align-content: start;
+  gap: 0.2rem;
+
+  & > li > a,
+  & > li > .drawer__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    padding-inline: 0;
+    padding-block: 0.65rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 7.5vw, 2.5rem);
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+    text-align: start;
+    color: var(--bone);
+  }
+}
+
+.drawer__sign {
+  position: relative;
+  flex: none;
+  width: 1.4rem;
+  height: 1.4rem;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 50% 50%;
+    translate: -50% -50%;
+    background: var(--jade);
+  }
+
+  &::before {
+    width: 1.1rem;
+    height: 2px;
+  }
+
+  &::after {
+    width: 2px;
+    height: 1.1rem;
+    transition:
+      opacity 0.3s var(--ease),
+      rotate 0.4s var(--ease-out);
+  }
+}
+
+.drawer__toggle[aria-expanded="true"] .drawer__sign::after {
+  opacity: 0;
+  rotate: 90deg;
+}
+
+/* A closed branch has to take no space at all. The grid 0fr trick can only
+   collapse its first row — every further <li> landed in an implicit auto row
+   and kept its height — so the wrapper animates its own height instead. */
+.drawer__fold {
+  block-size: 0;
+  overflow: hidden;
+  transition: block-size 0.5s var(--ease-out);
+}
+
+/* Expand, then the items fade in one behind the previous. */
+.drawer__list .sub-menu {
+  & li {
+    min-height: 0;
+  }
+
+  & a {
+    display: block;
+    padding: 0.48rem 0 0.48rem 1rem;
+    color: var(--ash);
+    font-size: 1rem;
+    border-inline-start: 2px solid color-mix(in oklab, var(--jade) 35%, transparent);
+    opacity: 0;
+    translate: 0 -0.5rem;
+    transition:
+      opacity 0.32s var(--ease),
+      translate 0.4s var(--ease-out),
+      color 0.25s var(--ease);
+  }
+}
+
+.drawer__toggle[aria-expanded="true"] + .drawer__fold {
+  block-size: auto;
+
+  & a {
+    opacity: 1;
+    translate: 0;
+  }
+}
+
+@supports (transition-delay: calc(sibling-index() * 1ms)) {
+  .drawer__toggle[aria-expanded="true"] + .drawer__fold li a {
+    transition-delay: calc(sibling-index() * 45ms);
+  }
+}
+
+.drawer__note {
+  margin-block-start: auto;
+  padding-block-start: 2rem;
+  color: var(--dust);
+  font-size: 0.8rem;
+}

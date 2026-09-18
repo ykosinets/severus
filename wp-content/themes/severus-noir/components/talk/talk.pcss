@@ -1,0 +1,99 @@
+.talk {
+  isolation: isolate;
+
+  /* Aurora behind the contact block (a dark, semi-transparent WebP), faded
+     into the sections above and below. */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: url("../media/contact-bg.webp") center bottom / cover no-repeat;
+    mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+    pointer-events: none;
+  }
+}
+
+.talk__in {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(2.5rem, 6vw, 6rem);
+  align-items: start;
+
+  @media (width <= 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.talk__side {
+  display: grid;
+  gap: 1.5rem;
+  justify-items: start;
+}
+
+.talk__logo {
+  width: clamp(3.5rem, 6vw, 5.5rem);
+  height: auto;
+  opacity: 0.9;
+  min-width: 120px
+}
+
+.talk__title {
+  font-size: clamp(2rem, 4vw, 4rem);
+  max-width: 10.51em;
+}
+
+.talk__text {
+  color: var(--ash);
+  max-width: 35.48em;
+}
+
+.talk__mail {
+  font-size: clamp(1rem, 1.2vw, 1.25rem);
+  color: var(--bone);
+  background: linear-gradient(90deg, var(--jade), var(--ice)) 0 100% / 100% 2px no-repeat;
+  padding-bottom: 0.2em;
+  transition: color 0.3s var(--ease);
+
+  &:hover {
+    color: var(--ice);
+  }
+}
+
+.talk__sub {
+  font-size: clamp(1.15rem, 1.6vw, 1.6rem);
+  line-height: 1.3;
+  color: var(--bone);
+  max-width: 22em;
+}
+
+/* Location and email. Without a location the email stands alone, unlabelled,
+   as it does on the front page. */
+.talk__facts {
+  display: grid;
+  gap: 1.1rem;
+  margin: 0;
+
+  & div {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  & dt {
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dust);
+  }
+
+  & dd {
+    margin: 0;
+    color: var(--bone);
+  }
+}
+
+/* As the page's first block (Contact Us) it carries the orbit mark; clip it
+   like the page hero does, so the mark never runs up under the site header. */
+.talk:has(> .orbit--deco) {
+  overflow: clip;
+}

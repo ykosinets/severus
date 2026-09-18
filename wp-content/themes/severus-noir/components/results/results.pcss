@@ -1,0 +1,170 @@
+/* Case cards: three across, stacking on narrow screens. The archive uses the
+   same grid for every case. */
+.works {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.75rem);
+
+  @media (width <= 1024px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* With two columns an odd card out takes the whole row, with a shallower
+     picture so it doesn't tower over the pair above. */
+  @media (640px < width <= 1024px) {
+    & .work:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+
+    & .work:last-child:nth-child(odd) .work__art {
+      aspect-ratio: 32 / 10;
+    }
+  }
+
+  @media (width <= 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* The picture on top, the copy on a dark panel below it. */
+.work {
+  --go: 3.25rem;
+  --pad: clamp(1.1rem, 1.8vw, 1.6rem);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--r-lg);
+  border: 2px solid color-mix(in oklab, var(--hair) 70%, transparent);
+  overflow: hidden;
+  background: var(--pit);
+  transition: border-color 0.4s var(--ease);
+
+  &:hover {
+    border-color: color-mix(in oklab, var(--jade) 60%, transparent);
+  }
+
+  &:hover .work__art img {
+    scale: 1.05;
+    filter: saturate(0.95) brightness(0.95);
+  }
+
+  &:hover .work__go {
+    color: var(--pit);
+    background: var(--jade);
+  }
+}
+
+.work__art {
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--slate);
+
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.7) brightness(0.85);
+    transition:
+      scale 0.8s var(--ease-out),
+      filter 0.6s var(--ease);
+  }
+}
+
+/* Cases without a cover get the Severus mark on a lit plate, so the row
+   keeps its rhythm. */
+.work__art--blank {
+  position: relative;
+  background:
+    radial-gradient(60% 70% at 50% 55%, color-mix(in oklab, var(--jade) 16%, transparent), transparent 72%),
+    var(--slate);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: color-mix(in oklab, var(--jade) 55%, var(--pewter));
+    opacity: 0.35;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 49'%3E%3Cpath fill='%23fff' d='M19.5586 7.43359L28.332 16.2031C29.4941 17.3672 28.0645 19.2266 26.6201 18.4297L21.8662 15.8164C21.3057 15.5078 20.6064 15.6055 20.1553 16.0547L14.7871 21.4062C14.2354 21.9531 14.2354 22.8398 14.7861 23.3906L21.751 30.3516C22.3096 30.9102 23.2227 30.9102 23.7832 30.3516L53.2305 1.01172C53.7891 0.453125 54.7012 0.453125 55.2607 1.01172L78.7881 24.4531C79.3398 25.0039 79.3398 25.8906 78.7881 26.4414L57.6367 47.5156C57.0771 48.0703 56.165 48.0703 55.6055 47.5156L47.3086 39.25C46.0801 38.0234 47.7227 36.1055 49.1484 37.1016L52.6631 39.5508C53.2334 39.9492 54.0117 39.8828 54.5029 39.3945L63.9395 29.9922C64.4912 29.4414 64.4912 28.5547 63.9395 28.0039L55.2607 19.3555C54.7012 18.8008 53.7891 18.8008 53.2305 19.3555L24.9453 47.5391C24.3955 48.0859 23.502 48.0977 22.9395 47.5625L0.583984 26.3477C0.0078125 25.8047 -0.00292969 24.8984 0.558594 24.3359L17.5264 7.43359C18.0859 6.875 18.999 6.875 19.5586 7.43359Z'/%3E%3C/svg%3E") center / 34% auto no-repeat;
+  }
+}
+
+/* It grows to the card's height, so panels line up across a row. The title
+   runs full width; the summary sits on the floor beside the button. */
+.work__panel {
+  position: relative;
+  flex: 1;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 0.5rem;
+  padding: var(--pad);
+  background: var(--glyph-well);
+  border-block-start: 1px solid color-mix(in oklab, var(--bone) 8%, transparent);
+}
+
+.work__title {
+  font-size: clamp(1.2rem, 1.6vw, 1.55rem);
+  line-height: 1.2;
+  color: var(--bone);
+}
+
+/* Only the summary shares the floor with the button, so only it (or the
+   title, when there is no summary) keeps clear of it. */
+.work__text,
+.work__title:nth-last-child(2) {
+  padding-inline-end: calc(var(--pad) + var(--go));
+}
+
+.work__text {
+  align-self: end;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  color: var(--ash);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.work__go {
+  position: absolute;
+  inset-block-end: var(--pad);
+  inset-inline-end: var(--pad);
+  display: grid;
+  place-items: center;
+  width: var(--go);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  color: var(--bone);
+  background: color-mix(in oklab, var(--jade) 45%, var(--deep));
+  transition:
+    color 0.3s var(--ease),
+    background-color 0.3s var(--ease);
+
+  & .snake-arrow {
+    width: 19px;
+    height: 15px;
+  }
+}
+
+.results__more {
+  margin-block-start: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+/* Category filter above the cases archive: the theme's buttons, in a row. */
+.filter {
+  margin-block-end: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.filter__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+
+  /* The quiet buttons carry a border; the current one gets a clear one so
+     they all stand the same height. */
+  & .btn--solid {
+    border: var(--edge) solid transparent;
+  }
+}

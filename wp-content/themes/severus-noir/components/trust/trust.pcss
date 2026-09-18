@@ -1,0 +1,158 @@
+.trust {
+  overflow: visible;
+  view-timeline-name: --trustline;
+}
+
+.trust__mark {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: -8vw;
+  translate: 0 -50%;
+  width: min(52vw, 720px);
+  opacity: 0.3;
+  pointer-events: none;
+  scale: .75;
+
+  /* Parallax: over the section's whole pass through the viewport the mark
+     drifts down against it, so it reads as further back than the copy.
+     Browsers without scroll timelines keep it still. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: trust-drift linear both;
+      animation-timeline: --trustline;
+      animation-range: cover 0% cover 100%;
+    }
+  }
+
+  /* Safari only (-apple-pay-button-style exists in WebKit on Apple
+     platforms alone): the mark stays still there. */
+  @supports (-apple-pay-button-style: inherit) {
+    animation: none;
+  }
+}
+
+@keyframes trust-drift {
+  from {
+    translate: 0 calc(-50% - 15vh);
+  }
+
+  to {
+    translate: 0 calc(-50% + 15vh);
+  }
+}
+
+.trust__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: end;
+
+  @media (width <= 1024px) {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+}
+
+.trust__title {
+  font-size: clamp(2.1rem, 4.4vw, 4.4rem);
+}
+
+.trust__description {
+  margin-block-start: 1rem;
+}
+
+.trust__aside {
+  display: grid;
+  gap: 1.75rem;
+  justify-items: start;
+
+  & p {
+    color: var(--ash);
+    max-width: 28.91em;
+  }
+}
+
+.figures {
+  margin-block-start: clamp(2.5rem, 5vw, 5.5rem);
+  display: grid;
+  gap: clamp(1.75rem, 3.5vw, 3.5rem);
+}
+
+.figures__big {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.75rem);
+
+  @media (width <= 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.figure {
+  padding-block: clamp(0.5rem, 1.5vw, 1.25rem);
+  padding-inline-end: 1.5rem;
+
+  &::before {
+    background: linear-gradient(90deg, color-mix(in oklab, var(--pewter) 55%, transparent), transparent 75%);
+  }
+
+  & p {
+    margin-block-start: 1rem;
+    color: var(--bone);
+    max-width: 14.45em;
+  }
+}
+
+.figure__n {
+  display: flex;
+  align-items: flex-start;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(3rem, 7.4vw, 7rem);
+  line-height: 1;
+  letter-spacing: -0.06em;
+
+  & i {
+    font-style: normal;
+  }
+}
+
+.odo {
+  display: inline-flex;
+}
+
+.odo__slot {
+  display: block;
+  overflow: hidden;
+  height: 1em;
+  mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent);
+}
+
+.odo__reel {
+  display: block;
+  will-change: transform;
+
+  & span {
+    display: block;
+    height: 1em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.figures__small {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.5rem, 4vw, 4rem);
+
+  @media (width <= 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.figure__note {
+  padding-block-start: 1.5rem;
+  //color: var(--bone);
+  font-size: clamp(1rem, 1.1vw, 1.2rem);
+  line-height: 1.45;
+}

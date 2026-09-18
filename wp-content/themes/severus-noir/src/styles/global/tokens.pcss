@@ -1,0 +1,127 @@
+/* ── Design tokens ─────────────────────────────────────────────────────────
+   Obsidian ground, emerald and silver cut into the edges. Green is a
+   highlight; silver carries the other half of the palette.
+   ------------------------------------------------------------------------- */
+
+@property --glint {
+  syntax: "<percentage>";
+  initial-value: 0%;
+  inherits: false;
+}
+
+@property --mark {
+  syntax: "<length-percentage>";
+  initial-value: 0px;
+  inherits: false;
+}
+
+@property --fill {
+  syntax: "<percentage>";
+  initial-value: 0%;
+  inherits: false;
+}
+
+/* Gradients don't interpolate between two different stop lists, so animated
+   edges are built from registered colours and those are what transition. */
+/* Angles of the light running round an important service card. */
+@property --ring-a {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@property --ring-b {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@property --face-1 {
+  syntax: "<color>";
+  initial-value: transparent;
+  inherits: false;
+}
+
+@property --face-2 {
+  syntax: "<color>";
+  initial-value: transparent;
+  inherits: false;
+}
+
+@property --edge-1 {
+  syntax: "<color>";
+  initial-value: transparent;
+  inherits: false;
+}
+
+@property --edge-2 {
+  syntax: "<color>";
+  initial-value: transparent;
+  inherits: false;
+}
+
+@property --edge-3 {
+  syntax: "<color>";
+  initial-value: transparent;
+  inherits: false;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* ground — three different blacks, so sections never read as one flat sheet */
+  --void: oklch(0.146 0.010 172);
+  --pit: oklch(0.112 0.012 172);
+  --abyss: oklch(0.145 0.016 258);
+  --deep: oklch(0.163 0.030 168);
+  --slate: oklch(0.196 0.014 172);
+  --hair: oklch(0.315 0.018 172);
+
+  /* emerald — the brand */
+  --jade: oklch(0.735 0.132 170);
+  --jade-deep: oklch(0.560 0.112 170);
+  --jade-dim: oklch(0.400 0.070 170);
+  --facet: oklch(0.955 0.048 168);
+
+  /* silver — the other half of the house colours */
+  --pewter: oklch(0.760 0.022 250);
+  --ice: oklch(0.880 0.052 214);
+
+  /* recolour targets consumed by the inlined service glyphs */
+  --glyph-mid: oklch(0.520 0.090 170);
+  --glyph-well: oklch(0.215 0.028 170);
+
+  /* type */
+  --bone: oklch(0.968 0.005 160);
+  --ash: oklch(0.740 0.010 168);
+  --dust: oklch(0.590 0.010 168);
+
+  /* Outfit throughout, as in the previous theme. */
+  --font: "Outfit", "Outfit Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", "Outfit Fallback", ui-sans-serif, sans-serif;
+
+  /* rhythm */
+  --gut: clamp(1.5rem, 5vw, 6rem);
+  --shell: 1520px;
+  --shell-narrow: 1140px;
+  --bay: clamp(3.5rem, 4.55vw, 5.425rem);
+  --head: 5.5rem;
+
+  /* geometry — a squircle reads much tighter than a round corner of the same
+     radius, so these are the round fallbacks at half size; the full values
+     are set with corner-shape in layout.pcss. */
+  --r-xs: 5px;
+  --r-sm: 9px;
+  --r-md: 14px;
+  --r-lg: 21px;
+  --r-pill: 999px;
+  --edge: 2px;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* breakpoints, mirrored in JS via the `theme` object */
+  --bp-lap: 1024px;
+  --bp-pad: 900px;
+  --bp-phone: 640px;
+}

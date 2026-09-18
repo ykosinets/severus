@@ -1,0 +1,65 @@
+.callout__panel {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  padding: clamp(2.5rem, 6vw, 5.5rem) clamp(1.5rem, 5vw, 5rem);
+  border-radius: var(--r-lg);
+  text-align: center;
+  overflow: hidden;
+  isolation: isolate;
+
+  & .btn {
+    margin-block-start: 0.5rem;
+  }
+}
+
+.callout__glow {
+  position: absolute;
+  inset-block-end: -60%;
+  inset-inline-start: 50%;
+  z-index: -1;
+  translate: -50% 0;
+  width: 120%;
+  aspect-ratio: 2;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--jade) 22%, transparent), transparent 75%);
+  pointer-events: none;
+}
+
+/* The shapes fill the panel behind the copy; the panel clips them, so they
+   can sit half off its edges. Painted after the glow, before the text. */
+.callout__shapes {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  & canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.8s var(--ease);
+  }
+
+  &[data-ready="true"] canvas {
+    opacity: 1;
+  }
+
+  /* On a phone the copy fills the panel, so the shapes step back. */
+  @media (width <= 640px) {
+    &[data-ready="true"] canvas {
+      opacity: 0.55;
+    }
+  }
+}
+
+.callout__title {
+  font-size: clamp(1.9rem, 3.6vw, 3.6rem);
+  max-width: 16em;
+}
+
+.callout__text {
+  max-width: 38em;
+  color: var(--ash);
+}

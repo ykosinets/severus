@@ -1,0 +1,261 @@
+/* ── Layout primitives and shared parts ───────────────────────────────────── */
+
+/* The jade glow at the top of every inner page (header.php leaves it off the
+   front page), behind the first section. It is
+   the full width of the page with the ellipse painted into it, so nothing
+   overhangs the viewport and no wrapper has to clip it. */
+.site-main {
+  position: relative;
+}
+
+.site-main__aura {
+  --aura: min(140vw, 1600px);
+  position: absolute;
+  inset-block-start: -18rem;
+  inset-inline: 0;
+  z-index: 0;
+  block-size: calc(var(--aura) / 1.6);
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--jade) 10%, transparent), transparent 72%) top center / var(--aura) 100% no-repeat;
+  filter: blur(30px);
+  pointer-events: none;
+}
+
+.shell {
+  width: min(100% - var(--gut) * 2, var(--shell));
+  margin-inline: auto;
+}
+
+/* Copy-led sections read better on a narrower measure. Anything deriving an
+   offset from --shell (the orbit mark) follows automatically. */
+.is-narrow {
+  --shell: var(--shell-narrow);
+}
+
+.section {
+  position: relative;
+  z-index: 2;
+  padding-block: var(--bay);
+}
+
+.section--cool {
+  background: radial-gradient(120% 90% at 80% 0%, color-mix(in oklab, var(--abyss) 85%, transparent), transparent 62%);
+}
+
+.section--warm {
+  background: radial-gradient(110% 80% at 12% 8%, color-mix(in oklab, var(--deep) 78%, transparent), transparent 58%);
+}
+
+.section--floor {
+  background: radial-gradient(100% 70% at 50% 100%, color-mix(in oklab, var(--abyss) 70%, transparent), transparent 62%);
+}
+
+/* Section header, shared by most blocks. */
+.lead {
+  max-width: 40.73em;
+  margin-block-end: clamp(2.5rem, 5vw, 5rem);
+
+  & .lead__title {
+    font-size: clamp(2.1rem, 4.4vw, 4.4rem);
+  }
+
+  & .lead__text {
+    margin-block-start: clamp(1.1rem, 1.8vw, 1.8rem);
+    color: var(--ash);
+    font-size: clamp(1rem, 0.4vw + 0.92rem, 1.18rem);
+    max-width: 34.16em;
+  }
+}
+
+.lead--split {
+  max-width: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: end;
+
+  & .lead__text {
+    margin-block-start: 0;
+    padding-block-end: 0.5rem;
+  }
+
+  @media (width <= 1024px) {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+}
+
+/* A gradient rule, used wherever a divider is needed. */
+.rule {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--jade) 70%, transparent) 0%,
+      color-mix(in oklab, var(--pewter) 42%, transparent) 28%,
+      transparent 82%
+    );
+  }
+}
+
+/* Squircle corners wherever a radius is doing visible work. The radius
+   tokens are raised here to their full size; without corner-shape they stay
+   at the halved round fallback from tokens.pcss. */
+@supports (corner-shape: squircle) {
+  :root {
+    --r-xs: 10px;
+    --r-sm: 18px;
+    --r-md: 28px;
+    --r-lg: 42px;
+  }
+
+  .btn,
+  .booking__panel,
+  .slab,
+  .card,
+  .card__glyph,
+  .work,
+  .quote,
+  .post__art,
+  .face__frame,
+  .form,
+  .field > input,
+  .field > textarea,
+  .nav__list .sub-menu,
+  .figure,
+  .impact__stage,
+  .entry__art,
+  .is-style-edge,
+  .is-style-card,
+  .is-style-frame img,
+  .entry__body img,
+  .form__note,
+  .nav__list .sub-menu a,
+  .stage__card,
+  .stage__poster,
+  .stats,
+  .stats__item,
+  .card--important::before,
+  .card--important::after,
+  .skip-link,
+  .points--cards .point,
+  .shift__panel,
+  .tile,
+  .callout__panel,
+  .page-hero__art--framed,
+  .lightbox__video,
+  .cky-consent-bar {
+    corner-shape: squircle;
+  }
+}
+
+/* Cards share one gradient edge. */
+.edge {
+  border: var(--edge) solid transparent;
+  background-image:
+    linear-gradient(158deg, color-mix(in oklab, var(--slate) 78%, transparent), color-mix(in oklab, var(--pit) 92%, transparent)),
+    linear-gradient(
+      148deg,
+      color-mix(in oklab, var(--jade) 62%, transparent) 0%,
+      color-mix(in oklab, var(--pewter) 40%, transparent) 34%,
+      color-mix(in oklab, var(--hair) 55%, transparent) 62%,
+      transparent 92%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+/* ── Buttons — no transform on hover; the arrow supplies the movement ─────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75em;
+  padding: 0.95em 1.6em;
+  border-radius: var(--r-pill);
+  font-size: clamp(0.875rem, 0.2vw + 0.84rem, 0.975rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  position: relative;
+  transition:
+    color 0.3s var(--ease),
+    box-shadow 0.35s var(--ease),
+    background-image 0.4s var(--ease);
+}
+
+.btn--solid {
+  background-image: linear-gradient(112deg, var(--jade), color-mix(in oklab, var(--jade) 74%, var(--ice)));
+  color: oklch(0.16 0.03 172);
+  font-weight: 500;
+  box-shadow: 0 14px 40px -20px color-mix(in oklab, var(--jade) 75%, transparent);
+
+  &:hover {
+    background-image: linear-gradient(112deg, color-mix(in oklab, var(--jade) 78%, var(--facet)), var(--ice));
+    box-shadow: 0 20px 54px -20px color-mix(in oklab, var(--ice) 70%, transparent);
+  }
+}
+
+.btn--quiet {
+  border: var(--edge) solid transparent;
+  color: var(--bone);
+  background-image:
+    linear-gradient(color-mix(in oklab, var(--slate) 55%, transparent), color-mix(in oklab, var(--slate) 40%, transparent)),
+    linear-gradient(120deg, color-mix(in oklab, var(--jade) 55%, transparent), color-mix(in oklab, var(--pewter) 40%, transparent) 60%, transparent);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  backdrop-filter: blur(8px);
+
+  &:hover {
+    background-image:
+      linear-gradient(color-mix(in oklab, var(--slate) 78%, transparent), color-mix(in oklab, var(--slate) 55%, transparent)),
+      linear-gradient(120deg, var(--jade), var(--ice) 55%, color-mix(in oklab, var(--pewter) 60%, transparent));
+  }
+}
+
+.btn--block {
+  width: 100%;
+  justify-content: center;
+}
+
+.btn__mail {
+  width: 1.3em;
+  height: 1.05em;
+  flex: none;
+}
+
+/* Inline text link with a travelling rule. */
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  font-size: 0.95rem;
+  color: var(--bone);
+  padding-bottom: 0.35em;
+  background: linear-gradient(90deg, var(--jade), var(--ice)) 0 100% / 0 2px no-repeat;
+  transition: background-size 0.45s var(--ease-out);
+
+  &:hover {
+    background-size: 100% 2px;
+    color: var(--ice);
+  }
+
+  & .snake-arrow {
+    width: 17px;
+    height: 13px;
+  }
+}
+
+/* The small uppercase line above a section title. */
+.eyebrow {
+  margin-block-end: 1rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--jade);
+}

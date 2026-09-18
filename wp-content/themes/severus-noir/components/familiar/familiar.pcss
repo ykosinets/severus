@@ -1,0 +1,142 @@
+/* The header pins above the stack and each slab pins below it, fanned by its
+   index. --lead-h and --tail are measured by familiar.js; without them the
+   header simply isn't accounted for. */
+.familiar {
+  --lead-top: calc(var(--head) + clamp(1rem, 2.5vw, 2.5rem));
+  --lead-gap: clamp(1.5rem, 2.5vw, 2.5rem);
+  --fan: 1.25rem;
+}
+
+/* The bottom margin is what keeps the header pinned exactly as long as the
+   last slab: a sticky box lets go when its margin box reaches the end of its
+   container, and --tail is the distance from the header's bottom to where the
+   last slab lets go. The stack's matching negative margin collapses with it,
+   so the flow gap is unchanged. */
+.familiar__lead {
+  position: sticky;
+  inset-block-start: var(--lead-top);
+  margin-block-end: calc(clamp(2.5rem, 5vw, 5rem) + var(--tail, 0px));
+
+  /* Too short a screen to hold the header and a slab at once. */
+  @media (height <= 720px) {
+    position: static;
+    margin-block-end: clamp(2.5rem, 5vw, 5rem);
+  }
+}
+
+/* Block flow, not grid: a sticky grid item is confined to its own grid area,
+   so the stack could never pin past its own row. */
+.stack {
+  display: block;
+  max-width: 720px;
+  margin-inline: auto;
+  margin-block-start: calc(-1 * var(--tail, 0px));
+
+  /* The gap between slabs; row-gap does nothing in block flow and is only
+     there so familiar.js can read the value in pixels. */
+  --gap: clamp(1.25rem, 2vw, 2rem);
+  row-gap: var(--gap);
+
+  /* Every slab lets go of the pin at the same moment, so the pile leaves as
+     one instead of the last slab sliding over the rest. A sticky box lets go
+     when its margin box meets the stack's end, so --hold (set by JS) pads each
+     slab down to the lowest pinned bottom. --above is the next slab's top
+     margin, chosen so the two collapse back to --gap. */
+  & > .slab {
+    margin-block-end: var(--hold, 0px);
+  }
+
+  & > .slab + .slab {
+    margin-block-start: var(--above, var(--gap));
+  }
+}
+
+/* Each slab pins and shrinks as the next drives over it. The scale and the
+   fade are written by JS — a view() timeline stalls on a pinned element. */
+.slab {
+  --ruby: oklch(0.735 0.132 25);
+  --ruby-deep: oklch(0.560 0.112 25);
+  --ruby-dim: oklch(0.400 0.070 25);
+  --facet-red: oklch(0.955 0.048 23);
+  position: sticky;
+  inset-block-start: calc(var(--lead-top) + var(--lead-h, 0px) + var(--lead-gap) + var(--i, 0) * var(--fan));
+  padding: clamp(1.5rem, 2.6vw, 2.75rem);
+  border-radius: var(--r-lg);
+  background: linear-gradient(45deg, rgba(0 0 0 / .3), transparent);
+  backdrop-filter: blur(10px);
+  /* The requested fill is the padding-box layer, so the gradient edge on the
+     border-box layer survives — a `background` shorthand would drop it. */
+  border: var(--edge) solid transparent;
+  background-image:
+    linear-gradient(45deg, rgb(0 0 0 / 0.3), transparent),
+    linear-gradient(
+      148deg,
+      color-mix(in oklab, var(--jade) 62%, transparent) 0%,
+      color-mix(in oklab, var(--pewter) 40%, transparent) 34%,
+      color-mix(in oklab, var(--hair) 55%, transparent) 62%,
+      transparent 92%
+    );
+  background-image:
+    linear-gradient(45deg, rgb(0 0 0 / 0.3), transparent),
+    linear-gradient(
+          148deg,
+          color-mix(in oklab, var(--ruby) 22%, transparent) 0%,
+          color-mix(in oklab, var(--ruby-deep) 20%, transparent) 14%,
+          color-mix(in oklab, var(--ruby-dim) 55%, transparent) 32%,
+          transparent 72%
+  );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  backdrop-filter: blur(10px);
+  scale: var(--slab-scale, 1);
+  transform-origin: 50% 0;
+  will-change: scale;
+}
+
+.slab__in {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1.5rem, 4vw, 4rem);
+  align-items: center;
+  opacity: var(--slab-fade, 1);
+
+  @media (width <= 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.slab__art {
+  border-radius: 4px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 45%, color-mix(in oklab, oklch(0.61 0.24 25.53) 11%, transparent), transparent 52%);
+
+  /* The art keeps its own crimson; the plate behind it stops the transparent
+     PNG from picking up the slab's gradient. */
+  & img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: contain;
+    background: #1a0a0a;
+  }
+
+  @media (width <= 640px) {
+    & img {
+      aspect-ratio: 16 / 10;
+    }
+  }
+}
+
+.slab__body {
+  & h3 {
+    font-size: clamp(1.35rem, 1.9vw, 2.1rem);
+    line-height: 1.1;
+    max-width: 17.08em;
+  }
+
+  & p {
+    margin-block-start: 1.15rem;
+    color: var(--ash);
+    max-width: 38.11em;
+    font-size: clamp(1rem, 0.3vw + 1rem, 1.06rem);
+  }
+}

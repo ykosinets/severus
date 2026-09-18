@@ -1,0 +1,73 @@
+/* The 3D orbit mark. Hosts position and size it; this is the shared plate. */
+.orbit {
+  position: absolute;
+  aspect-ratio: 1;
+  contain: layout paint;
+  background: radial-gradient(circle, color-mix(in oklab, var(--jade) 10%, transparent), transparent 66%);
+  pointer-events: none;
+  opacity: 0.2;
+
+  & canvas,
+  & .orbit__still {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  & canvas {
+    z-index: 2;
+  }
+
+  & .orbit__still {
+    z-index: 1;
+    object-fit: contain;
+    transition: opacity 0.2s ease;
+  }
+
+  &[data-ready="true"] .orbit__still {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    & canvas {
+      display: none;
+    }
+
+    &[data-ready="true"] .orbit__still {
+      opacity: 1;
+    }
+  }
+}
+
+/* Where the previous theme's rotating sphere sat: half above the block,
+   behind the header, at one side of the shell. */
+.orbit--deco {
+  z-index: 0;
+  inset-block-start: calc(var(--orbit-size) * -0.5);
+  width: var(--orbit-size);
+  --orbit-size: clamp(15.625rem, 33vw, 30rem);
+}
+
+/* A positioned mark paints over static content, so its siblings are lifted. */
+.orbit--deco ~ * {
+  position: relative;
+  z-index: 1;
+}
+
+.orbit--left {
+  inset-inline-start: max(var(--gut), calc((100vw - var(--shell)) / 2));
+}
+
+.orbit--right {
+  inset-inline-end: max(var(--gut), calc((100vw - var(--shell)) / 2));
+}
+
+.section:has(.orbit) {
+  z-index: 1;
+
+  .orbit {
+    opacity: .3;
+  }
+}

@@ -1,0 +1,151 @@
+/* Single posts and pages. The body is core block output, so the rules here
+   style what Gutenberg emits rather than a bespoke markup tree. */
+.entry__head {
+  margin-block-end: clamp(2rem, 4vw, 3.5rem);
+}
+
+.entry__title {
+  font-size: clamp(2rem, 4.2vw, 4.2rem);
+  max-width: 14.45em;
+}
+
+.entry__meta {
+  margin-block-start: 1rem;
+  color: var(--dust);
+  font-size: 0.875rem;
+}
+
+.entry__art {
+  margin-block-end: clamp(2rem, 4vw, 3.5rem);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+
+  & img {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.entry__body {
+  color: var(--ash);
+
+  & > * {
+    margin-block-start: 1.35rem;
+  }
+
+  & :is(h2, h3, h4) {
+    margin-block-start: clamp(2.25rem, 4vw, 3.25rem);
+    color: var(--bone);
+  }
+
+  & :is(ul, ol) {
+    display: grid;
+    gap: 0.6rem;
+    padding-inline-start: 1.25rem;
+    list-style: revert;
+  }
+
+  & blockquote {
+    padding-inline-start: 1.5rem;
+    border-inline-start: 2px solid var(--jade);
+    color: var(--bone);
+  }
+
+  & img {
+    border-radius: var(--r-md);
+  }
+}
+
+/* Block style variations registered in inc/blocks.php. */
+.is-style-edge {
+  padding: clamp(1.5rem, 2.4vw, 2.5rem);
+  border-radius: var(--r-lg);
+  border: var(--edge) solid transparent;
+  background-image:
+    linear-gradient(158deg, color-mix(in oklab, var(--slate) 78%, transparent), color-mix(in oklab, var(--pit) 92%, transparent)),
+    linear-gradient(148deg, color-mix(in oklab, var(--jade) 62%, transparent), color-mix(in oklab, var(--pewter) 40%, transparent) 40%, transparent 92%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+.is-style-rule {
+  border: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--jade), color-mix(in oklab, var(--pewter) 45%, transparent) 40%, transparent 85%);
+}
+
+.is-style-display {
+  font-size: clamp(2.4rem, 6.2vw, 6.2rem);
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+}
+
+.is-style-frame img {
+  border-radius: var(--r-md);
+  border: var(--edge) solid transparent;
+  background-image:
+    linear-gradient(var(--pit), var(--pit)),
+    linear-gradient(150deg, color-mix(in oklab, var(--jade) 55%, transparent), color-mix(in oklab, var(--pewter) 40%, transparent) 60%, transparent);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+.is-style-card {
+  padding: clamp(1.5rem, 2.8vw, 2.5rem);
+  border-radius: var(--r-lg);
+  background: color-mix(in oklab, var(--slate) 60%, transparent);
+}
+
+.wp-block-button.is-style-quiet .wp-block-button__link {
+  background: color-mix(in oklab, var(--slate) 55%, transparent);
+  color: var(--bone);
+  border: var(--edge) solid color-mix(in oklab, var(--jade) 45%, transparent);
+}
+
+.pager {
+  margin-block-start: clamp(2.5rem, 5vw, 4rem);
+  color: var(--ash);
+
+  & .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  & .page-numbers {
+    display: inline-grid;
+    place-items: center;
+    min-width: 2.75rem;
+    height: 2.75rem;
+    padding-inline: 0.9rem;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--hair);
+    transition:
+      color 0.3s var(--ease),
+      border-color 0.3s var(--ease);
+  }
+
+  & a.page-numbers:hover {
+    color: var(--ice);
+    border-color: var(--jade);
+  }
+
+  & .current {
+    color: var(--pit);
+    background: var(--jade);
+    border-color: var(--jade);
+  }
+
+  & .dots {
+    border-color: transparent;
+  }
+}
+
+/* Case studies and pages follow their own page hero, so they only need room
+   below. */
+.entry:is(.case, .page-body) {
+  position: relative;
+  z-index: 2;
+  padding-block-end: var(--bay);
+}
