@@ -6,6 +6,9 @@
 !/.claude/
 !/.ddev/
 !/deploy-staging.sh
+!/deploy-staging-db.sh
+!/package.json
+!/README.md
 /design
 
 !/wp-content/
