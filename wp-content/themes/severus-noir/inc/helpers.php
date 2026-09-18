@@ -350,31 +350,26 @@ function severus_orbit( string $class = '', string $scroll = 'section' ): void {
 }
 
 /**
- * The services to suggest beside one: those under the same parent
- * (service_parent), never a parent itself. On a parent's own page, its
- * children. Ordered by menu order, then title.
+ * The services to suggest beside one: the rest of its family. On a child's
+ * page that is its siblings, on a top-level service's page its children.
+ * Ordered by menu order, then title.
+ *
+ * The tree is two levels deep, so everything under a parent is a leaf and
+ * the family never includes a parent itself.
  *
  * @return int[]
  */
 function severus_service_siblings( int $id ): array {
-	$parent = get_field( 'service_important', $id ) ? $id : (int) get_field( 'service_parent', $id );
+	$parent = (int) wp_get_post_parent_id( $id );
 
-	if ( ! $parent ) {
-		return array();
-	}
-
-	$ids = get_posts(
+	return get_posts(
 		array(
 			'post_type'    => 'service',
 			'numberposts'  => -1,
 			'fields'       => 'ids',
+			'post_parent'  => $parent ? $parent : $id,
 			'post__not_in' => array( $id ),
 			'orderby'      => array( 'menu_order' => 'ASC', 'title' => 'ASC' ),
-			'meta_query'   => array( // phpcs:ignore WordPress.DB.SlowDBQuery
-				array( 'key' => 'service_parent', 'value' => (string) $parent ),
-			),
 		)
 	);
-
-	return array_values( array_filter( $ids, static fn( $sibling ) => ! get_field( 'service_important', $sibling ) ) );
 }

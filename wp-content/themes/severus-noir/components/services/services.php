@@ -6,15 +6,15 @@
  *
  * $data (all optional; the front page fields are the defaults):
  *   services            post ids or objects; on the front page, every
- *                       service marked important (in services_list order),
- *                       or the first three of services_list if none is
+ *                       top-level service (in services_list order), or the
+ *                       first three of services_list if there are none
  *   limit               how many to show
  *   label, title, text  the header
  *   button              ACF link under the cards
  *   id                  section id
- *   feature             true for the Services page: a row per important
- *                       service (lit border), its children (service_parent)
- *                       listed beside it as horizontal rows
+ *   feature             true for the Services page: a row per top-level
+ *                       service (lit border), its children listed beside it
+ *                       as horizontal rows
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -22,22 +22,22 @@ if ( isset( $data['services'] ) ) {
 	$services = severus_ids( $data['services'] );
 	$limit    = $data['limit'] ?? 0;
 } else {
-	$listed    = severus_ids( get_field( 'services_list' ) );
-	$important = get_posts(
+	$listed = severus_ids( get_field( 'services_list' ) );
+	$top    = get_posts(
 		array(
 			'post_type'   => 'service',
 			'numberposts' => -1,
 			'fields'      => 'ids',
+			'post_parent' => 0,
 			'orderby'     => array( 'menu_order' => 'ASC', 'title' => 'ASC' ),
-			'meta_query'  => array( array( 'key' => 'service_important', 'value' => '1' ) ), // phpcs:ignore WordPress.DB.SlowDBQuery
 		)
 	);
 
 	// Listed ones keep the list's order; any others follow.
-	$services = $important
-		? array_merge( array_values( array_intersect( $listed, $important ) ), array_values( array_diff( $important, $listed ) ) )
+	$services = $top
+		? array_merge( array_values( array_intersect( $listed, $top ) ), array_values( array_diff( $top, $listed ) ) )
 		: $listed;
-	$limit    = $data['limit'] ?? ( $important ? 0 : 3 );
+	$limit    = $data['limit'] ?? ( $top ? 0 : 3 );
 }
 
 if ( $limit ) {
@@ -50,17 +50,16 @@ if ( ! $services ) {
 
 $feature = ! empty( $data['feature'] );
 
-/* The Services page: each important service starts a row, its children
-   (service_parent) follow it on the same row; anything outside the tree
-   comes after. */
-$groups  = array();
-$loose   = $services;
+/* The Services page: each top-level service starts a row, its children follow
+   it on the same row; anything whose parent is not on show comes after. */
+$groups = array();
+$loose  = $services;
 
 if ( $feature ) {
-	$parents = array_values( array_filter( $services, static fn( $id ) => (bool) get_field( 'service_important', $id ) ) );
+	$parents = array_values( array_filter( $services, static fn( $id ) => ! wp_get_post_parent_id( $id ) ) );
 
 	foreach ( $parents as $parent ) {
-		$groups[ $parent ] = array_values( array_filter( $services, static fn( $id ) => (int) get_field( 'service_parent', $id ) === $parent && ! in_array( $id, $parents, true ) ) );
+		$groups[ $parent ] = array_values( array_filter( $services, static fn( $id ) => (int) wp_get_post_parent_id( $id ) === $parent ) );
 	}
 
 	$placed = array_merge( $parents, ...array_values( $groups ) );
