@@ -5,9 +5,10 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-$title = get_field( 'swp_title' );
+$title = severus_field( 'swp_title' );
+$steps = severus_rows( 'scrollact_items' );
 
-if ( ! $title && ! have_rows( 'scrollact_items' ) ) {
+if ( ! $title && ! $steps ) {
 	return;
 }
 ?>
@@ -20,21 +21,20 @@ if ( ! $title && ! have_rows( 'scrollact_items' ) ) {
 			<?php endif; ?>
 
 			<div class="method__notes reveal">
-				<?php if ( $subtitle = get_field( 'swp_subtitle' ) ) : ?>
+				<?php if ( $subtitle = severus_field( 'swp_subtitle' ) ) : ?>
 					<p class="method__sub"><?php echo wp_kses_post( $subtitle ); ?></p>
 				<?php endif; ?>
-				<?php if ( $description = get_field( 'swp_description' ) ) : ?>
+				<?php if ( $description = severus_field( 'swp_description' ) ) : ?>
 					<p class="method__desc"><?php echo wp_kses_post( $description ); ?></p>
 				<?php endif; ?>
 			</div>
 		</div>
 
-		<?php if ( have_rows( 'scrollact_items' ) ) : ?>
+		<?php if ( $steps ) : ?>
 			<ol class="steps">
 				<?php
-				while ( have_rows( 'scrollact_items' ) ) :
-					the_row();
-					$text = get_sub_field( 'swp_item_text' );
+				foreach ( $steps as $step ) :
+					$text = $step['swp_item_text'] ?? '';
 					if ( ! $text ) {
 						continue;
 					}
@@ -47,7 +47,7 @@ if ( ! $title && ! have_rows( 'scrollact_items' ) ) {
 						</span>
 						<p class="is-quiet"><?php echo wp_kses_post( $text ); ?></p>
 					</li>
-				<?php endwhile; ?>
+				<?php endforeach; ?>
 			</ol>
 		<?php endif; ?>
 

@@ -13,8 +13,8 @@ get_header();
 while ( have_posts() ) :
 	the_post();
 
-	$fields      = get_field( 'cases_fields' );
-	$testimonial = get_field( 'case_testimonial' );
+	$fields      = severus_field( 'cases_fields' );
+	$testimonial = severus_field( 'case_testimonial' );
 
 	/* No lede: the short description is usually the write-up's first
 	   paragraph, and it would read twice. */

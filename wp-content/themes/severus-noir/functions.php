@@ -14,6 +14,7 @@ defined( 'ABSPATH' ) || exit;
 define( 'SEVERUS_VERSION', '1.0.0' );
 
 require_once get_theme_file_path( 'inc/setup.php' );
+require_once get_theme_file_path( 'inc/fields.php' );
 require_once get_theme_file_path( 'inc/post-types.php' );
 require_once get_theme_file_path( 'inc/assets.php' );
 require_once get_theme_file_path( 'inc/helpers.php' );

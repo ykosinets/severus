@@ -11,7 +11,7 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-$title = $data['title'] ?? get_field( 'contact_title' );
+$title = $data['title'] ?? severus_field( 'contact_title' );
 
 if ( ! $title ) {
 	return;
@@ -20,9 +20,9 @@ if ( ! $title ) {
 $heading  = 'h1' === ( $data['heading'] ?? '' ) ? 'h1' : 'h2';
 $label    = $data['label'] ?? '';
 $subtitle = $data['subtitle'] ?? '';
-$text     = $data['text'] ?? get_field( 'contact_text' );
+$text     = $data['text'] ?? severus_field( 'contact_text' );
 $location = $data['location'] ?? '';
-$logo     = isset( $data['title'] ) ? null : severus_image( get_field( 'contact_logo' ) );
+$logo     = isset( $data['title'] ) ? null : severus_image( severus_field( 'contact_logo' ) );
 ?>
 <section class="section talk" id="<?php echo esc_attr( $data['id'] ?? 'home-contacts' ); ?>">
 	<?php if ( ! empty( $data['orbit'] ) ) : ?>

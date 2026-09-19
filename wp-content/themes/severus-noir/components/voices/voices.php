@@ -8,17 +8,17 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-$reviews = severus_ids( $data['reviews'] ?? get_field( 'review_list' ) );
+$reviews = severus_ids( $data['reviews'] ?? severus_field( 'review_list' ) );
 
 if ( ! $reviews ) {
 	return;
 }
 
 $label  = $data['label'] ?? '';
-$title  = $data['title'] ?? get_field( 'testimonials_title' );
-$kicker = $data['kicker'] ?? get_field( 'testimonials_subheading' );
-$text   = $data['text'] ?? get_field( 'testimonials_text' );
-$button = $data['button'] ?? get_field( 'testimonials_button' );
+$title  = $data['title'] ?? severus_field( 'testimonials_title' );
+$kicker = $data['kicker'] ?? severus_field( 'testimonials_subheading' );
+$text   = $data['text'] ?? severus_field( 'testimonials_text' );
+$button = $data['button'] ?? severus_field( 'testimonials_button' );
 ?>
 <section class="section section--cool voices">
 	<div class="shell voices__in">
@@ -45,7 +45,7 @@ $button = $data['button'] ?? get_field( 'testimonials_button' );
 		<div class="voices__rail">
 			<?php
 			foreach ( $reviews as $id ) :
-				$review = get_field( 'reviews', $id );
+				$review = severus_field( 'reviews', $id );
 				$role   = is_array( $review ) ? ( $review['profession'] ?? '' ) : '';
 				?>
 				<figure class="quote reveal">

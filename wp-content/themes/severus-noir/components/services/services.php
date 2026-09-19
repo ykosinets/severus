@@ -70,10 +70,10 @@ if ( $feature ) {
  * One service card.
  */
 $card = static function ( int $id, string $modifier = '' ): void {
-	$glyph   = severus_inline_svg( get_field( 'service_icon', $id ) );
-	$art     = severus_image( get_field( 'service_card_image', $id ) );
-	$points  = array_filter( wp_list_pluck( (array) get_field( 'service_card_points', $id ), 'text' ) );
-	$summary = get_field( 'service_short_descr', $id );
+	$glyph   = severus_inline_svg( severus_field( 'service_icon', $id ) );
+	$art     = severus_image( severus_field( 'service_card_image', $id ) );
+	$points  = array_filter( wp_list_pluck( (array) severus_field( 'service_card_points', $id ), 'text' ) );
+	$summary = severus_field( 'service_short_descr', $id );
 	?>
 	<a class="<?php echo esc_attr( trim( 'card ' . $modifier ) ); ?>" href="<?php echo esc_url( get_permalink( $id ) ); ?>" data-snake-arrow>
 		<?php if ( $art ) : ?>
@@ -113,8 +113,8 @@ $card = static function ( int $id, string $modifier = '' ): void {
  * summary, and a button.
  */
 $row = static function ( int $id ): void {
-	$glyph   = severus_inline_svg( get_field( 'service_icon', $id ) );
-	$summary = get_field( 'service_short_descr', $id );
+	$glyph   = severus_inline_svg( severus_field( 'service_icon', $id ) );
+	$summary = severus_field( 'service_short_descr', $id );
 	$url     = get_permalink( $id );
 	?>
 	<div class="sub">
@@ -134,12 +134,12 @@ $row = static function ( int $id ): void {
 
 /* Where a group has a single child, the spare room offers a call instead. */
 $front   = (int) get_option( 'page_on_front' );
-$booking = $front ? get_field( 'hero_btn_primary', $front ) : null;
+$booking = $front ? severus_field( 'hero_btn_primary', $front ) : null;
 
 $lead = array(
 	'label' => $data['label'] ?? '',
-	'title' => $data['title'] ?? get_field( 'services_title' ),
-	'text'  => $data['text'] ?? get_field( 'services_subtitle' ),
+	'title' => $data['title'] ?? severus_field( 'services_title' ),
+	'text'  => $data['text'] ?? severus_field( 'services_subtitle' ),
 );
 ?>
 <section class="section section--warm services" id="<?php echo esc_attr( $data['id'] ?? 'services' ); ?>">
@@ -185,7 +185,7 @@ $lead = array(
 			</div>
 		<?php endif; ?>
 
-		<?php if ( $button = ( $data['button'] ?? get_field( 'services_button' ) ) ) : ?>
+		<?php if ( $button = ( $data['button'] ?? severus_field( 'services_button' ) ) ) : ?>
 			<div class="services__foot reveal">
 				<?php severus_button( $button, 'btn btn--solid' ); ?>
 			</div>

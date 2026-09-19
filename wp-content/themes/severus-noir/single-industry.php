@@ -15,12 +15,12 @@ while ( have_posts() ) :
 	severus_component(
 		'page-hero',
 		array(
-			'label'    => get_field( 'industry_label' ),
-			'title'    => get_field( 'industry_hero_title' ),
-			'subtitle' => get_field( 'industry_subtitle' ),
-			'text'     => get_field( 'industry_description' ),
-			'button'   => get_field( 'industry_hero_button' ),
-			'image'    => severus_image( get_field( 'industry_hero_image' ) ),
+			'label'    => severus_field( 'industry_label' ),
+			'title'    => severus_field( 'industry_hero_title' ),
+			'subtitle' => severus_field( 'industry_subtitle' ),
+			'text'     => severus_field( 'industry_description' ),
+			'button'   => severus_field( 'industry_hero_button' ),
+			'image'    => severus_image( severus_field( 'industry_hero_image' ) ),
 		)
 	);
 
@@ -28,11 +28,11 @@ while ( have_posts() ) :
 		'results',
 		array(
 			'id'    => 'case-studies',
-			'cases' => get_field( 'cs_cases_list' ) ?: array(),
-			'label' => get_field( 'cs_label' ),
-			'title' => get_field( 'cs_title' ),
-			'text'  => get_field( 'cs_description' ),
-			'more'  => get_field( 'see_all_construction_case' ),
+			'cases' => severus_field( 'cs_cases_list' ) ?: array(),
+			'label' => severus_field( 'cs_label' ),
+			'title' => severus_field( 'cs_title' ),
+			'text'  => severus_field( 'cs_description' ),
+			'more'  => severus_field( 'see_all_construction_case' ),
 		)
 	);
 

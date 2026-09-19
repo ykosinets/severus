@@ -7,7 +7,7 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-$option   = static fn( string $name, string $fallback = '' ) => ( function_exists( 'get_field' ) ? get_field( $name, 'option' ) : null ) ?: $fallback;
+$option   = static fn( string $name, string $fallback = '' ) => severus_field( $name, 'option' ) ?: $fallback;
 $photo    = (int) $option( 'booking_photo' );
 $host     = $option( 'booking_host', 'Olena Bochulia' );
 $title    = $option( 'booking_title', 'Severus | Helping business owners to scale and grow' );

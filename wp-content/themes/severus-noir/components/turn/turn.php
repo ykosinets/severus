@@ -5,7 +5,7 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-$title = get_field( 'section_info_title' );
+$title = severus_field( 'section_info_title' );
 
 if ( ! $title ) {
 	return;

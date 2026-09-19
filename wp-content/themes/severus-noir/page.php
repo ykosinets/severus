@@ -21,7 +21,7 @@ while ( have_posts() ) :
 
 	/* On the services listing the page copy is a short intro: it goes into
 	   the hero, centred under the title, instead of an article below. */
-	$intro = get_field( 'service-title' ) && ! has_post_thumbnail();
+	$intro = severus_field( 'service-title' ) && ! has_post_thumbnail();
 
 	severus_component(
 		'page-hero',
@@ -52,44 +52,44 @@ while ( have_posts() ) :
 
 	/* A page that gives the services section a heading gets the section, with
 	   the service tree in it. */
-	if ( get_field( 'service-title' ) ) {
+	if ( severus_field( 'service-title' ) ) {
 		severus_component(
 			'services',
 			array(
 				'feature' => true,
-				'label'   => get_field( 'service-subtitle' ),
-				'title'   => $heading( get_field( 'service-title' ) ),
+				'label'   => severus_field( 'service-subtitle' ),
+				'title'   => $heading( severus_field( 'service-title' ) ),
 				'text'    => '',
 				'button'  => null,
 			)
 		);
 	}
 
-	if ( get_field( 'case-list' ) ) {
+	if ( severus_field( 'case-list' ) ) {
 		severus_component(
 			'results',
 			array(
-				'cases' => get_field( 'case-list' ),
-				'label' => get_field( 'case-subtitle' ),
-				'title' => $heading( get_field( 'case-title' ) ),
+				'cases' => severus_field( 'case-list' ),
+				'label' => severus_field( 'case-subtitle' ),
+				'title' => $heading( severus_field( 'case-title' ) ),
 				'text'  => '',
 			)
 		);
 
-		$group = get_field( 'home_group_fields' );
+		$group = severus_field( 'home_group_fields' );
 
 		if ( is_array( $group ) && ! empty( $group['show_get_started'] ) ) {
 			severus_component( 'callout', severus_get_started() );
 		}
 	}
 
-	if ( get_field( 'review_list' ) ) {
+	if ( severus_field( 'review_list' ) ) {
 		severus_component(
 			'voices',
 			array(
-				'reviews' => get_field( 'review_list' ),
-				'label'   => get_field( 'review-subtitle' ),
-				'title'   => $heading( get_field( 'review-title' ) ),
+				'reviews' => severus_field( 'review_list' ),
+				'label'   => severus_field( 'review-subtitle' ),
+				'title'   => $heading( severus_field( 'review-title' ) ),
 				'kicker'  => '',
 				'text'    => '',
 				'button'  => null,
@@ -97,19 +97,19 @@ while ( have_posts() ) :
 		);
 	}
 
-	if ( get_field( 'insights_list' ) ) {
+	if ( severus_field( 'insights_list' ) ) {
 		severus_component(
 			'journal',
 			array(
-				'posts'  => get_field( 'insights_list' ),
-				'label'  => get_field( 'insights-subtitle' ),
-				'title'  => $heading( get_field( 'insights-title' ) ),
+				'posts'  => severus_field( 'insights_list' ),
+				'label'  => severus_field( 'insights-subtitle' ),
+				'title'  => $heading( severus_field( 'insights-title' ) ),
 				'button' => null,
 			)
 		);
 	}
 
-	$contact = get_field( 'contact_form' );
+	$contact = severus_field( 'contact_form' );
 
 	if ( is_array( $contact ) && ! empty( $contact['title'] ) ) {
 		severus_component(

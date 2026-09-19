@@ -21,11 +21,11 @@ while ( have_posts() ) :
 	severus_component(
 		'page-hero',
 		array(
-			'label'  => get_field( 'service_label' ),
-			'title'  => get_field( 'service_hero_title' ),
-			'text'   => get_field( 'service_description' ),
-			'button' => get_field( 'service_hero_button' ),
-			'image'  => severus_image( get_field( 'service_hero_image' ) ),
+			'label'  => severus_field( 'service_label' ),
+			'title'  => severus_field( 'service_hero_title' ),
+			'text'   => severus_field( 'service_description' ),
+			'button' => severus_field( 'service_hero_button' ),
+			'image'  => severus_image( severus_field( 'service_hero_image' ) ),
 			'art'    => 'framed',
 		)
 	);
@@ -34,10 +34,10 @@ while ( have_posts() ) :
 		'brief',
 		array(
 			'id'    => 'what-it-is',
-			'label' => get_field( 'service_what_label' ),
-			'title' => get_field( 'service_what_title' ),
-			'text'  => get_field( 'service_what_description' ),
-			'note'  => get_field( 'service_what_note' ),
+			'label' => severus_field( 'service_what_label' ),
+			'title' => severus_field( 'service_what_title' ),
+			'text'  => severus_field( 'service_what_description' ),
+			'note'  => severus_field( 'service_what_note' ),
 		)
 	);
 
@@ -45,10 +45,10 @@ while ( have_posts() ) :
 		'points',
 		array(
 			'id'     => 'when',
-			'label'  => get_field( 'service_when_label' ),
-			'title'  => get_field( 'service_when_title' ),
-			'text'   => get_field( 'service_when_description' ),
-			'items'  => $pair( get_field( 'service_when_items' ) ),
+			'label'  => severus_field( 'service_when_label' ),
+			'title'  => severus_field( 'service_when_title' ),
+			'text'   => severus_field( 'service_when_description' ),
+			'items'  => $pair( severus_field( 'service_when_items' ) ),
 			'layout' => 'cards',
 		)
 	);
@@ -57,10 +57,10 @@ while ( have_posts() ) :
 		'points',
 		array(
 			'id'     => 'approach',
-			'label'  => get_field( 'service_approach_label' ),
-			'title'  => get_field( 'service_approach_title' ),
-			'text'   => get_field( 'service_approach_description' ),
-			'items'  => $pair( get_field( 'service_approach_items' ) ),
+			'label'  => severus_field( 'service_approach_label' ),
+			'title'  => severus_field( 'service_approach_title' ),
+			'text'   => severus_field( 'service_approach_description' ),
+			'items'  => $pair( severus_field( 'service_approach_items' ) ),
 			'layout' => 'list',
 		)
 	);
@@ -69,10 +69,10 @@ while ( have_posts() ) :
 		'gains',
 		array(
 			'id'    => 'what-you-get',
-			'label' => get_field( 'service_get_label' ),
-			'title' => get_field( 'service_get_title' ),
-			'text'  => get_field( 'service_get_description' ),
-			'items' => $pair( get_field( 'service_get_items' ) ),
+			'label' => severus_field( 'service_get_label' ),
+			'title' => severus_field( 'service_get_title' ),
+			'text'  => severus_field( 'service_get_description' ),
+			'items' => $pair( severus_field( 'service_get_items' ) ),
 		)
 	);
 
@@ -80,9 +80,9 @@ while ( have_posts() ) :
 		'shift',
 		array(
 			'id'    => 'what-changes',
-			'label' => get_field( 'service_changes_label' ),
-			'title' => get_field( 'service_changes_title' ),
-			'items' => $pair( get_field( 'service_changes_items' ) ),
+			'label' => severus_field( 'service_changes_label' ),
+			'title' => severus_field( 'service_changes_title' ),
+			'items' => $pair( severus_field( 'service_changes_items' ) ),
 		)
 	);
 
@@ -91,9 +91,9 @@ while ( have_posts() ) :
 		array(
 			'id'       => 'more-services',
 			'services' => severus_service_siblings( get_the_ID() ),
-			'label'    => get_field( 'service_more_label' ),
-			'title'    => get_field( 'service_more_title' ),
-			'text'     => get_field( 'service_more_description' ),
+			'label'    => severus_field( 'service_more_label' ),
+			'title'    => severus_field( 'service_more_title' ),
+			'text'     => severus_field( 'service_more_description' ),
 			'button'   => null,
 		)
 	);
@@ -101,18 +101,18 @@ while ( have_posts() ) :
 	severus_component(
 		'faq',
 		array(
-			'label' => get_field( 'service_faq_label' ),
-			'title' => get_field( 'service_faq_title' ),
-			'items' => (array) get_field( 'service_faq_items' ),
+			'label' => severus_field( 'service_faq_label' ),
+			'title' => severus_field( 'service_faq_title' ),
+			'items' => (array) severus_field( 'service_faq_items' ),
 		)
 	);
 
 	severus_component(
 		'callout',
 		array(
-			'title'  => get_field( 'service_cta_title' ),
-			'text'   => get_field( 'service_cta_description' ),
-			'button' => get_field( 'service_cta_button' ),
+			'title'  => severus_field( 'service_cta_title' ),
+			'text'   => severus_field( 'service_cta_description' ),
+			'button' => severus_field( 'service_cta_button' ),
 		)
 	);
 endwhile;

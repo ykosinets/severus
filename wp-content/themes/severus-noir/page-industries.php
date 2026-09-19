@@ -17,7 +17,7 @@ while ( have_posts() ) :
 	severus_component(
 		'page-hero',
 		array(
-			'text'  => get_field( 'industries_text' ),
+			'text'  => severus_field( 'industries_text' ),
 		)
 	);
 
@@ -33,14 +33,14 @@ while ( have_posts() ) :
 		'tiles',
 		array(
 			'id'    => 'industries',
-			'title' => get_field( 'industries_section_title' ),
+			'title' => severus_field( 'industries_section_title' ),
 			'items' => array_map(
 				static function ( WP_Post $industry ): array {
-					$image = get_field( 'industry_hero_image', $industry->ID );
+					$image = severus_field( 'industry_hero_image', $industry->ID );
 
 					return array(
 						'title' => get_the_title( $industry ),
-						'text'  => get_field( 'industry_subtitle', $industry->ID ),
+						'text'  => severus_field( 'industry_subtitle', $industry->ID ),
 						'url'   => get_permalink( $industry ),
 						'image' => has_post_thumbnail( $industry )
 							? severus_image( get_post_thumbnail_id( $industry ) )
@@ -52,7 +52,7 @@ while ( have_posts() ) :
 		)
 	);
 
-	$group = get_field( 'home_group_fields' );
+	$group = severus_field( 'home_group_fields' );
 
 	if ( is_array( $group ) && ! empty( $group['show_get_started'] ) ) {
 		severus_component( 'callout', severus_get_started() );

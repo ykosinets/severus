@@ -5,20 +5,21 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-if ( ! have_rows( 'impact_items' ) ) {
+$items = severus_rows( 'impact_items' );
+
+if ( ! $items ) {
 	return;
 }
 
 $slides = array();
 
-while ( have_rows( 'impact_items' ) ) {
-	the_row();
-	$image  = severus_image( get_sub_field( 'impact_image' ) );
-	$button = get_sub_field( 'impact_button' );
+foreach ( $items as $item ) {
+	$image  = severus_image( $item['impact_image'] ?? null );
+	$button = $item['impact_button'] ?? null;
 
 	$slides[] = array(
-		'title' => get_sub_field( 'impact_title' ),
-		'text'  => get_sub_field( 'impact_text' ),
+		'title' => $item['impact_title'] ?? '',
+		'text'  => $item['impact_text'] ?? '',
 		'image' => $image ? $image['url'] : '',
 		'link'  => is_array( $button ) ? ( $button['url'] ?? '' ) : '',
 		'label' => is_array( $button ) ? ( $button['title'] ?? '' ) : '',
@@ -37,10 +38,10 @@ $first  = $slides[0] ?? array();
 
 			<div class="impact__copy">
 				<header class="lead">
-					<?php if ( $title = get_field( 'impact_title' ) ) : ?>
+					<?php if ( $title = severus_field( 'impact_title' ) ) : ?>
 						<h2 class="lead__title"><?php echo wp_kses_post( $title ); ?></h2>
 					<?php endif; ?>
-					<?php if ( $subtitle = get_field( 'impact_subtitle' ) ) : ?>
+					<?php if ( $subtitle = severus_field( 'impact_subtitle' ) ) : ?>
 						<p class="lead__text"><?php echo wp_kses_post( $subtitle ); ?></p>
 					<?php endif; ?>
 				</header>

@@ -18,13 +18,13 @@ while ( have_posts() ) :
 		'page-hero',
 		array(
 			'orbit'    => 'right',
-			'title'    => get_field( 'heading_h1' ),
-			'subtitle' => get_field( 'heading_h2' ),
-			'text'     => get_field( 'description' ),
+			'title'    => severus_field( 'heading_h1' ),
+			'subtitle' => severus_field( 'heading_h2' ),
+			'text'     => severus_field( 'description' ),
 		)
 	);
 
-	$services = get_field( 'services-section' );
+	$services = severus_field( 'services-section' );
 
 	if ( is_array( $services ) ) {
 		severus_component(
@@ -46,7 +46,7 @@ while ( have_posts() ) :
 		);
 	}
 
-	$values = get_field( 'faq-section' );
+	$values = severus_field( 'faq-section' );
 
 	if ( is_array( $values ) ) {
 		severus_component(
@@ -64,15 +64,15 @@ while ( have_posts() ) :
 	severus_component(
 		'results',
 		array(
-			'cases' => get_field( 'case-list' ) ?: array(),
+			'cases' => severus_field( 'case-list' ) ?: array(),
 			'orbit' => 'right',
-			'label' => get_field( 'case-subtitle' ),
-			'title' => get_field( 'case-title' ),
+			'label' => severus_field( 'case-subtitle' ),
+			'title' => severus_field( 'case-title' ),
 			'text'  => '',
 		)
 	);
 
-	if ( get_field( 'show_get_started' ) ) {
+	if ( severus_field( 'show_get_started' ) ) {
 		severus_component( 'callout', severus_get_started() );
 	}
 

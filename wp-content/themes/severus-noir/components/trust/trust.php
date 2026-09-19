@@ -4,13 +4,16 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-$title = get_field( 'trust_title' );
+$title = severus_field( 'trust_title' );
 
-if ( ! $title && ! have_rows( 'trust_stats_lg' ) ) {
+$big   = severus_rows( 'trust_stats_lg' );
+$small = severus_rows( 'trust_stats_sm' );
+
+if ( ! $title && ! $big ) {
 	return;
 }
 
-$mark = severus_image( get_field( 'trust_logo' ) );
+$mark = severus_image( severus_field( 'trust_logo' ) );
 ?>
 <section class="section section--warm is-narrow trust">
 	<?php if ( $mark ) : ?>
@@ -23,24 +26,23 @@ $mark = severus_image( get_field( 'trust_logo' ) );
 			<?php if ( $title ) : ?>
                 <div class="reveal is-display">
                     <h2 class="trust__title"><?php echo wp_kses_post( $title ); ?></h2>
-                    <?php if ( $description = get_field( 'trust_descr' ) ) : ?>
+                    <?php if ( $description = severus_field( 'trust_descr' ) ) : ?>
                         <p class="trust__description"><?php echo wp_kses_post( $description ); ?></p>
                     <?php endif; ?>
                 </div>
 			<?php endif; ?>
 
 			<div class="trust__aside reveal">
-				<?php severus_button( get_field( 'trust_button' ), 'btn btn--solid' ); ?>
+				<?php severus_button( severus_field( 'trust_button' ), 'btn btn--solid' ); ?>
 			</div>
 		</div>
 
 		<div class="figures">
-			<?php if ( have_rows( 'trust_stats_lg' ) ) : ?>
+			<?php if ( $big ) : ?>
 				<div class="figures__big">
 					<?php
-					while ( have_rows( 'trust_stats_lg' ) ) :
-						the_row();
-						$number = severus_split_number( get_sub_field( 'stlg_number' ) );
+					foreach ( $big as $figure ) :
+						$number = severus_split_number( $figure['stlg_number'] ?? '' );
 						?>
 						<div class="figure rule">
 							<b class="figure__n">
@@ -49,19 +51,19 @@ $mark = severus_image( get_field( 'trust_logo' ) );
 									<i><?php echo esc_html( $number['suffix'] ); ?></i>
 								<?php endif; ?>
 							</b>
-							<?php if ( $text = get_sub_field( 'stlg_text' ) ) : ?>
+							<?php if ( $text = ( $figure['stlg_text'] ?? '' ) ) : ?>
 								<p><?php echo wp_kses_post( $text ); ?></p>
 							<?php endif; ?>
 						</div>
-					<?php endwhile; ?>
+					<?php endforeach; ?>
 				</div>
 			<?php endif; ?>
 
-			<?php if ( have_rows( 'trust_stats_sm' ) ) : ?>
+			<?php if ( $small ) : ?>
 				<div class="figures__small">
-					<?php while ( have_rows( 'trust_stats_sm' ) ) : the_row(); ?>
-						<p class="figure__note reveal is-bright"><?php echo wp_kses_post( get_sub_field( 'stsm_text' ) ); ?></p>
-					<?php endwhile; ?>
+					<?php foreach ( $small as $note ) : ?>
+						<p class="figure__note reveal is-bright"><?php echo wp_kses_post( $note['stsm_text'] ?? '' ); ?></p>
+					<?php endforeach; ?>
 				</div>
 			<?php endif; ?>
 		</div>

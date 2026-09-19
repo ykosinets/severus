@@ -4,7 +4,9 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-if ( ! have_rows( 'experts_list' ) ) {
+$experts = severus_rows( 'experts_list' );
+
+if ( ! $experts ) {
 	return;
 }
 ?>
@@ -12,21 +14,20 @@ if ( ! have_rows( 'experts_list' ) ) {
 	<div class="shell">
 
 		<header class="lead lead--split reveal">
-			<?php if ( $title = get_field( 'experts_title' ) ) : ?>
+			<?php if ( $title = severus_field( 'experts_title' ) ) : ?>
 				<h2 class="lead__title"><?php echo wp_kses_post( $title ); ?></h2>
 			<?php endif; ?>
-			<?php if ( $intro = get_field( 'experts_intro' ) ) : ?>
+			<?php if ( $intro = severus_field( 'experts_intro' ) ) : ?>
 				<p class="lead__text"><?php echo wp_kses_post( $intro ); ?></p>
 			<?php endif; ?>
 		</header>
 
 		<div class="people__grid">
 			<?php
-			while ( have_rows( 'experts_list' ) ) :
-				the_row();
-				$photo    = severus_image( get_sub_field( 'expert_photo' ) );
-				$name     = get_sub_field( 'expert_name' );
-				$linkedin = get_sub_field( 'expert_linkedin' );
+			foreach ( $experts as $expert ) :
+				$photo    = severus_image( $expert['expert_photo'] ?? null );
+				$name     = $expert['expert_name'] ?? '';
+				$linkedin = $expert['expert_linkedin'] ?? '';
 				?>
 				<article class="face reveal">
 					<div class="face__frame">
@@ -35,10 +36,10 @@ if ( ! have_rows( 'experts_list' ) ) {
 						<?php endif; ?>
 
 						<div class="face__veil">
-							<?php if ( $quote = get_sub_field( 'expert_quote' ) ) : ?>
+							<?php if ( $quote = ( $expert['expert_quote'] ?? '' ) ) : ?>
 								<blockquote><?php echo wp_kses_post( $quote ); ?></blockquote>
 							<?php endif; ?>
-							<?php if ( $overlay = get_sub_field( 'expert_overlay_role' ) ) : ?>
+							<?php if ( $overlay = ( $expert['expert_overlay_role'] ?? '' ) ) : ?>
 								<p><?php echo esc_html( $overlay ); ?></p>
 							<?php endif; ?>
 						</div>
@@ -55,11 +56,11 @@ if ( ! have_rows( 'experts_list' ) ) {
 						<?php endif; ?>
 					</h3>
 
-					<?php if ( $role = get_sub_field( 'expert_role' ) ) : ?>
+					<?php if ( $role = ( $expert['expert_role'] ?? '' ) ) : ?>
 						<p class="face__role"><?php echo esc_html( $role ); ?></p>
 					<?php endif; ?>
 				</article>
-			<?php endwhile; ?>
+			<?php endforeach; ?>
 		</div>
 
 	</div>

@@ -15,7 +15,7 @@ $items = $data['items'] ?? null;
 if ( null === $items ) {
 	$items = array();
 
-	foreach ( (array) get_field( 'faq_list' ) as $row ) {
+	foreach ( (array) severus_field( 'faq_list' ) as $row ) {
 		$items[] = array(
 			'question' => $row['faq_item_title'] ?? '',
 			'answer'   => $row['faq_item_descr'] ?? '',
@@ -30,7 +30,7 @@ if ( ! $items ) {
 }
 
 $label = $data['label'] ?? '';
-$title = $data['title'] ?? get_field( 'faq_title' );
+$title = $data['title'] ?? severus_field( 'faq_title' );
 $text  = $data['text'] ?? '';
 $group = 'severus-faq-' . wp_unique_id();
 $index = 0;

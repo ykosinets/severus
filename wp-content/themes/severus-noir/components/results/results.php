@@ -11,7 +11,7 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-$cases = array_slice( severus_ids( $data['cases'] ?? get_field( 'case-list' ) ), 0, 3 );
+$cases = array_slice( severus_ids( $data['cases'] ?? severus_field( 'case-list' ) ), 0, 3 );
 
 if ( ! $cases ) {
 	return;
@@ -19,8 +19,8 @@ if ( ! $cases ) {
 
 $lead = array(
 	'label' => $data['label'] ?? '',
-	'title' => $data['title'] ?? get_field( 'results_title' ),
-	'text'  => $data['text'] ?? get_field( 'results_subtitle' ),
+	'title' => $data['title'] ?? severus_field( 'results_title' ),
+	'text'  => $data['text'] ?? severus_field( 'results_subtitle' ),
 );
 ?>
 <section class="section results" id="<?php echo esc_attr( $data['id'] ?? 'results' ); ?>">

@@ -4,7 +4,9 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-if ( ! have_rows( 'sound_familiar_cards' ) ) {
+$cards = severus_rows( 'sound_familiar_cards' );
+
+if ( ! $cards ) {
 	return;
 }
 ?>
@@ -14,10 +16,10 @@ if ( ! have_rows( 'sound_familiar_cards' ) ) {
 		<?php /* Pinned while the slabs scroll, so no .reveal — a view() timeline
 			stalls on a sticky element. */ ?>
 		<header class="lead familiar__lead" data-stack-lead>
-			<?php if ( $title = get_field( 'sound_familiar_title' ) ) : ?>
+			<?php if ( $title = severus_field( 'sound_familiar_title' ) ) : ?>
 				<h2 class="lead__title"><?php echo wp_kses_post( $title ); ?></h2>
 			<?php endif; ?>
-			<?php if ( $intro = get_field( 'sound_familiar_intro' ) ) : ?>
+			<?php if ( $intro = severus_field( 'sound_familiar_intro' ) ) : ?>
 				<p class="lead__text"><?php echo wp_kses_post( $intro ); ?></p>
 			<?php endif; ?>
 		</header>
@@ -25,9 +27,8 @@ if ( ! have_rows( 'sound_familiar_cards' ) ) {
 		<div class="stack" data-stack>
 			<?php
 			$index = 0;
-			while ( have_rows( 'sound_familiar_cards' ) ) :
-				the_row();
-				$image = severus_image( get_sub_field( 'card_image' ) );
+			foreach ( $cards as $card ) :
+				$image = severus_image( $card['card_image'] ?? null );
 				?>
 				<article class="slab" style="--i: <?php echo (int) $index++; ?>">
 					<div class="slab__in">
@@ -38,16 +39,16 @@ if ( ! have_rows( 'sound_familiar_cards' ) ) {
 						<?php endif; ?>
 
 						<div class="slab__body">
-							<?php if ( $heading = get_sub_field( 'card_heading' ) ) : ?>
+							<?php if ( $heading = ( $card['card_heading'] ?? '' ) ) : ?>
 								<h3><?php echo wp_kses_post( $heading ); ?></h3>
 							<?php endif; ?>
-							<?php if ( $text = get_sub_field( 'card_text' ) ) : ?>
+							<?php if ( $text = ( $card['card_text'] ?? '' ) ) : ?>
 								<p><?php echo wp_kses_post( $text ); ?></p>
 							<?php endif; ?>
 						</div>
 					</div>
 				</article>
-			<?php endwhile; ?>
+			<?php endforeach; ?>
 		</div>
 
 	</div>

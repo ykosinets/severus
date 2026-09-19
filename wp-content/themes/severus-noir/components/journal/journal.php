@@ -9,15 +9,15 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-$posts = severus_ids( $data['posts'] ?? get_field( 'products_list' ) );
+$posts = severus_ids( $data['posts'] ?? severus_field( 'products_list' ) );
 
 if ( ! $posts ) {
 	return;
 }
 
 $label  = $data['label'] ?? '';
-$title  = $data['title'] ?? get_field( 'products_title' );
-$button = $data['button'] ?? get_field( 'products_button' );
+$title  = $data['title'] ?? severus_field( 'products_title' );
+$button = $data['button'] ?? severus_field( 'products_button' );
 ?>
 <section class="section is-narrow journal" id="insights">
 	<div class="shell">

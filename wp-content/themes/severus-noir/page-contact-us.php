@@ -14,7 +14,7 @@ get_header();
 while ( have_posts() ) :
 	the_post();
 
-	$contact = get_field( 'contact_form' );
+	$contact = severus_field( 'contact_form' );
 	$contact = is_array( $contact ) ? $contact : array();
 
 	severus_component(

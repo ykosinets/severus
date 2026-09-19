@@ -25,9 +25,9 @@ severus_component(
 		)
 		: array(
 			'orbit'    => 'right',
-			'title'    => get_field( 'case-list-title', 'option' ) ?: $all,
-			'subtitle' => get_field( 'case-list-subtitle', 'option' ),
-			'text'     => get_field( 'case-list-description', 'option' ),
+			'title'    => severus_field( 'case-list-title', 'option' ) ?: $all,
+			'subtitle' => severus_field( 'case-list-subtitle', 'option' ),
+			'text'     => severus_field( 'case-list-description', 'option' ),
 		)
 );
 

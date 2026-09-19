@@ -303,7 +303,7 @@ function severus_get_started(): array {
  * title, a three-line summary and the round arrow.
  */
 function severus_work_card( int $id ): void {
-	$fields  = get_field( 'cases_fields', $id );
+	$fields  = severus_field( 'cases_fields', $id );
 	$summary = is_array( $fields ) ? ( $fields['short_description'] ?? '' ) : '';
 	$summary = wp_strip_all_tags( $summary ?: get_the_excerpt( $id ) );
 	?>

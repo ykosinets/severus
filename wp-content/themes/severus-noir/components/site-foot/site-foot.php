@@ -1,17 +1,17 @@
 <?php
 /**
  * Site footer: brand, Reach Out, Offices, Explore, Our Services — in the
- * previous theme's order, with its titles and offices from the ACF options
- * page.
+ * previous theme's order, with its titles and offices from the theme
+ * settings.
  */
 defined( 'ABSPATH' ) || exit;
 
-/* Column titles and offices come from the ACF options page, as before. */
-$option  = static fn( string $name ) => function_exists( 'get_field' ) ? get_field( $name, 'option' ) : null;
-$offices = function_exists( 'get_field' ) ? array_filter(
-	(array) get_field( 'footer_offices', 'option' ),
+/* Column titles and offices come from the theme settings. */
+$option  = static fn( string $name ) => severus_field( $name, 'option' );
+$offices = array_filter(
+	severus_rows( 'footer_offices', 'option' ),
 	static fn( $office ) => ! empty( $office['office_country'] ) || ! empty( $office['office_address'] )
-) : array();
+);
 ?>
 <footer class="site-foot">
 	<div class="shell">
