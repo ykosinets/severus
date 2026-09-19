@@ -21,7 +21,7 @@ while ( have_posts() ) :
 
 	/* On the services listing the page copy is a short intro: it goes into
 	   the hero, centred under the title, instead of an article below. */
-	$intro = get_field( 'services_list' ) && ! has_post_thumbnail();
+	$intro = get_field( 'service-title' ) && ! has_post_thumbnail();
 
 	severus_component(
 		'page-hero',
@@ -50,16 +50,17 @@ while ( have_posts() ) :
 		<?php
 	endif;
 
-	if ( get_field( 'services_list' ) ) {
+	/* A page that gives the services section a heading gets the section, with
+	   the service tree in it. */
+	if ( get_field( 'service-title' ) ) {
 		severus_component(
 			'services',
 			array(
-				'services' => get_field( 'services_list' ),
-				'feature'  => true,
-				'label'    => get_field( 'service-subtitle' ),
-				'title'    => $heading( get_field( 'service-title' ) ),
-				'text'     => '',
-				'button'   => null,
+				'feature' => true,
+				'label'   => get_field( 'service-subtitle' ),
+				'title'   => $heading( get_field( 'service-title' ) ),
+				'text'    => '',
+				'button'  => null,
 			)
 		);
 	}

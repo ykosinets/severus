@@ -4,10 +4,13 @@
  * (service_short_descr), the ticked card list, a link, and the card
  * background behind it — all from the service's card fields.
  *
- * $data (all optional; the front page fields are the defaults):
- *   services            post ids or objects; on the front page, every
- *                       top-level service (in services_list order), or the
- *                       first three of services_list if there are none
+ * Which services are shown comes from the service tree, not from a list kept
+ * beside it: the cards are the top-level services, in their own menu order.
+ *
+ * $data (all optional):
+ *   services            post ids or objects, when a caller has its own set —
+ *                       the related services beside a single one. Left out,
+ *                       the top-level services are used.
  *   limit               how many to show
  *   label, title, text  the header
  *   button              ACF link under the cards
@@ -18,27 +21,23 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-if ( isset( $data['services'] ) ) {
-	$services = severus_ids( $data['services'] );
-	$limit    = $data['limit'] ?? 0;
-} else {
-	$listed = severus_ids( get_field( 'services_list' ) );
-	$top    = get_posts(
-		array(
-			'post_type'   => 'service',
-			'numberposts' => -1,
-			'fields'      => 'ids',
-			'post_parent' => 0,
-			'orderby'     => array( 'menu_order' => 'ASC', 'title' => 'ASC' ),
-		)
-	);
+/**
+ * Services under a parent, in menu order. 0 gives the top-level ones.
+ *
+ * @return int[]
+ */
+$family = static fn( int $parent ): array => get_posts(
+	array(
+		'post_type'   => 'service',
+		'numberposts' => -1,
+		'fields'      => 'ids',
+		'post_parent' => $parent,
+		'orderby'     => array( 'menu_order' => 'ASC', 'title' => 'ASC' ),
+	)
+);
 
-	// Listed ones keep the list's order; any others follow.
-	$services = $top
-		? array_merge( array_values( array_intersect( $listed, $top ) ), array_values( array_diff( $top, $listed ) ) )
-		: $listed;
-	$limit    = $data['limit'] ?? ( $top ? 0 : 3 );
-}
+$services = isset( $data['services'] ) ? severus_ids( $data['services'] ) : $family( 0 );
+$limit    = $data['limit'] ?? 0;
 
 if ( $limit ) {
 	$services = array_slice( $services, 0, $limit );
@@ -50,19 +49,20 @@ if ( ! $services ) {
 
 $feature = ! empty( $data['feature'] );
 
-/* The Services page: each top-level service starts a row, its children follow
-   it on the same row; anything whose parent is not on show comes after. */
+/* The Services page: each top-level service starts a row and its children
+   follow it on the same row. A service shown without its parent — a caller
+   passing its own set — keeps its plain card below. */
 $groups = array();
 $loose  = $services;
 
 if ( $feature ) {
-	$parents = array_values( array_filter( $services, static fn( $id ) => ! wp_get_post_parent_id( $id ) ) );
-
-	foreach ( $parents as $parent ) {
-		$groups[ $parent ] = array_values( array_filter( $services, static fn( $id ) => (int) wp_get_post_parent_id( $id ) === $parent ) );
+	foreach ( $services as $id ) {
+		if ( ! wp_get_post_parent_id( $id ) ) {
+			$groups[ $id ] = $family( $id );
+		}
 	}
 
-	$placed = array_merge( $parents, ...array_values( $groups ) );
+	$placed = $groups ? array_merge( array_keys( $groups ), ...array_values( $groups ) ) : array();
 	$loose  = array_values( array_diff( $services, $placed ) );
 }
 

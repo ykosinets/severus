@@ -146,3 +146,15 @@ add_action( 'acf/include_fields', 'severus_register_fields' );
  * post meta until the field is removed from the group in ACF.
  */
 add_filter( 'acf/prepare_field/key=field_661787b59fd7d', '__return_false' );
+
+/**
+ * The services shown on the home page and the Services page are the top-level
+ * services in their own order, so the lists that used to pick and order them
+ * by hand — one on each page's field group — no longer decide anything.
+ * Hidden rather than deleted, for the same reason as above: reordering a list
+ * that changes nothing is worse than not seeing it.
+ *
+ * Services are ordered in the Order box on the service itself.
+ */
+add_filter( 'acf/prepare_field/key=field_6a59e89a0b4c2', '__return_false' );
+add_filter( 'acf/prepare_field/key=field_66177695ab6b6', '__return_false' );
