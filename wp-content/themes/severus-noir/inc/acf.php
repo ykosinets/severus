@@ -11,6 +11,30 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * The field groups that used to live as rows in the database, one file per
+ * group under inc/field-groups/.
+ *
+ * Moving them into the theme means a deploy carries the field structure with
+ * it, instead of the structure and the code drifting apart between
+ * environments. The trade is that ACF shows groups registered in code as
+ * read-only: their definitions are edited in those files.
+ */
+function severus_register_exported_field_groups(): void {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	foreach ( (array) glob( get_theme_file_path( 'inc/field-groups/*.php' ) ) as $file ) {
+		$group = require $file;
+
+		if ( is_array( $group ) ) {
+			acf_add_local_field_group( $group );
+		}
+	}
+}
+add_action( 'acf/include_fields', 'severus_register_exported_field_groups' );
+
 function severus_register_fields(): void {
 	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
 		return;
