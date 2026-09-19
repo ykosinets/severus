@@ -1,0 +1,21 @@
+/* ── wp-admin ─────────────────────────────────────────────────────────────
+   The admin pages themselves — the screens around the editor, not the
+   editable area inside it. main.css and editor.pcss both go in through
+   add_editor_style(), which puts them inside the canvas, so neither can
+   reach the furniture that surrounds it. This is loaded on the admin page.
+   ------------------------------------------------------------------------- */
+
+/* The classic editor shows fields, not content.
+   A page built from section blocks keeps its content as block markup, edited
+   in the block editor and nowhere else. The classic view is opened for the
+   field groups beside it, so the content box is hidden: what cannot be
+   reached cannot be changed by hand.
+
+   Hidden, not removed from the form — the field keeps posting what it was
+   given, so a save carries the markup back unchanged and autosave keeps
+   working on it. #postdivrich is the classic editor's own wrapper and exists
+   on no other screen. ACF's own wysiwyg fields are separate elements and are
+   left alone: those are what the classic view is for. */
+#postdivrich {
+  display: none;
+}

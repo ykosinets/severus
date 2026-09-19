@@ -43,6 +43,24 @@ function severus_enqueue(): void {
 add_action( 'wp_enqueue_scripts', 'severus_enqueue' );
 
 /**
+ * The admin pages themselves.
+ *
+ * main.css and editor.css both go in through add_editor_style(), which puts
+ * them inside the editable area — the block canvas, or TinyMCE's own frame.
+ * Neither can style the screen around it, so the admin sheet is enqueued the
+ * ordinary way instead.
+ */
+function severus_enqueue_admin(): void {
+	wp_enqueue_style(
+		'severus-admin',
+		get_theme_file_uri( 'assets/dist/admin.css' ),
+		array(),
+		severus_asset_version( 'assets/dist/admin.css' )
+	);
+}
+add_action( 'admin_enqueue_scripts', 'severus_enqueue_admin' );
+
+/**
  * The bundle is ESM; a classic script tag would fail on the import statements.
  */
 function severus_module_tag( string $tag, string $handle ): string {

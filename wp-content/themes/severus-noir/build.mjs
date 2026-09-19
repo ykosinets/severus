@@ -4,6 +4,7 @@
  *   components/<name>/<name>.js    ->  bundled into assets/dist/main.js
  *   src/editor/index.jsx           ->  bundled into assets/dist/editor.js
  *   src/styles/editor.pcss         ->  built into assets/dist/editor.css
+ *   src/styles/admin.pcss          ->  built into assets/dist/admin.css
  *
  * Nothing is registered by hand: the folders are the manifest. Add a component
  * directory and it is picked up on the next `npm run build`.
@@ -91,19 +92,21 @@ async function buildScripts() {
 /* The block editor bundle. JSX compiles against wp.element rather than React,
    and the wp.* globals the editor already loads are used as they are, so the
    theme needs no @wordpress packages of its own. */
-/* The editor canvas stylesheet: loaded after the theme's own, to undo what
-   only makes sense on a page being scrolled. */
-async function buildEditorStyles() {
-  const source = path.join(ROOT, 'src/styles/editor.pcss');
+/* A stylesheet that is one file rather than a folder of components: the
+   editor canvas sheet, loaded after the theme's own to undo what only makes
+   sense on a page being scrolled, and the admin sheet, which dresses the
+   screens around the editor instead of the editable area inside it. */
+async function buildSheet(name) {
+  const source = path.join(ROOT, `src/styles/${name}.pcss`);
   if (!existsSync(source)) return 0;
 
   const css = await readFile(source, 'utf8');
   const result = await postcss(makePlugins({ minify: MINIFY })).process(css, {
     from: source,
-    to: path.join(DIST, 'editor.css'),
+    to: path.join(DIST, `${name}.css`),
   });
 
-  await writeFile(path.join(DIST, 'editor.css'), result.css, 'utf8');
+  await writeFile(path.join(DIST, `${name}.css`), result.css, 'utf8');
   return 1;
 }
 
@@ -140,7 +143,9 @@ async function run() {
   const [sheets, scripts, blocks] = await Promise.all([
     buildStyles(),
     buildScripts(),
-    Promise.all([buildEditor(), buildEditorStyles()]).then(([a, b]) => a + b),
+    Promise.all([buildEditor(), buildSheet('editor'), buildSheet('admin')]).then(
+      parts => parts.reduce((total, n) => total + n, 0)
+    ),
   ]);
   console.log(`built ${sheets} stylesheets, ${scripts} component scripts and ${blocks} editor assets in ${Date.now() - started}ms`);
 }
