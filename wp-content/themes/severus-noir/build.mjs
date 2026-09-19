@@ -3,6 +3,7 @@
  *   components/<name>/<name>.pcss  ->  bundled into assets/dist/main.css
  *   components/<name>/<name>.js    ->  bundled into assets/dist/main.js
  *   src/editor/index.jsx           ->  bundled into assets/dist/editor.js
+ *   src/styles/editor.pcss         ->  built into assets/dist/editor.css
  *
  * Nothing is registered by hand: the folders are the manifest. Add a component
  * directory and it is picked up on the next `npm run build`.
@@ -90,6 +91,22 @@ async function buildScripts() {
 /* The block editor bundle. JSX compiles against wp.element rather than React,
    and the wp.* globals the editor already loads are used as they are, so the
    theme needs no @wordpress packages of its own. */
+/* The editor canvas stylesheet: loaded after the theme's own, to undo what
+   only makes sense on a page being scrolled. */
+async function buildEditorStyles() {
+  const source = path.join(ROOT, 'src/styles/editor.pcss');
+  if (!existsSync(source)) return 0;
+
+  const css = await readFile(source, 'utf8');
+  const result = await postcss(makePlugins({ minify: MINIFY })).process(css, {
+    from: source,
+    to: path.join(DIST, 'editor.css'),
+  });
+
+  await writeFile(path.join(DIST, 'editor.css'), result.css, 'utf8');
+  return 1;
+}
+
 async function buildEditor() {
   const source = path.join(ROOT, 'src/editor/index.jsx');
   if (!existsSync(source)) return 0;
@@ -120,8 +137,12 @@ async function run() {
   await mkdir(DIST, { recursive: true });
 
   const started = Date.now();
-  const [sheets, scripts, blocks] = await Promise.all([buildStyles(), buildScripts(), buildEditor()]);
-  console.log(`built ${sheets} stylesheets, ${scripts} component scripts and ${blocks ? 'the' : 'no'} block editor in ${Date.now() - started}ms`);
+  const [sheets, scripts, blocks] = await Promise.all([
+    buildStyles(),
+    buildScripts(),
+    Promise.all([buildEditor(), buildEditorStyles()]).then(([a, b]) => a + b),
+  ]);
+  console.log(`built ${sheets} stylesheets, ${scripts} component scripts and ${blocks} editor assets in ${Date.now() - started}ms`);
 }
 
 async function watch() {

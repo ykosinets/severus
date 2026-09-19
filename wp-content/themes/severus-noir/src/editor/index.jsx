@@ -18,8 +18,11 @@ const {
   MediaUpload,
   MediaUploadCheck,
 } = wp.blockEditor;
-const { PanelBody, TextControl, TextareaControl, Button, FormTokenField } = wp.components;
+const { PanelBody, TextControl, TextareaControl, Button, FormTokenField, Disabled, Spinner } = wp.components;
 const { useSelect } = wp.data;
+const { useState, useEffect, RawHTML } = wp.element;
+const { serialize } = wp.blocks;
+const apiFetch = wp.apiFetch;
 const { __ } = wp.i18n;
 
 /* rich: edited in place. text/area: sidebar. media: attachment picker.
@@ -158,8 +161,8 @@ function Posts({ label, value, onChange, postType }) {
 }
 
 /** The sidebar controls for everything that is not edited in place. */
-function Fields({ fields, attributes, setAttributes }) {
-  const controls = Object.entries(fields).filter(([, spec]) => spec[0] !== 'rich');
+function Fields({ fields, attributes, setAttributes, sidebarAll }) {
+  const controls = Object.entries(fields).filter(([, spec]) => sidebarAll || spec[0] !== 'rich');
 
   if (!controls.length) {
     return null;
@@ -180,7 +183,7 @@ function Fields({ fields, attributes, setAttributes }) {
           if (kind === 'posts') {
             return <Posts key={name} label={label} value={attributes[name]} onChange={set} postType={extra} />;
           }
-          if (kind === 'area') {
+          if (kind === 'area' || kind === 'rich') {
             return (
               <TextareaControl key={name} label={label} value={attributes[name] || ''} onChange={set} />
             );
@@ -189,6 +192,64 @@ function Fields({ fields, attributes, setAttributes }) {
         })}
       </PanelBody>
     </InspectorControls>
+  );
+}
+
+/**
+ * What the section will actually look like: its own markup, rendered by the
+ * same PHP the page uses, asked for again a moment after an edit settles.
+ */
+function Preview({ clientId }) {
+  const { markup, postId } = useSelect(
+    (select) => {
+      const block = select('core/block-editor').getBlock(clientId);
+      return {
+        markup: block ? serialize([block]) : '',
+        postId: select('core/editor')?.getCurrentPostId?.() || 0,
+      };
+    },
+    [clientId]
+  );
+
+  const [html, setHtml] = useState('');
+  const [busy, setBusy] = useState(true);
+
+  useEffect(() => {
+    let live = true;
+    setBusy(true);
+
+    const timer = setTimeout(() => {
+      apiFetch({
+        path: '/severus/v1/preview',
+        method: 'POST',
+        data: { content: markup, post_id: postId },
+      })
+        .then((response) => live && setHtml(response.html || ''))
+        .catch(() => live && setHtml(''))
+        .finally(() => live && setBusy(false));
+    }, 400);
+
+    return () => {
+      live = false;
+      clearTimeout(timer);
+    };
+  }, [markup, postId]);
+
+  if (!html) {
+    return (
+      <div className="severus-preview severus-preview--empty">
+        {busy ? <Spinner /> : __('Nothing to show yet.', 'severus-noir')}
+      </div>
+    );
+  }
+
+  return (
+    <Disabled>
+      <div className="severus-preview">
+        <RawHTML>{html}</RawHTML>
+        {busy ? <span className="severus-preview__busy"><Spinner /></span> : null}
+      </div>
+    </Disabled>
   );
 }
 
@@ -211,22 +272,27 @@ function Rich({ fields, attributes, setAttributes, tag }) {
 
 Object.entries(SECTIONS).forEach(([name, { fields, rows }]) => {
   registerBlockType(`severus/${name}`, {
-    edit({ attributes, setAttributes }) {
-      const blockProps = useBlockProps({ className: 'severus-section' });
+    edit({ attributes, setAttributes, clientId }) {
+      const blockProps = useBlockProps({ className: 'severus-block' });
       const inner = rows
         ? useInnerBlocksProps(
-            { className: 'severus-section__rows' },
+            { className: 'severus-block__rows' },
             { allowedBlocks: rows, template: [[rows[0]]], templateLock: false }
           )
         : null;
 
       return (
         <>
-          <Fields fields={fields} attributes={attributes} setAttributes={setAttributes} />
-          <section {...blockProps}>
-            <Rich fields={fields} attributes={attributes} setAttributes={setAttributes} tag="h2" />
-            {inner ? <div {...inner} /> : null}
-          </section>
+          <Fields fields={{ ...fields }} attributes={attributes} setAttributes={setAttributes} sidebarAll />
+          <div {...blockProps}>
+            <Preview clientId={clientId} />
+            {inner ? (
+              <div className="severus-block__edit">
+                <p className="severus-block__legend">{__('Rows', 'severus-noir')}</p>
+                <div {...inner} />
+              </div>
+            ) : null}
+          </div>
         </>
       );
     },
@@ -239,7 +305,7 @@ Object.entries(ROWS).forEach(([name, fields]) => {
     edit({ attributes, setAttributes }) {
       return (
         <div {...useBlockProps({ className: 'severus-row' })}>
-          <Fields fields={fields} attributes={attributes} setAttributes={setAttributes} />
+          <Fields fields={fields} attributes={attributes} setAttributes={setAttributes} sidebarAll />
           <Rich fields={fields} attributes={attributes} setAttributes={setAttributes} tag="h3" />
         </div>
       );
