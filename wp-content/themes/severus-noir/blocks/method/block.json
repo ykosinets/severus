@@ -1,8 +1,8 @@
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "severus/familiar",
-    "title": "Sound familiar",
+    "name": "severus/method",
+    "title": "How we work",
     "category": "severus",
     "icon": "layout",
     "textdomain": "severus-noir",
@@ -11,7 +11,11 @@
             "type": "string",
             "default": ""
         },
-        "intro": {
+        "subtitle": {
+            "type": "string",
+            "default": ""
+        },
+        "description": {
             "type": "string",
             "default": ""
         }

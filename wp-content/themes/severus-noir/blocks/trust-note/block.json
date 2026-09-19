@@ -1,17 +1,16 @@
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "severus/familiar",
-    "title": "Sound familiar",
+    "name": "severus/trust-note",
+    "title": "Note",
+    "parent": [
+        "severus/trust"
+    ],
     "category": "severus",
-    "icon": "layout",
+    "icon": "minus",
     "textdomain": "severus-noir",
     "attributes": {
-        "title": {
-            "type": "string",
-            "default": ""
-        },
-        "intro": {
+        "text": {
             "type": "string",
             "default": ""
         }

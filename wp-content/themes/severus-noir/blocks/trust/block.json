@@ -1,8 +1,8 @@
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "severus/familiar",
-    "title": "Sound familiar",
+    "name": "severus/trust",
+    "title": "Trust",
     "category": "severus",
     "icon": "layout",
     "textdomain": "severus-noir",
@@ -11,9 +11,16 @@
             "type": "string",
             "default": ""
         },
-        "intro": {
+        "text": {
             "type": "string",
             "default": ""
+        },
+        "logoId": {
+            "type": "number",
+            "default": 0
+        },
+        "button": {
+            "type": "object"
         }
     },
     "supports": {

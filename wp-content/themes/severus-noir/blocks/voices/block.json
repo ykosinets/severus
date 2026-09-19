@@ -1,8 +1,8 @@
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "severus/familiar",
-    "title": "Sound familiar",
+    "name": "severus/voices",
+    "title": "Testimonials",
     "category": "severus",
     "icon": "layout",
     "textdomain": "severus-noir",
@@ -11,9 +11,20 @@
             "type": "string",
             "default": ""
         },
-        "intro": {
+        "kicker": {
             "type": "string",
             "default": ""
+        },
+        "text": {
+            "type": "string",
+            "default": ""
+        },
+        "button": {
+            "type": "object"
+        },
+        "reviews": {
+            "type": "array",
+            "default": []
         }
     },
     "supports": {

@@ -1,8 +1,8 @@
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "severus/familiar",
-    "title": "Sound familiar",
+    "name": "severus/journal",
+    "title": "Journal",
     "category": "severus",
     "icon": "layout",
     "textdomain": "severus-noir",
@@ -11,9 +11,12 @@
             "type": "string",
             "default": ""
         },
-        "intro": {
-            "type": "string",
-            "default": ""
+        "button": {
+            "type": "object"
+        },
+        "posts": {
+            "type": "array",
+            "default": []
         }
     },
     "supports": {

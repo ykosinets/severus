@@ -4,16 +4,16 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-$title = severus_field( 'trust_title' );
+$title = $data['title'] ?? severus_field( 'trust_title' );
 
-$big   = severus_rows( 'trust_stats_lg' );
-$small = severus_rows( 'trust_stats_sm' );
+$big   = isset( $data['figures'] ) ? (array) $data['figures'] : severus_rows( 'trust_stats_lg' );
+$small = isset( $data['notes'] ) ? (array) $data['notes'] : severus_rows( 'trust_stats_sm' );
 
 if ( ! $title && ! $big ) {
 	return;
 }
 
-$mark = severus_image( severus_field( 'trust_logo' ) );
+$mark = severus_image( $data['logo'] ?? severus_field( 'trust_logo' ) );
 ?>
 <section class="section section--warm is-narrow trust">
 	<?php if ( $mark ) : ?>
@@ -26,14 +26,14 @@ $mark = severus_image( severus_field( 'trust_logo' ) );
 			<?php if ( $title ) : ?>
                 <div class="reveal is-display">
                     <h2 class="trust__title"><?php echo wp_kses_post( $title ); ?></h2>
-                    <?php if ( $description = severus_field( 'trust_descr' ) ) : ?>
+                    <?php if ( $description = ( $data['text'] ?? severus_field( 'trust_descr' ) ) ) : ?>
                         <p class="trust__description"><?php echo wp_kses_post( $description ); ?></p>
                     <?php endif; ?>
                 </div>
 			<?php endif; ?>
 
 			<div class="trust__aside reveal">
-				<?php severus_button( severus_field( 'trust_button' ), 'btn btn--solid' ); ?>
+				<?php severus_button( $data['button'] ?? severus_field( 'trust_button' ), 'btn btn--solid' ); ?>
 			</div>
 		</div>
 
@@ -42,7 +42,7 @@ $mark = severus_image( severus_field( 'trust_logo' ) );
 				<div class="figures__big">
 					<?php
 					foreach ( $big as $figure ) :
-						$number = severus_split_number( $figure['stlg_number'] ?? '' );
+						$number = severus_split_number( $figure['number'] ?? $figure['stlg_number'] ?? '' );
 						?>
 						<div class="figure rule">
 							<b class="figure__n">
@@ -51,7 +51,7 @@ $mark = severus_image( severus_field( 'trust_logo' ) );
 									<i><?php echo esc_html( $number['suffix'] ); ?></i>
 								<?php endif; ?>
 							</b>
-							<?php if ( $text = ( $figure['stlg_text'] ?? '' ) ) : ?>
+							<?php if ( $text = ( $figure['text'] ?? $figure['stlg_text'] ?? '' ) ) : ?>
 								<p><?php echo wp_kses_post( $text ); ?></p>
 							<?php endif; ?>
 						</div>
@@ -62,7 +62,7 @@ $mark = severus_image( severus_field( 'trust_logo' ) );
 			<?php if ( $small ) : ?>
 				<div class="figures__small">
 					<?php foreach ( $small as $note ) : ?>
-						<p class="figure__note reveal is-bright"><?php echo wp_kses_post( $note['stsm_text'] ?? '' ); ?></p>
+						<p class="figure__note reveal is-bright"><?php echo wp_kses_post( $note['text'] ?? $note['stsm_text'] ?? '' ); ?></p>
 					<?php endforeach; ?>
 				</div>
 			<?php endif; ?>

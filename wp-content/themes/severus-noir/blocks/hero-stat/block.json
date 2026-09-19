@@ -1,17 +1,23 @@
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "severus/familiar",
-    "title": "Sound familiar",
+    "name": "severus/hero-stat",
+    "title": "Stat",
+    "parent": [
+        "severus/hero"
+    ],
     "category": "severus",
-    "icon": "layout",
+    "icon": "minus",
     "textdomain": "severus-noir",
     "attributes": {
-        "title": {
-            "type": "string",
-            "default": ""
+        "iconId": {
+            "type": "number",
+            "default": 0
         },
-        "intro": {
+        "link": {
+            "type": "object"
+        },
+        "text": {
             "type": "string",
             "default": ""
         }

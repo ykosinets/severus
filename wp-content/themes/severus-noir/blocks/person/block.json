@@ -1,24 +1,36 @@
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "severus/familiar-card",
-    "title": "Slab",
+    "name": "severus/person",
+    "title": "Person",
     "parent": [
-        "severus/familiar"
+        "severus/people"
     ],
     "category": "severus",
     "icon": "minus",
     "textdomain": "severus-noir",
     "attributes": {
-        "imageId": {
+        "photoId": {
             "type": "number",
             "default": 0
         },
-        "heading": {
+        "name": {
             "type": "string",
             "default": ""
         },
-        "text": {
+        "role": {
+            "type": "string",
+            "default": ""
+        },
+        "quote": {
+            "type": "string",
+            "default": ""
+        },
+        "overlay": {
+            "type": "string",
+            "default": ""
+        },
+        "linkedin": {
             "type": "string",
             "default": ""
         }

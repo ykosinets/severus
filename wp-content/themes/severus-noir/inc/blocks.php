@@ -74,117 +74,58 @@ function severus_register_block_assets(): void {
 add_action( 'init', 'severus_register_block_assets', 5 );
 
 /**
- * The theme's blocks, each from its own block.json.
+ * The theme's blocks, each from its own block.json. Section blocks share one
+ * render callback, which reads what to do from severus_block_sections().
  */
 function severus_register_blocks(): void {
 	foreach ( (array) glob( get_theme_file_path( 'blocks/*/block.json' ) ) as $manifest ) {
-		$name = basename( dirname( $manifest ) );
-
-		register_block_type(
-			dirname( $manifest ),
-			array( 'render_callback' => 'severus_render_' . str_replace( '-', '_', $name ) . '_block' )
-		);
+		register_block_type( dirname( $manifest ), array( 'render_callback' => 'severus_render_block' ) );
 	}
 }
 add_action( 'init', 'severus_register_blocks', 10 );
 
 /**
- * The front page's composition is fixed: the editor fills the sections in, it
- * does not choose them. The template is built from the blocks already saved,
- * so it follows the page rather than duplicating the order in a second place,
- * and the lock is one setting to relax when sections should become movable.
+ * Any of the theme's blocks.
  *
- * @param array<string, mixed> $settings Block editor settings.
- * @param WP_Block_Editor_Context $context Which editor is being set up.
- * @return array<string, mixed>
- */
-function severus_lock_front_page_template( array $settings, $context ): array {
-	$post = $context->post ?? null;
-
-	if ( ! $post instanceof WP_Post || (int) $post->ID !== (int) get_option( 'page_on_front' ) ) {
-		return $settings;
-	}
-
-	$template = array();
-
-	foreach ( parse_blocks( (string) $post->post_content ) as $block ) {
-		if ( empty( $block['blockName'] ) ) {
-			continue;
-		}
-
-		$template[] = array( $block['blockName'], (array) ( $block['attrs'] ?? array() ) );
-	}
-
-	if ( $template ) {
-		$settings['template']     = $template;
-		$settings['templateLock'] = 'all';
-	}
-
-	return $settings;
-}
-add_filter( 'block_editor_settings_all', 'severus_lock_front_page_template', 10, 2 );
-
-/**
- * A section that still reads its own fields.
+ * A section renders its component with the data its attributes describe. The
+ * bridge block renders a component that still reads its own fields. A row
+ * block renders nothing on its own — its parent has already read it.
  *
  * @param array<string, mixed> $attributes Block attributes.
+ * @param string               $content    Inner markup, unused.
+ * @param WP_Block             $block      The block, for its parsed children.
  */
-function severus_render_section_block( array $attributes ): string {
-	$name = (string) ( $attributes['name'] ?? '' );
+function severus_render_block( array $attributes, string $content = '', ?WP_Block $block = null ): string {
+	$name = (string) ( $block->name ?? '' );
 
-	if ( '' === $name || ! preg_match( '/^[a-z0-9-]+$/', $name ) ) {
+	if ( 'severus/section' === $name ) {
+		$section = (string) ( $attributes['name'] ?? '' );
+
+		if ( '' === $section || ! preg_match( '/^[a-z0-9-]+$/', $section ) ) {
+			return '';
+		}
+
+		ob_start();
+		severus_component( $section );
+
+		return (string) ob_get_clean();
+	}
+
+	$section = substr( $name, strlen( 'severus/' ) );
+	$schema  = severus_block_sections()[ $section ] ?? null;
+
+	if ( ! $schema ) {
 		return '';
 	}
 
-	ob_start();
-	severus_component( $name );
-
-	return (string) ob_get_clean();
-}
-
-/**
- * "Sound familiar": the header from the block, the slabs from its children.
- *
- * @param array<string, mixed> $attributes Block attributes.
- * @param string               $content    Rendered inner blocks — unused, the
- *                                         slabs are read as data instead.
- * @param WP_Block             $block      The block, for its parsed children.
- */
-function severus_render_familiar_block( array $attributes, string $content = '', ?WP_Block $block = null ): string {
-	$cards = array();
-
-	foreach ( (array) ( $block->parsed_block['innerBlocks'] ?? array() ) as $inner ) {
-		if ( 'severus/familiar-card' !== ( $inner['blockName'] ?? '' ) ) {
-			continue;
-		}
-
-		$card = (array) ( $inner['attrs'] ?? array() );
-
-		/* Attributes hold what was typed; the line breaks are put in here,
-		   the way the textarea fields these replace were formatted. */
-		$cards[] = array(
-			'card_image'   => (int) ( $card['imageId'] ?? 0 ),
-			'card_heading' => nl2br( (string) ( $card['heading'] ?? '' ) ),
-			'card_text'    => nl2br( (string) ( $card['text'] ?? '' ) ),
-		);
-	}
-
-	ob_start();
-	severus_component(
-		'familiar',
-		array(
-			'title' => (string) ( $attributes['title'] ?? '' ),
-			'intro' => nl2br( (string) ( $attributes['intro'] ?? '' ) ),
-			'cards' => $cards,
-		)
+	$data = severus_render_section_data(
+		$section,
+		$attributes,
+		(array) ( $block->parsed_block['innerBlocks'] ?? array() )
 	);
 
-	return (string) ob_get_clean();
-}
+	ob_start();
+	severus_component( (string) ( $schema['component'] ?? $section ), $data );
 
-/**
- * A slab renders as part of its stack, never on its own.
- */
-function severus_render_familiar_card_block(): string {
-	return '';
+	return (string) ob_get_clean();
 }

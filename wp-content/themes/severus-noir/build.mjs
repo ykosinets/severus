@@ -2,7 +2,7 @@
  *
  *   components/<name>/<name>.pcss  ->  bundled into assets/dist/main.css
  *   components/<name>/<name>.js    ->  bundled into assets/dist/main.js
- *   blocks/<name>/editor.jsx       ->  bundled into assets/dist/editor.js
+ *   src/editor/index.jsx           ->  bundled into assets/dist/editor.js
  *
  * Nothing is registered by hand: the folders are the manifest. Add a component
  * directory and it is picked up on the next `npm run build`.
@@ -91,25 +91,11 @@ async function buildScripts() {
    and the wp.* globals the editor already loads are used as they are, so the
    theme needs no @wordpress packages of its own. */
 async function buildEditor() {
-  const dir = path.join(ROOT, 'blocks');
-  if (!existsSync(dir)) return 0;
-
-  const names = (await readdir(dir, { withFileTypes: true }))
-    .filter(entry => entry.isDirectory())
-    .map(entry => entry.name)
-    .sort();
-
-  const modules = names
-    .map(name => `blocks/${name}/editor.jsx`)
-    .filter(file => existsSync(path.join(ROOT, file)));
-
-  if (!modules.length) return 0;
-
-  const entry = path.join(BUILD, 'editor.js');
-  await writeFile(entry, modules.map(file => `import ${JSON.stringify(rel(file))};`).join('\n') + '\n', 'utf8');
+  const source = path.join(ROOT, 'src/editor/index.jsx');
+  if (!existsSync(source)) return 0;
 
   await esbuild.build({
-    entryPoints: [entry],
+    entryPoints: [source],
     outfile: path.join(DIST, 'editor.js'),
     bundle: true,
     format: 'iife',
@@ -123,7 +109,7 @@ async function buildEditor() {
     logLevel: 'silent',
   });
 
-  return modules.length;
+  return 1;
 }
 
 async function run() {
@@ -135,7 +121,7 @@ async function run() {
 
   const started = Date.now();
   const [sheets, scripts, blocks] = await Promise.all([buildStyles(), buildScripts(), buildEditor()]);
-  console.log(`built ${sheets} stylesheets, ${scripts} component scripts and ${blocks} block editors in ${Date.now() - started}ms`);
+  console.log(`built ${sheets} stylesheets, ${scripts} component scripts and ${blocks ? 'the' : 'no'} block editor in ${Date.now() - started}ms`);
 }
 
 async function watch() {

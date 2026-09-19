@@ -5,7 +5,7 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-$items = severus_rows( 'impact_items' );
+$items = isset( $data['slides'] ) ? (array) $data['slides'] : severus_rows( 'impact_items' );
 
 if ( ! $items ) {
 	return;
@@ -14,12 +14,12 @@ if ( ! $items ) {
 $slides = array();
 
 foreach ( $items as $item ) {
-	$image  = severus_image( $item['impact_image'] ?? null );
-	$button = $item['impact_button'] ?? null;
+	$image  = severus_image( $item['image'] ?? $item['impact_image'] ?? null );
+	$button = $item['button'] ?? $item['impact_button'] ?? null;
 
 	$slides[] = array(
-		'title' => $item['impact_title'] ?? '',
-		'text'  => $item['impact_text'] ?? '',
+		'title' => $item['title'] ?? $item['impact_title'] ?? '',
+		'text'  => $item['text'] ?? $item['impact_text'] ?? '',
 		'image' => $image ? $image['url'] : '',
 		'link'  => is_array( $button ) ? ( $button['url'] ?? '' ) : '',
 		'label' => is_array( $button ) ? ( $button['title'] ?? '' ) : '',
@@ -38,10 +38,10 @@ $first  = $slides[0] ?? array();
 
 			<div class="impact__copy">
 				<header class="lead">
-					<?php if ( $title = severus_field( 'impact_title' ) ) : ?>
+					<?php if ( $title = ( $data['title'] ?? severus_field( 'impact_title' ) ) ) : ?>
 						<h2 class="lead__title"><?php echo wp_kses_post( $title ); ?></h2>
 					<?php endif; ?>
-					<?php if ( $subtitle = severus_field( 'impact_subtitle' ) ) : ?>
+					<?php if ( $subtitle = ( $data['subtitle'] ?? severus_field( 'impact_subtitle' ) ) ) : ?>
 						<p class="lead__text"><?php echo wp_kses_post( $subtitle ); ?></p>
 					<?php endif; ?>
 				</header>

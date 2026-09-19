@@ -8,15 +8,15 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-$title = severus_field( 'hero_title' );
-$intro = severus_field( 'hero_intro' );
+$title = $data['title'] ?? severus_field( 'hero_title' );
+$intro = $data['intro'] ?? severus_field( 'hero_intro' );
 
 if ( ! $title && ! $intro ) {
 	return;
 }
 
-$video  = severus_file_url( severus_field( 'hero_video' ) );
-$poster = severus_image( severus_field( 'hero_poster' ) );
+$video  = severus_file_url( $data['video'] ?? severus_field( 'hero_video' ) );
+$poster = severus_image( $data['poster'] ?? severus_field( 'hero_poster' ) );
 $still  = severus_lightbox_still( $poster );
 ?>
 <section class="hero">
@@ -35,8 +35,8 @@ $still  = severus_lightbox_still( $poster );
 
 				<div class="hero__actions">
 					<?php
-					severus_button( severus_field( 'hero_btn_primary' ), 'btn btn--solid' );
-					severus_button( severus_field( 'hero_btn_secondary' ), 'btn btn--quiet' );
+					severus_button( $data['primary'] ?? severus_field( 'hero_btn_primary' ), 'btn btn--solid' );
+					severus_button( $data['secondary'] ?? severus_field( 'hero_btn_secondary' ), 'btn btn--quiet' );
 					?>
 				</div>
 			</div>
@@ -66,7 +66,7 @@ $still  = severus_lightbox_still( $poster );
 									<i aria-hidden="true"></i><?php esc_html_e( 'View', 'severus-noir' ); ?>
 								</span>
 
-								<?php if ( $duration = severus_field( 'hero_video_duration' ) ) : ?>
+								<?php if ( $duration = ( $data['duration'] ?? severus_field( 'hero_video_duration' ) ) ) : ?>
 									<span class="stage__tag stage__tag--time"><?php echo esc_html( $duration ); ?></span>
 								<?php endif; ?>
 							</span>
@@ -84,12 +84,12 @@ $still  = severus_lightbox_still( $poster );
 
 		</div>
 
-		<?php if ( $stats = severus_rows( 'hero_stats' ) ) : ?>
+		<?php if ( $stats = ( isset( $data['stats'] ) ? (array) $data['stats'] : severus_rows( 'hero_stats' ) ) ) : ?>
 			<ul class="stats">
 				<?php
 				foreach ( $stats as $stat ) :
-					$icon = severus_image( $stat['stats_icon'] ?? null );
-					$link = $stat['stats_link'] ?? '';
+					$icon = severus_image( $stat['icon'] ?? $stat['stats_icon'] ?? null );
+					$link = $stat['link'] ?? $stat['stats_link'] ?? '';
 					$link = is_array( $link ) ? ( $link['url'] ?? '' ) : $link;
 
 					/* The link holds only an icon, so it is named after the site it
@@ -102,7 +102,7 @@ $still  = severus_lightbox_still( $poster );
 					?>
 					<li class="stats__item">
 						<p>
-							<?php echo wp_kses_post( $stat['stats_text'] ?? '' ); ?>
+							<?php echo wp_kses_post( $stat['text'] ?? $stat['stats_text'] ?? '' ); ?>
 							<?php if ( $icon && $link ) : ?>
 								<a href="<?php echo esc_url( $link ); ?>" target="_blank" rel="noopener" aria-label="<?php echo esc_attr( $label ); ?>">
 									<img src="<?php echo esc_url( $icon['url'] ); ?>" alt="" width="<?php echo esc_attr( $icon['width'] ); ?>" height="<?php echo esc_attr( $icon['height'] ); ?>" loading="lazy">

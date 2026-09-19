@@ -22,7 +22,9 @@ $label    = $data['label'] ?? '';
 $subtitle = $data['subtitle'] ?? '';
 $text     = $data['text'] ?? severus_field( 'contact_text' );
 $location = $data['location'] ?? '';
-$logo     = isset( $data['title'] ) ? null : severus_image( severus_field( 'contact_logo' ) );
+$logo     = array_key_exists( 'logo', $data )
+	? severus_image( $data['logo'] )
+	: ( isset( $data['title'] ) ? null : severus_image( severus_field( 'contact_logo' ) ) );
 ?>
 <section class="section talk" id="<?php echo esc_attr( $data['id'] ?? 'home-contacts' ); ?>">
 	<?php if ( ! empty( $data['orbit'] ) ) : ?>

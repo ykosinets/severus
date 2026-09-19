@@ -1,8 +1,8 @@
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "severus/familiar",
-    "title": "Sound familiar",
+    "name": "severus/impact",
+    "title": "Impact",
     "category": "severus",
     "icon": "layout",
     "textdomain": "severus-noir",
@@ -11,7 +11,7 @@
             "type": "string",
             "default": ""
         },
-        "intro": {
+        "subtitle": {
             "type": "string",
             "default": ""
         }

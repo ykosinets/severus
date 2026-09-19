@@ -5,8 +5,8 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-$title = severus_field( 'swp_title' );
-$steps = severus_rows( 'scrollact_items' );
+$title = $data['title'] ?? severus_field( 'swp_title' );
+$steps = isset( $data['steps'] ) ? (array) $data['steps'] : severus_rows( 'scrollact_items' );
 
 if ( ! $title && ! $steps ) {
 	return;
@@ -21,10 +21,10 @@ if ( ! $title && ! $steps ) {
 			<?php endif; ?>
 
 			<div class="method__notes reveal">
-				<?php if ( $subtitle = severus_field( 'swp_subtitle' ) ) : ?>
+				<?php if ( $subtitle = ( $data['subtitle'] ?? severus_field( 'swp_subtitle' ) ) ) : ?>
 					<p class="method__sub"><?php echo wp_kses_post( $subtitle ); ?></p>
 				<?php endif; ?>
-				<?php if ( $description = severus_field( 'swp_description' ) ) : ?>
+				<?php if ( $description = ( $data['description'] ?? severus_field( 'swp_description' ) ) ) : ?>
 					<p class="method__desc"><?php echo wp_kses_post( $description ); ?></p>
 				<?php endif; ?>
 			</div>
@@ -34,7 +34,7 @@ if ( ! $title && ! $steps ) {
 			<ol class="steps">
 				<?php
 				foreach ( $steps as $step ) :
-					$text = $step['swp_item_text'] ?? '';
+					$text = $step['text'] ?? $step['swp_item_text'] ?? '';
 					if ( ! $text ) {
 						continue;
 					}

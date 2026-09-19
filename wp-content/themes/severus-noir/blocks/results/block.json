@@ -1,8 +1,8 @@
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "severus/familiar",
-    "title": "Sound familiar",
+    "name": "severus/results",
+    "title": "Cases",
     "category": "severus",
     "icon": "layout",
     "textdomain": "severus-noir",
@@ -11,9 +11,13 @@
             "type": "string",
             "default": ""
         },
-        "intro": {
+        "text": {
             "type": "string",
             "default": ""
+        },
+        "cases": {
+            "type": "array",
+            "default": []
         }
     },
     "supports": {
