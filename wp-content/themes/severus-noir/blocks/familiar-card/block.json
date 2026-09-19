@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "severus/familiar-card",
+	"title": "Slab",
+	"parent": [ "severus/familiar" ],
+	"category": "severus",
+	"icon": "media-default",
+	"description": "One slab in the stack.",
+	"textdomain": "severus-noir",
+	"attributes": {
+		"imageId": { "type": "number", "default": 0 },
+		"heading": { "type": "string", "default": "" },
+		"text": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"lock": false
+	},
+	"editorScript": "severus-editor"
+}

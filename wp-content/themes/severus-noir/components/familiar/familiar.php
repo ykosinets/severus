@@ -1,14 +1,22 @@
 <?php
 /**
  * "Sound Familiar?" — a stack of slabs that pin and shrink under the next one.
+ *
+ * $data (all optional; the page's fields are the defaults):
+ *   title, intro  the header
+ *   cards         rows of card_image (attachment id or array), card_heading,
+ *                 card_text — what the severus/familiar block passes in
  */
 defined( 'ABSPATH' ) || exit;
 
-$cards = severus_rows( 'sound_familiar_cards' );
+$cards = isset( $data['cards'] ) ? (array) $data['cards'] : severus_rows( 'sound_familiar_cards' );
 
 if ( ! $cards ) {
 	return;
 }
+
+$title = $data['title'] ?? severus_field( 'sound_familiar_title' );
+$intro = $data['intro'] ?? severus_field( 'sound_familiar_intro' );
 ?>
 <section class="section section--cool is-narrow familiar" id="sound-familiar">
 	<div class="shell">
@@ -16,10 +24,10 @@ if ( ! $cards ) {
 		<?php /* Pinned while the slabs scroll, so no .reveal — a view() timeline
 			stalls on a sticky element. */ ?>
 		<header class="lead familiar__lead" data-stack-lead>
-			<?php if ( $title = severus_field( 'sound_familiar_title' ) ) : ?>
+			<?php if ( $title ) : ?>
 				<h2 class="lead__title"><?php echo wp_kses_post( $title ); ?></h2>
 			<?php endif; ?>
-			<?php if ( $intro = severus_field( 'sound_familiar_intro' ) ) : ?>
+			<?php if ( $intro ) : ?>
 				<p class="lead__text"><?php echo wp_kses_post( $intro ); ?></p>
 			<?php endif; ?>
 		</header>

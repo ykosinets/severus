@@ -2,6 +2,7 @@
  *
  *   components/<name>/<name>.pcss  ->  bundled into assets/dist/main.css
  *   components/<name>/<name>.js    ->  bundled into assets/dist/main.js
+ *   blocks/<name>/editor.jsx       ->  bundled into assets/dist/editor.js
  *
  * Nothing is registered by hand: the folders are the manifest. Add a component
  * directory and it is picked up on the next `npm run build`.
@@ -86,6 +87,45 @@ async function buildScripts() {
   return modules.length;
 }
 
+/* The block editor bundle. JSX compiles against wp.element rather than React,
+   and the wp.* globals the editor already loads are used as they are, so the
+   theme needs no @wordpress packages of its own. */
+async function buildEditor() {
+  const dir = path.join(ROOT, 'blocks');
+  if (!existsSync(dir)) return 0;
+
+  const names = (await readdir(dir, { withFileTypes: true }))
+    .filter(entry => entry.isDirectory())
+    .map(entry => entry.name)
+    .sort();
+
+  const modules = names
+    .map(name => `blocks/${name}/editor.jsx`)
+    .filter(file => existsSync(path.join(ROOT, file)));
+
+  if (!modules.length) return 0;
+
+  const entry = path.join(BUILD, 'editor.js');
+  await writeFile(entry, modules.map(file => `import ${JSON.stringify(rel(file))};`).join('\n') + '\n', 'utf8');
+
+  await esbuild.build({
+    entryPoints: [entry],
+    outfile: path.join(DIST, 'editor.js'),
+    bundle: true,
+    format: 'iife',
+    target: ['es2022'],
+    jsx: 'transform',
+    jsxFactory: 'wp.element.createElement',
+    jsxFragment: 'wp.element.Fragment',
+    loader: { '.jsx': 'jsx' },
+    minify: MINIFY,
+    sourcemap: !MINIFY,
+    logLevel: 'silent',
+  });
+
+  return modules.length;
+}
+
 async function run() {
   // Wipe dist first: esbuild leaves orphaned chunks behind when a dynamic
   // import goes away, and they would still be served.
@@ -94,13 +134,13 @@ async function run() {
   await mkdir(DIST, { recursive: true });
 
   const started = Date.now();
-  const [sheets, scripts] = await Promise.all([buildStyles(), buildScripts()]);
-  console.log(`built ${sheets} stylesheets and ${scripts} component scripts in ${Date.now() - started}ms`);
+  const [sheets, scripts, blocks] = await Promise.all([buildStyles(), buildScripts(), buildEditor()]);
+  console.log(`built ${sheets} stylesheets, ${scripts} component scripts and ${blocks} block editors in ${Date.now() - started}ms`);
 }
 
 async function watch() {
   const { default: chokidarModule } = await import('node:fs');
-  const watched = [path.join(ROOT, 'components'), path.join(ROOT, 'src')];
+  const watched = [path.join(ROOT, 'components'), path.join(ROOT, 'src'), path.join(ROOT, 'blocks')];
   let queued = null;
 
   for (const dir of watched) {
