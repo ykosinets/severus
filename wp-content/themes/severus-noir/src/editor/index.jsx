@@ -11,6 +11,7 @@
  */
 const { registerBlockType } = wp.blocks;
 const {
+  InnerBlocks,
   useBlockProps,
   useInnerBlocksProps,
   RichText,
@@ -296,7 +297,13 @@ Object.entries(SECTIONS).forEach(([name, { fields, rows }]) => {
         </>
       );
     },
-    save: () => null,
+    /* A dynamic block saves nothing of its own — the render callback draws
+       the section — but a section that holds rows must still write them out.
+       Gutenberg serialises a block whose save() is empty as self-closing,
+       and a self-closing block has nowhere to put its children: saving one
+       in the editor would drop every row it holds. InnerBlocks.Content is
+       what keeps them in the markup for parse_blocks() to read back. */
+    save: () => (rows ? <InnerBlocks.Content /> : null),
   });
 });
 
