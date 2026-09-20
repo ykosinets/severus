@@ -68,15 +68,9 @@
   display: block;
 }
 
-/* The rows below the preview: the part that is actually edited. On a section
-   built from repeaters there is no preview above them and this is the whole
-   block, so it starts flush. */
+/* The rows below the preview: the part that is actually edited. */
 .severus-block__edit {
   margin-top: 0.5rem;
-
-  &:first-child {
-    margin-top: 0;
-  }
   padding: 1rem;
   border: 1px solid var(--hair, rgb(255 255 255 / 12%));
   border-radius: 0.5rem;
@@ -138,6 +132,23 @@
 
   & + .severus-section__line {
     margin-top: 0.25rem;
+  }
+}
+
+/* What a repeater fills is left out of the preview. It is edited as rows
+   just below, so the preview would be showing it twice — and this is exactly
+   the part that needs the page's JavaScript, which the canvas does not load:
+   the steps would never tick, the slabs never stack, the figures never count.
+   One container per section's repeater, each unique to its component. */
+.severus-preview {
+  & .stats,        /* hero — the strip of three */
+  & .stack,        /* familiar — the slabs */
+  & .steps,        /* method — the ticked steps */
+  & .verticals,    /* impact — the slides */
+  & .figures,      /* trust — the figures and the notes */
+  & .people__grid, /* people — the team */
+  & .faq__list {   /* faq — the questions */
+    display: none;
   }
 }
 

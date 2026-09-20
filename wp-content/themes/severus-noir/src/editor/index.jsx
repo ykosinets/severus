@@ -274,9 +274,6 @@ function Rich({ fields, attributes, setAttributes, tag }) {
 Object.entries(SECTIONS).forEach(([name, { fields, rows }]) => {
   registerBlockType(`severus/${name}`, {
     edit({ attributes, setAttributes, clientId }) {
-      /* Without a preview the block would be an unlabelled box, so the
-         legend carries the section's own title. */
-      const label = wp.blocks.getBlockType(`severus/${name}`)?.title || name;
       const blockProps = useBlockProps({ className: 'severus-block' });
       const inner = rows
         ? useInnerBlocksProps(
@@ -285,24 +282,17 @@ Object.entries(SECTIONS).forEach(([name, { fields, rows }]) => {
           )
         : null;
 
-      /* A section whose rows are repeaters is not previewed. The preview is
-         the page's own markup with none of the page's JavaScript behind it,
-         so exactly the parts a repeater builds — the ticked steps, the
-         stacking slabs, the figures that count up — sit there in their first
-         frame looking broken. The rows themselves say more, and the page is
-         the place to see the section move. */
       return (
         <>
           <Fields fields={{ ...fields }} attributes={attributes} setAttributes={setAttributes} sidebarAll />
           <div {...blockProps}>
+            <Preview clientId={clientId} />
             {inner ? (
               <div className="severus-block__edit">
-                <p className="severus-block__legend">{label}</p>
+                <p className="severus-block__legend">{__('Rows', 'severus-noir')}</p>
                 <div {...inner} />
               </div>
-            ) : (
-              <Preview clientId={clientId} />
-            )}
+            ) : null}
           </div>
         </>
       );
