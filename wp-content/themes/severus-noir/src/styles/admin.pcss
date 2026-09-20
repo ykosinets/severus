@@ -1,0 +1,36 @@
+/* ── wp-admin ─────────────────────────────────────────────────────────────
+   The admin pages themselves. main.css goes in through add_editor_style(),
+   which puts it inside the editable area, so it cannot reach the furniture
+   around it. This is enqueued on the admin page instead.
+   ------------------------------------------------------------------------- */
+
+/* The classic editor shows fields, not content.
+   Every section of this site is built from its own field group and drawn by
+   its component; the post's own content is not used and is empty on the
+   pages that matter. An editor opening one is there for the fields, so the
+   content box is taken out of their way.
+
+   Hidden, not removed from the form — the field keeps posting what it was
+   given, so a save carries the content back unchanged and autosave keeps
+   working on it. #postdivrich is the classic editor's own wrapper and exists
+   on no other screen. ACF's own wysiwyg fields are separate elements and are
+   left alone: those are what the classic view is for. */
+#postdivrich {
+    display: none;
+}
+
+/* The publish box: its links read as the buttons they are, and the publish
+   action leaves the absolute corner core parks it in. */
+#major-publishing-actions {
+    a {
+        display: inline-block;
+        padding: 10px 16px;
+        line-height: 1.5;
+    }
+
+    #publishing-action {
+        position: relative !important;
+        right: 0 !important;
+        bottom: 0 !important;
+    }
+}

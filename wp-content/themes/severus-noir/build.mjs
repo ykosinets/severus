@@ -2,6 +2,7 @@
  *
  *   components/<name>/<name>.pcss  ->  bundled into assets/dist/main.css
  *   components/<name>/<name>.js    ->  bundled into assets/dist/main.js
+ *   src/styles/admin.pcss          ->  built into assets/dist/admin.css
  *
  * Nothing is registered by hand: the folders are the manifest. Add a component
  * directory and it is picked up on the next `npm run build`.
@@ -60,6 +61,22 @@ async function buildStyles() {
   return sheets.length;
 }
 
+/* A stylesheet that is one file rather than a folder of components: the
+   admin sheet, which dresses the screens around the editor. */
+async function buildSheet(name) {
+  const source = path.join(ROOT, `src/styles/${name}.pcss`);
+  if (!existsSync(source)) return 0;
+
+  const css = await readFile(source, 'utf8');
+  const result = await postcss(makePlugins({ minify: MINIFY })).process(css, {
+    from: source,
+    to: path.join(DIST, `${name}.css`),
+  });
+
+  await writeFile(path.join(DIST, `${name}.css`), result.css, 'utf8');
+  return 1;
+}
+
 async function buildScripts() {
   const modules = await components('js');
   const entry = path.join(BUILD, 'main.js');
@@ -94,8 +111,10 @@ async function run() {
   await mkdir(DIST, { recursive: true });
 
   const started = Date.now();
-  const [sheets, scripts] = await Promise.all([buildStyles(), buildScripts()]);
-  console.log(`built ${sheets} stylesheets and ${scripts} component scripts in ${Date.now() - started}ms`);
+  const [sheets, scripts, admin] = await Promise.all([buildStyles(), buildScripts(), buildSheet('admin')]);
+  console.log(
+    `built ${sheets} stylesheets, ${scripts} component scripts and ${admin} admin stylesheet in ${Date.now() - started}ms`
+  );
 }
 
 async function watch() {
