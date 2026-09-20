@@ -152,6 +152,41 @@
   }
 }
 
+/* Impact drives a full-screen slider from the scroll position: the section is
+   320svh of runway, the pin holds a viewport-tall stage, and impact.js moves
+   the slides through it. None of that survives without the page's scrolling
+   or its JavaScript, so the runway collapses to the height of its content and
+   the stage — the slider itself — is left out. The copy around it stays. */
+.severus-preview {
+  & .impact {
+    height: auto;
+  }
+
+  & .impact__pin {
+    position: relative;
+    height: auto;
+  }
+
+  & .impact__stage {
+    display: none;
+  }
+}
+
+/* The canvas is shown the way a reader who asked for less motion sees the
+   page. This mirrors the reduce branch in src/styles/global/motion.pcss,
+   which the canvas cannot reach on its own: that media query answers to the
+   viewer's system setting, and someone laying out a page is not asking to
+   watch it move. add_editor_style() scopes this to the editable area, so the
+   admin around it is untouched. */
+*,
+*::before,
+*::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
 /* The bridge block: a section still edited in this page's fields. */
 .severus-placeholder {
   display: flex;
