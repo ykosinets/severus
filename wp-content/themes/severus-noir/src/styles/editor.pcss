@@ -68,9 +68,15 @@
   display: block;
 }
 
-/* The rows below the preview: the part that is actually edited. */
+/* The rows below the preview: the part that is actually edited. On a section
+   built from repeaters there is no preview above them and this is the whole
+   block, so it starts flush. */
 .severus-block__edit {
   margin-top: 0.5rem;
+
+  &:first-child {
+    margin-top: 0;
+  }
   padding: 1rem;
   border: 1px solid var(--hair, rgb(255 255 255 / 12%));
   border-radius: 0.5rem;
