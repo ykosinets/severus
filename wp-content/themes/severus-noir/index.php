@@ -8,13 +8,44 @@
 defined( 'ABSPATH' ) || exit;
 
 get_header();
+
+/* The blog and its category archives share one page: the category buttons
+   are plain links to the archives, and blog.js swaps the posts in place. */
+$blog = is_home() || is_category();
+
+if ( $blog ) {
+	$blog_categories = get_terms(
+		array(
+			'taxonomy'   => 'category',
+			'hide_empty' => true,
+			'exclude'    => array( (int) get_option( 'default_category' ) ),
+		)
+	);
+	$blog_term       = is_category() ? get_queried_object() : null;
+}
 ?>
 
-<section class="section is-narrow"<?php if ( is_home() ) : ?> data-blog id="blog-posts"<?php endif; ?>>
+<section class="section is-narrow"<?php if ( $blog ) : ?> data-blog id="blog-posts"<?php endif; ?>>
 	<div class="shell">
 		<header class="lead reveal">
 			<h1 class="lead__title"><?php echo esc_html( wp_get_document_title() ); ?></h1>
 		</header>
+
+		<?php if ( $blog && $blog_categories && ! is_wp_error( $blog_categories ) ) : ?>
+			<nav class="filter" aria-label="<?php esc_attr_e( 'Filter posts by category', 'severus-noir' ); ?>">
+				<ul class="filter__list">
+					<li>
+						<a class="btn <?php echo $blog_term ? 'btn--quiet' : 'btn--solid'; ?>" href="<?php echo esc_url( get_permalink( (int) get_option( 'page_for_posts' ) ) ?: home_url( '/' ) ); ?>" data-blog-filter="all"<?php echo $blog_term ? '' : ' aria-current="page"'; ?>><?php esc_html_e( 'All', 'severus-noir' ); ?></a>
+					</li>
+					<?php foreach ( $blog_categories as $blog_category ) : ?>
+						<?php $current = $blog_term && $blog_term->term_id === $blog_category->term_id; ?>
+						<li>
+							<a class="btn <?php echo $current ? 'btn--solid' : 'btn--quiet'; ?>" href="<?php echo esc_url( get_term_link( $blog_category ) ); ?>" data-blog-filter="<?php echo esc_attr( $blog_category->slug ); ?>"<?php echo $current ? ' aria-current="page"' : ''; ?>><?php echo esc_html( $blog_category->name ); ?></a>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			</nav>
+		<?php endif; ?>
 
 		<div data-blog-content aria-live="polite" tabindex="-1">
 		<?php if ( have_posts() ) : ?>
