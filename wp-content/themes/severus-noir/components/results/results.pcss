@@ -26,6 +26,105 @@
   }
 }
 
+/* More than three cases: one row that scrolls sideways. Cards are sized so
+   the next one peeks in by a tenth of a card — that sliver says there is
+   more. --n is how many whole cards fit. */
+.works--rail {
+  --n: 3;
+  --gap: clamp(1rem, 2vw, 1.75rem);
+  display: flex;
+  gap: var(--gap);
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline mandatory;
+  padding-block-end: 1.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--jade-dim) color-mix(in oklab, var(--hair) 45%, transparent);
+
+  @media (width <= 1024px) {
+    --n: 2;
+  }
+
+  @media (width <= 640px) {
+    --n: 1;
+  }
+
+  /* Safari ignores scrollbar-color; Chrome and Firefox ignore these once it
+     is set. */
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 99px;
+    background: color-mix(in oklab, var(--hair) 45%, transparent);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 99px;
+    background: var(--jade-dim);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--jade);
+  }
+
+  & > .work {
+    flex: 0 0 calc((100% - var(--n) * var(--gap)) / (var(--n) + 0.1));
+    scroll-snap-align: start;
+  }
+}
+
+/* The rail's last stop: a round arrow to the archive. */
+.works__more {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding-inline: clamp(1rem, 3vw, 2.5rem);
+  scroll-snap-align: end;
+  color: var(--ash);
+  transition: color 0.3s var(--ease);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--bone);
+  }
+
+  &:hover .works__more-go,
+  &:focus-visible .works__more-go {
+    color: var(--pit);
+    background: var(--jade);
+    border-color: var(--jade);
+  }
+}
+
+.works__more-go {
+  display: grid;
+  place-items: center;
+  width: clamp(4.5rem, 6vw, 5.75rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid color-mix(in oklab, var(--jade) 55%, transparent);
+  color: var(--jade);
+  transition:
+    color 0.3s var(--ease),
+    background-color 0.3s var(--ease),
+    border-color 0.3s var(--ease);
+
+  & .snake-arrow {
+    width: 19px;
+    height: 15px;
+  }
+}
+
+.works__more-label {
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
 /* The picture on top, the copy on a dark panel below it. */
 .work {
   --go: 3.25rem;
@@ -167,4 +266,9 @@
   & .btn--solid {
     border: var(--edge) solid transparent;
   }
+}
+
+.results .orbit {
+  transform: scale(1.3);
+  opacity: .05 !important;
 }

@@ -5,15 +5,18 @@
    Each face fades with its angle — fully there at the front, gone at the
    sides — so an arrow fades out as it rolls away and in as it comes round.
    With reduced motion the arrow stays put. */
-(() => {
-  const SPIN = 4;               // seconds per full turn
-  const SPEED = 360 / SPIN;     // degrees per second
-  const EASE_IN = 0.35;         // seconds to reach full speed
-  const SETTLE = 6;             // how briskly it settles on a face
+const SPIN = 4;               // seconds per full turn
+const SPEED = 360 / SPIN;     // degrees per second
+const EASE_IN = 0.35;         // seconds to reach full speed
+const SETTLE = 6;             // how briskly it settles on a face
 
-  const still = matchMedia('(prefers-reduced-motion: reduce)');
+const still = matchMedia('(prefers-reduced-motion: reduce)');
 
-  document.querySelectorAll('[data-snake-arrow]').forEach(trigger => {
+export const initializeSnakeArrows = (root = document) => {
+  root.querySelectorAll('[data-snake-arrow]').forEach(trigger => {
+    if (trigger.dataset.snakeArrowReady) return;
+    trigger.dataset.snakeArrowReady = 'true';
+
     const drums = trigger.querySelectorAll('.snake-arrow__drum');
     if (!drums.length) return;
 
@@ -85,4 +88,10 @@
     });
     trigger.addEventListener('blur', stop);
   });
-})();
+};
+
+initializeSnakeArrows();
+
+document.addEventListener('severus:content-updated', event => {
+  initializeSnakeArrows(event.detail?.root || document);
+});

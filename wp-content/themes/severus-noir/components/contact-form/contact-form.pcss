@@ -12,7 +12,7 @@
 }
 
 .form__note {
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   color: var(--jade);
   padding: 0.7rem 1rem;
   border-radius: var(--r-xs);
@@ -81,8 +81,8 @@
 
 .field:has(> :is(input, textarea):focus) > label,
 .field:has(> :is(input, textarea):not(:placeholder-shown)) > label {
-  translate: 0 -0.72rem;
-  font-size: 0.72rem;
+  translate: 0 -0.875rem;
+  font-size: 0.875rem;
   color: var(--ash);
 }
 
@@ -98,10 +98,45 @@
   position: absolute;
   inset-block-end: 0.7rem;
   inset-inline-end: 1.1rem;
-  font-size: 0.72rem;
+  font-size: 0.875rem;
   color: var(--dust);
 }
 
 .form .btn {
   margin-block-start: 0.5rem;
+}
+
+/* Keep the Noir fields; Forminator owns validation, captcha and AJAX. */
+.form--forminator {
+  .forminator-row {
+    margin: 0 0 1rem;
+  }
+
+  .forminator-row-last { margin-bottom: 0; }
+  .forminator-col { padding: 0; }
+  .forminator-label { z-index: 1; margin: 0; font-weight: 400; }
+  .forminator-textarea { min-height: 7.5rem !important; }
+  .field:has(> textarea) { padding-bottom: 0; }
+  .forminator-description { margin: 0; pointer-events: none; }
+  .forminator-row:has(.recaptcha-invisible) { margin: 0; }
+
+  .forminator-error-message {
+    display: block;
+    color: oklch(0.78 0.15 25);
+    font-size: 1rem;
+    margin-top: 0.4rem;
+  }
+
+  .forminator-response-message {
+    padding: 0.7rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: var(--r-xs);
+    color: var(--jade);
+    background: color-mix(in oklab, var(--jade) 10%, transparent);
+  }
+
+  .forminator-response-message[aria-hidden="true"] { display: none; }
+  .forminator-response-message.forminator-error { color: oklch(0.78 0.15 25); }
+  .forminator-has_error > :is(input, textarea) { border-color: oklch(0.7 0.16 25); }
+  .field:has(.forminator-error-message) .field__count { inset-block-end: 2.2rem; }
 }

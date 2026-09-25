@@ -1,9 +1,10 @@
 <?php
 /**
- * Case studies: three picture cards in a row.
+ * Case studies: three picture cards in a row. More than three turn the row
+ * into a sideways rail that ends in a link to the cases archive.
  *
  * $data (all optional; the front page fields are the defaults):
- *   cases               post ids or objects; only the first three are shown
+ *   cases               post ids or objects
  *   label, title, text  the header
  *   more                ACF link shown under the cards
  *   id                  section id
@@ -11,11 +12,13 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-$cases = array_slice( severus_ids( $data['cases'] ?? get_field( 'case-list' ) ), 0, 3 );
+$cases = severus_ids( $data['cases'] ?? get_field( 'case-list' ) );
 
 if ( ! $cases ) {
 	return;
 }
+
+$rail = count( $cases ) > 3;
 
 $lead = array(
 	'label' => $data['label'] ?? '',
@@ -30,12 +33,18 @@ $lead = array(
 	<div class="shell">
 		<?php severus_lead( $lead, array( 'split' => true ) ); ?>
 
-		<div class="works">
+		<div class="works<?php echo $rail ? ' works--rail' : ''; ?>">
 			<?php
 			foreach ( $cases as $id ) {
 				severus_work_card( $id );
 			}
 			?>
+			<?php if ( $rail ) : ?>
+				<a class="works__more" href="<?php echo esc_url( get_post_type_archive_link( 'case' ) ); ?>" data-snake-arrow>
+					<span class="works__more-go" aria-hidden="true"><?php severus_arrow(); ?></span>
+					<span class="works__more-label"><?php esc_html_e( 'More cases', 'severus-noir' ); ?></span>
+				</a>
+			<?php endif; ?>
 		</div>
 
 		<?php if ( ! empty( $data['more'] ) ) : ?>

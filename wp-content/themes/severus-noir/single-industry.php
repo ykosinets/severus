@@ -1,6 +1,6 @@
 <?php
 /**
- * An industry: the pitch, then the case studies picked for it.
+ * An industry: the pitch, then case studies from its matching category.
  *
  * @package Severus_Noir
  */
@@ -24,15 +24,47 @@ while ( have_posts() ) :
 		)
 	);
 
+	$cases_link = get_field( 'see_all_construction_case' );
+	$case_category = get_term_by( 'slug', get_post_field( 'post_name', get_the_ID() ), 'case_category' );
+	$industry_cases = $case_category instanceof WP_Term
+		? get_posts(
+			array(
+				'post_type'      => 'case',
+				'post_status'    => 'publish',
+				'posts_per_page' => 3,
+				'fields'         => 'ids',
+				'orderby'        => array( 'date' => 'DESC', 'ID' => 'DESC' ),
+				'tax_query'      => array(
+					array(
+						'taxonomy'         => 'case_category',
+						'field'            => 'term_id',
+						'terms'            => $case_category->term_id,
+						'include_children' => false,
+					),
+				),
+			)
+		)
+		: array();
+
+	if ( is_array( $cases_link ) ) {
+		$cases_url = $case_category instanceof WP_Term
+			? get_term_link( $case_category )
+			: get_post_type_archive_link( 'case' );
+
+		if ( $cases_url && ! is_wp_error( $cases_url ) ) {
+			$cases_link['url'] = $cases_url . '#case-studies';
+		}
+	}
+
 	severus_component(
 		'results',
 		array(
 			'id'    => 'case-studies',
-			'cases' => get_field( 'cs_cases_list' ) ?: array(),
+			'cases' => $industry_cases,
 			'label' => get_field( 'cs_label' ),
 			'title' => get_field( 'cs_title' ),
 			'text'  => get_field( 'cs_description' ),
-			'more'  => get_field( 'see_all_construction_case' ),
+			'more'  => $cases_link,
 		)
 	);
 

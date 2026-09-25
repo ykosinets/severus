@@ -2,7 +2,7 @@
   position: sticky;
   inset-block-start: 0;
   z-index: 50;
-  padding-block: clamp(0.9rem, 1.4vw, 1.5rem);
+  padding-block: .5rem;
   transition:
     background-color 0.4s var(--ease),
     backdrop-filter 0.4s var(--ease);
@@ -10,6 +10,10 @@
   &.is-stuck {
     background: color-mix(in oklab, var(--void) 74%, transparent);
     backdrop-filter: blur(18px) saturate(1.4);
+  }
+
+  .admin-bar & {
+    inset-block-start: 32px;
   }
 }
 
@@ -54,7 +58,7 @@
   display: none;
   flex-direction: column;
   gap: 6px;
-  padding: 0.6rem;
+  padding: 1rem 0.6rem;
   margin-inline-start: auto;
 
   & span {

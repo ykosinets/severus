@@ -20,17 +20,19 @@ $$('.odo').forEach(odo => {
 
     slot.append(reel);
     odo.append(slot);
-    return { slot, reel };
+    return { reel };
   });
 
   /* Classic odometer: a column only starts turning once the ones below it are
-     about to roll over, so the number reads correctly the whole way up. */
-  const paint = value => reels.forEach(({ slot, reel }, index) => {
+     about to roll over, so the number reads correctly the whole way up.
+     Cells are 1em tall, so the offset is in em: it scales with the fluid font
+     size and a resize never leaves the digits half-way between cells. */
+  const paint = value => reels.forEach(({ reel }, index) => {
     const exact = value / 10 ** (places - 1 - index);
     const fraction = exact - Math.floor(exact);
     const carry = fraction > 0.9 ? (fraction - 0.9) * 10 : 0;
     const position = (Math.floor(exact) % 10) + carry;
-    reel.style.transform = `translateY(${-position * slot.getBoundingClientRect().height}px)`;
+    reel.style.transform = `translateY(${-position}em)`;
   });
 
   paint(0);
