@@ -146,3 +146,10 @@ add_action( 'acf/include_fields', 'severus_register_fields' );
  * post meta until the field is removed from the group in ACF.
  */
 add_filter( 'acf/prepare_field/key=field_661787b59fd7d', '__return_false' );
+
+/**
+ * "Services List" on a service picked the other services shown under it, but
+ * that section follows the service tree (severus_service_siblings()), so the
+ * picks were never shown. Hidden the same way, for the same reason.
+ */
+add_filter( 'acf/prepare_field/key=field_6a6c6832ee144', '__return_false' );
