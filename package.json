@@ -1,6 +1,6 @@
 {
   "name": "severus-co",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Severus.co WordPress site — theme build and staging deploys.",
   "scripts": {
@@ -8,6 +8,8 @@
     "dev": "npm --prefix wp-content/themes/severus-noir run dev",
     "deploy": "npm run deploy:code && npm run deploy:db",
     "deploy:code": "./deploy-staging.sh",
-    "deploy:db": "./deploy-staging-db.sh"
+    "deploy:db": "./deploy-staging-db.sh",
+    "staging:pull:db": "./pull-staging-db.sh",
+    "staging:pull:data": "./pull-staging-uploads.sh"
   }
 }

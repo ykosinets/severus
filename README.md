@@ -50,6 +50,26 @@ staging one.
 Override the target with `SEVERUS_STAGING_HOST`, `SEVERUS_STAGING_PATH` and
 `SEVERUS_STAGING_URL`.
 
+### Pulling from staging
+
+Once the client edits content on staging, bring it down instead of pushing over
+it:
+
+```bash
+npm run staging:pull:db     # replace the local database with staging's
+npm run staging:pull:data   # copy new and changed uploads from staging
+```
+
+Both ask before changing anything and take `--dry-run`. Neither writes to
+staging.
+
+`staging:pull:db` **replaces** the local database, so your local login becomes
+the staging one. It dumps the local database to `backups/` first, keeps the
+staging dump beside it, and rewrites the staging hostname to the local one.
+
+`staging:pull:data` never deletes local files. Files that differ from staging's
+are overwritten after being copied to `backups/uploads-before-pull-<stamp>/`.
+
 The staging host is on the LAN, so ssh has to reach it. The terminal inside an
 IDE may lack macOS's Local Network permission and fail with "No route to host"
 while a normal terminal works.

@@ -65,7 +65,7 @@ echo "→ local ${LOCAL_URL} → staging ${STAGING_URL} (${HOST}:${REMOTE_WP})"
 if [ -n "$DRY" ]; then
   echo "→ dry run: would back up staging, import the local database,"
   echo "  replace ${LOCAL_HOST} with ${STAGING_HOSTNAME}, and flush caches"
-  [ -n "$UPLOADS" ] && rsync -az --dry-run --itemize-changes --exclude '.DS_Store' \
+  [ -n "$UPLOADS" ] && rsync -az --no-perms --no-group --dry-run --itemize-changes --exclude '.DS_Store' \
     "${ROOT}/wp-content/uploads/" "${HOST}:${REMOTE_WP}/wp-content/uploads/"
   exit 0
 fi
@@ -77,9 +77,16 @@ echo "→ backing up staging to ~/backups/severus-staging-before-deploy-${STAMP}
 ssh -o BatchMode=yes "$HOST" "mkdir -p ~/backups && cd ${REMOTE_WP} && wp db export - | gzip > ~/backups/severus-staging-before-deploy-${STAMP}.sql.gz"
 
 if [ -n "$UPLOADS" ]; then
+  # PHP runs as www-data and writes here through the group, so the Mac's
+  # 755/644 and gid must not reach the server: -a alone reset uploads to
+  # read-only once, and gid 20 (staff) lands as dialout on Debian. The macOS
+  # rsync ignores --chmod, so new entries are opened up afterwards instead.
   echo "→ syncing new uploads (nothing on the server is deleted)"
-  rsync -az --itemize-changes --exclude '.DS_Store' \
+  rsync -az --no-perms --no-group --itemize-changes --exclude '.DS_Store' \
     "${ROOT}/wp-content/uploads/" "${HOST}:${REMOTE_WP}/wp-content/uploads/"
+  ssh -o BatchMode=yes "$HOST" "cd ${REMOTE_WP}/wp-content/uploads \
+    && find . -user \$(id -un) -type d ! -perm -2775 -exec chmod 2775 {} + \
+    && find . -user \$(id -un) -type f ! -perm -664 -exec chmod ug+rw {} +"
 fi
 
 echo "→ exporting the local database"

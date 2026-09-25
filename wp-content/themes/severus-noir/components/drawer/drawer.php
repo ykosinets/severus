@@ -5,7 +5,7 @@
 defined( 'ABSPATH' ) || exit;
 ?>
 <div class="drawer" id="site-drawer" hidden>
-	<div class="drawer__in">
+	<div class="drawer__in shell">
 
 		<?php
 		if ( has_nav_menu( 'primary' ) ) {

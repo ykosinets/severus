@@ -10,12 +10,13 @@ defined( 'ABSPATH' ) || exit;
 get_header();
 ?>
 
-<section class="section is-narrow">
+<section class="section is-narrow"<?php if ( is_home() ) : ?> data-blog id="blog-posts"<?php endif; ?>>
 	<div class="shell">
 		<header class="lead reveal">
 			<h1 class="lead__title"><?php echo esc_html( wp_get_document_title() ); ?></h1>
 		</header>
 
+		<div data-blog-content aria-live="polite" tabindex="-1">
 		<?php if ( have_posts() ) : ?>
 			<div class="journal__grid">
 				<?php
@@ -38,6 +39,7 @@ get_header();
 		<?php else : ?>
 			<p><?php esc_html_e( 'Nothing here yet.', 'severus-noir' ); ?></p>
 		<?php endif; ?>
+		</div>
 	</div>
 </section>
 
