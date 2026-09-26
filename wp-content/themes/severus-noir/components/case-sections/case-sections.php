@@ -8,6 +8,8 @@
  *   text        text across the full width
  *   image       an image, full width or centred / left / right
  *   cards       title and text, then cards three to a row
+ *   related     picked services, industries, cases or articles as link cards
+ *   button      a link button, left, centred or right
  *
  * A section with nothing in it is skipped; a two-column one with only one
  * side filled takes the full width. Titles stay first in the markup however
@@ -55,6 +57,14 @@ foreach ( (array) ( $data['sections'] ?? array() ) as $row ) {
 			$row['cards'] = array_values( array_filter( (array) ( $row['cards'] ?? array() ), static fn( $card ) => is_array( $card ) && $filled( $card['content'] ?? '' ) ) );
 			$keep         = $title || $content || $row['cards'];
 			break;
+		case 'related':
+			$row['items'] = severus_ids( $row['items'] ?? array() );
+			$title        = $title ?: __( 'Related', 'severus-noir' );
+			$keep         = (bool) $row['items'];
+			break;
+		case 'button':
+			$keep = is_array( $row['link'] ?? null ) && ! empty( $row['link']['url'] ) && '' !== trim( (string) ( $row['link']['title'] ?? '' ) );
+			break;
 		default:
 			$keep = false;
 	}
@@ -62,8 +72,10 @@ foreach ( (array) ( $data['sections'] ?? array() ) as $row ) {
 	if ( $keep ) {
 		$sections[] = compact( 'layout', 'title', 'content', 'img' ) + array(
 			'reverse' => ! empty( $row['is_reverse'] ),
-			'align'   => in_array( $row['align'] ?? '', array( 'full', 'center', 'left', 'right' ), true ) ? $row['align'] : 'full',
+			'align'   => in_array( $row['align'] ?? '', array( 'full', 'center', 'left', 'right' ), true ) ? $row['align'] : ( 'button' === $layout ? 'left' : 'full' ),
 			'cards'   => $row['cards'] ?? array(),
+			'items'   => $row['items'] ?? array(),
+			'link'    => $row['link'] ?? null,
 		);
 	}
 }
@@ -136,6 +148,31 @@ if ( ! $sections ) {
 								<?php endforeach; ?>
 							</ul>
 						<?php endif; ?>
+						<?php break;
+
+					case 'related': ?>
+						<h2 class="case-section__title case-section__title--small reveal"><?php echo esc_html( $s['title'] ); ?></h2>
+						<ul class="case-links">
+							<?php foreach ( $s['items'] as $item ) : ?>
+								<?php
+								$type = get_post_type( $item );
+								$kind = 'post' === $type ? __( 'Article', 'severus-noir' ) : ( get_post_type_object( $type )->labels->singular_name ?? '' );
+								?>
+								<li class="reveal">
+									<a class="case-link edge" href="<?php echo esc_url( get_permalink( $item ) ); ?>" data-snake-arrow>
+										<span class="case-link__kind"><?php echo esc_html( $kind ); ?></span>
+										<span class="case-link__title"><?php echo esc_html( get_the_title( $item ) ); ?></span>
+										<span class="case-link__go" aria-hidden="true"><?php severus_arrow(); ?></span>
+									</a>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+						<?php break;
+
+					case 'button': ?>
+						<div class="case-section__button case-section__button--<?php echo esc_attr( $s['align'] ); ?> reveal">
+							<?php severus_button( $s['link'], 'btn btn--solid' ); ?>
+						</div>
 						<?php break;
 				endswitch; ?>
 			</div>

@@ -178,3 +178,109 @@
     }
   }
 }
+
+/* Related: link cards three to a row, the kind of page over its title and
+   the round arrow in the corner, like the case cards' button. */
+.case-section__title--small {
+  font-size: clamp(1.5rem, 2.2vw, 2.1rem);
+}
+
+.case-section__title--small + .case-links {
+  margin-block-start: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.case-links {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.75rem);
+
+  @media (width <= 1024px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (width <= 640px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  & > li {
+    display: grid;
+  }
+}
+
+.case-link {
+  --go: 3rem;
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 0.6rem;
+  min-block-size: 9.5rem;
+  padding: clamp(1.25rem, 2.2vw, 1.75rem);
+  padding-inline-end: calc(clamp(1.25rem, 2.2vw, 1.75rem) * 2 + var(--go));
+  border-radius: var(--r-lg);
+  color: var(--bone);
+
+  &:hover .case-link__go,
+  &:focus-visible .case-link__go {
+    color: var(--pit);
+    background: var(--jade);
+  }
+}
+
+.case-link__kind {
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dust);
+}
+
+.case-link__title {
+  font-size: clamp(1.1rem, 1.3vw, 1.3rem);
+  line-height: 1.25;
+}
+
+.case-link__go {
+  position: absolute;
+  inset-block-end: clamp(1.25rem, 2.2vw, 1.75rem);
+  inset-inline-end: clamp(1.25rem, 2.2vw, 1.75rem);
+  display: grid;
+  place-items: center;
+  width: var(--go);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  color: var(--bone);
+  background: color-mix(in oklab, var(--jade) 45%, var(--deep));
+  transition:
+    color 0.3s var(--ease),
+    background-color 0.3s var(--ease);
+
+  & .snake-arrow {
+    width: 19px;
+    height: 15px;
+  }
+}
+
+/* A button carries on from the section above it: no line, no second gap. */
+.case-section--button {
+  padding-block-start: 0;
+}
+
+.case-section:has(+ .case-section--button) {
+  padding-block-end: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.case-section + .case-section--button .case-section__in::before {
+  content: none;
+}
+
+.case-section__button {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.case-section__button--center {
+  justify-content: center;
+}
+
+.case-section__button--right {
+  justify-content: flex-end;
+}
