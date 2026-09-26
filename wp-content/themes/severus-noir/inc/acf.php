@@ -18,6 +18,73 @@ function severus_register_fields(): void {
 
 	acf_add_local_field_group(
 		array(
+			'key'                   => 'group_severus_case_sections',
+			'title'                 => __( 'Case sections', 'severus-noir' ),
+			'fields'                => array(
+				array(
+					'key'          => 'field_severus_case_sections',
+					'label'        => __( 'Sections', 'severus-noir' ),
+					'name'         => 'case_sections',
+					'type'         => 'repeater',
+					'instructions' => __( 'The write-up, a section at a time: title on one side, text on the other, a line between sections. While this is empty the page shows the content editor instead.', 'severus-noir' ),
+					'layout'       => 'block',
+					'collapsed'    => 'field_severus_case_section_title',
+					'min'          => 0,
+					'max'          => 0,
+					'button_label' => __( 'Add section', 'severus-noir' ),
+					'sub_fields'   => array(
+						array(
+							'key'      => 'field_severus_case_section_title',
+							'label'    => __( 'Title', 'severus-noir' ),
+							'name'     => 'title',
+							'type'     => 'text',
+							'required' => 1,
+							'wrapper'  => array( 'width' => '75' ),
+						),
+						array(
+							'key'           => 'field_severus_case_section_reverse',
+							'label'         => __( 'Text on the left', 'severus-noir' ),
+							'name'          => 'is_reverse',
+							'type'          => 'true_false',
+							'instructions'  => __( 'Off: title left, text right.', 'severus-noir' ),
+							'ui'            => 1,
+							'default_value' => 0,
+							'wrapper'       => array( 'width' => '25' ),
+						),
+						array(
+							'key'          => 'field_severus_case_section_content',
+							'label'        => __( 'Content', 'severus-noir' ),
+							'name'         => 'content',
+							'type'         => 'wysiwyg',
+							'tabs'         => 'all',
+							'toolbar'      => 'full',
+							'media_upload' => 1,
+							'delay'        => 1,
+						),
+					),
+				),
+			),
+			'location'              => array(
+				array(
+					array(
+						'param'    => 'post_type',
+						'operator' => '==',
+						'value'    => 'case',
+					),
+				),
+			),
+			'menu_order'            => 0,
+			'position'              => 'normal',
+			'style'                 => 'default',
+			'label_placement'       => 'top',
+			'instruction_placement' => 'label',
+			'active'                => true,
+			'show_in_rest'          => 0,
+		)
+	);
+
+	acf_add_local_field_group(
+		array(
 			'key'                   => 'group_severus_service_card_extra',
 			'title'                 => __( 'Service card — list and background', 'severus-noir' ),
 			'fields'                => array(

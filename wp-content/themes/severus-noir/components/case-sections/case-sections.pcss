@@ -1,0 +1,83 @@
+/* A case study's write-up: title and text side by side, the columns of the
+   services' copy sections, and the footer's line between sections. */
+.case-sections {
+  --gap-y: clamp(2.5rem, 5vw, 4.5rem);
+  position: relative;
+  z-index: 2;
+  padding-block: calc(var(--gap-y) * 0.5) var(--bay);
+}
+
+.case-section {
+  padding-block: var(--gap-y);
+}
+
+.case-section__in {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  grid-template-areas: "title text";
+  gap: clamp(1.25rem, 6vw, 6rem);
+  align-items: start;
+
+  @media (width <= 1024px) {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "title"
+      "text";
+  }
+}
+
+.case-section--reverse .case-section__in {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  grid-template-areas: "text title";
+
+  @media (width <= 1024px) {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "title"
+      "text";
+  }
+}
+
+/* The footer's rule (.site-foot::before), across the shell, midway between
+   two sections. A reversed section mirrors it so it starts on its text
+   side. */
+.case-section + .case-section .case-section__in::before {
+  content: "";
+  position: absolute;
+  inset-block-start: calc(var(--gap-y) * -1);
+  inset-inline: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--jade) 60%, transparent),
+    color-mix(in oklab, var(--pewter) 40%, transparent) 35%,
+    transparent 85%
+  );
+}
+
+.case-section + .case-section--reverse .case-section__in::before {
+  background: linear-gradient(
+    270deg,
+    color-mix(in oklab, var(--jade) 60%, transparent),
+    color-mix(in oklab, var(--pewter) 40%, transparent) 35%,
+    transparent 85%
+  );
+}
+
+.case-section__title {
+  grid-area: title;
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  line-height: 1.12;
+  color: var(--bone);
+}
+
+.case-section__text {
+  grid-area: text;
+  font-size: clamp(1rem, 0.4vw + 1rem, 1.2rem);
+
+  /* The body's rhythm, without pushing the first line off the title. */
+  & > :first-child {
+    margin-block-start: 0;
+  }
+}
