@@ -125,3 +125,117 @@
   --bp-pad: 900px;
   --bp-phone: 640px;
 }
+
+/* Test-only light palette, enabled by the site-header control. */
+body.is-light-theme {
+  color-scheme: light;
+  --void: oklch(0.972 0.010 172);
+  --pit: oklch(0.942 0.012 172);
+  --abyss: oklch(0.955 0.016 214);
+  --deep: oklch(0.900 0.040 168);
+  --slate: oklch(0.914 0.016 172);
+  --hair: oklch(0.680 0.022 172);
+  --jade: oklch(0.540 0.120 170);
+  --jade-deep: oklch(0.430 0.100 170);
+  --jade-dim: oklch(0.620 0.085 170);
+  --facet: oklch(0.300 0.055 168);
+  --pewter: oklch(0.435 0.020 250);
+  --ice: oklch(0.360 0.052 214);
+  --glyph-mid: oklch(0.470 0.095 170);
+  --glyph-well: oklch(0.850 0.025 170);
+  --bone: oklch(0.205 0.012 168);
+  --ash: oklch(0.360 0.012 168);
+  --dust: oklch(0.490 0.012 168);
+  --card-red: oklch(0.750 0.090 25);
+  --card-green: oklch(0.700 0.090 170);
+
+  .turn video {
+    filter: invert(1) hue-rotate(160deg);
+    mix-blend-mode: color-dodge;
+  }
+
+  .btn--solid {
+    color: white;
+  }
+
+  .btn--quiet:not(:hover) {
+    background-image: linear-gradient(color-mix(in oklab, var(--slate) 55%, transparent), color-mix(in oklab, var(--slate) 40%, transparent)), linear-gradient(120deg, color-mix(in oklab, var(--jade) 55%, transparent), color-mix(in oklab, oklch(0.76 0.18 163.91) 40%, transparent) 1000%);
+  }
+
+  .hero .stage__play svg {
+    color: #fff;
+  }
+
+  .services .card {
+    background-color: var(--card-green);
+    background-image: none;
+    border-color: color-mix(in oklab, var(--card-green) 76%, var(--jade-deep));
+    filter: brightness(1.5) saturate(0.5);
+
+    .card__glyph {
+      filter: contrast(1.33) brightness(0.66);
+    }
+
+    .card__art {
+      opacity: 0.3;
+      filter: invert(1) hue-rotate(180deg);
+    }
+
+    &:hover .card__art {
+      opacity: .6;
+    }
+  }
+
+  .familiar .slab {
+    background: var(--card-red);
+    background-image: none;
+    border-color: color-mix(in oklab, var(--card-red) 78%, var(--ruby-deep));
+  }
+
+  .form__note {
+    background: var(--card-green);
+    color: white;
+
+    &.is-bad {
+      background: var(--card-red);
+      color: white;
+    }
+  }
+
+  .callout__shapes {
+    filter: invert(1) hue-rotate(180deg);
+  }
+
+  .orbit {
+    filter: invert(1) hue-rotate(180deg);
+    opacity: .6;
+  }
+
+  .impact {
+    .impact__stage {
+      filter: invert(1) hue-rotate(180deg);
+      mask-image: linear-gradient(to bottom, black, black calc(100% - 50px), transparent);
+      opacity: .8;
+    }
+  }
+
+  .trust .trust__mark {
+    filter: invert(1) hue-rotate(180deg);
+    opacity: .4;
+  }
+
+  .talk {
+    &:before {
+      mask-image: none;
+      filter: invert(1) hue-rotate(180deg);
+    }
+
+    .form {
+      background: rgba(255 255 255 / .55);
+    }
+  }
+
+  .talk .talk__logo, .site-foot .custom-logo {
+    filter: invert(1) hue-rotate(180deg);
+  }
+}

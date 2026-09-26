@@ -44,6 +44,42 @@
   }
 }
 
+.theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 2.8rem;
+  aspect-ratio: 1;
+  flex: none;
+  padding: 0;
+  border: 1px solid color-mix(in oklab, var(--hair) 78%, transparent);
+  border-radius: var(--r-pill);
+  background: color-mix(in oklab, var(--slate) 68%, transparent);
+  color: var(--bone);
+  cursor: pointer;
+  transition: background-color .3s var(--ease), border-color .3s var(--ease), color .3s var(--ease), transform .3s var(--ease);
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--jade);
+    color: var(--jade);
+    transform: rotate(18deg);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--jade);
+    outline-offset: 4px;
+  }
+}
+
+.theme-toggle__sun {
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+body.is-light-theme .site-head__logo img {
+  filter: brightness(.36) saturate(1.35);
+}
+
 @media (width < 425px) {
   .site-head__cta svg {
     display: none;

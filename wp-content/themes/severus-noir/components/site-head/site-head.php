@@ -19,6 +19,11 @@ $contact = severus_contact_url();
 
 		<?php severus_component( 'site-nav' ); ?>
 
+		<button class="theme-toggle" type="button" aria-pressed="false">
+			<span class="theme-toggle__sun" aria-hidden="true">☼</span>
+			<span class="screen-reader-text"><?php esc_html_e( 'Enable light mode', 'severus-noir' ); ?></span>
+		</button>
+
 		<a class="btn btn--solid site-head__cta" href="<?php echo esc_url( $contact ); ?>">
 			<svg class="btn__mail" viewBox="0 0 20 16" aria-hidden="true" focusable="false">
 				<rect x="1" y="1.5" width="18" height="13" rx="2.6" fill="none" stroke="currentColor" stroke-width="1.5" />
