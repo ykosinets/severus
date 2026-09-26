@@ -16,6 +16,38 @@ function severus_register_fields(): void {
 		return;
 	}
 
+	/* Case write-ups are built from sections. Every text field is the visual
+	   editor; a section with nothing in it is not rendered. */
+	$case_text = static fn( string $key, string $label = '' ): array => array(
+		'key'          => $key,
+		'label'        => $label ?: __( 'Content', 'severus-noir' ),
+		'name'         => 'content',
+		'type'         => 'wysiwyg',
+		'tabs'         => 'all',
+		'toolbar'      => 'full',
+		'media_upload' => 0,
+		'delay'        => 1,
+	);
+	$case_image = static fn( string $key ): array => array(
+		'key'           => $key,
+		'label'         => __( 'Image', 'severus-noir' ),
+		'name'          => 'image',
+		'type'          => 'image',
+		'return_format' => 'id',
+		'preview_size'  => 'medium',
+		'library'       => 'all',
+		'mime_types'    => 'jpg, jpeg, png, webp, avif, svg',
+	);
+	$case_reverse = static fn( string $key, string $label ): array => array(
+		'key'           => $key,
+		'label'         => __( 'Reverse', 'severus-noir' ),
+		'name'          => 'is_reverse',
+		'type'          => 'true_false',
+		'message'       => $label,
+		'ui'            => 1,
+		'default_value' => 0,
+	);
+
 	acf_add_local_field_group(
 		array(
 			'key'                   => 'group_severus_case_sections',
@@ -25,41 +57,95 @@ function severus_register_fields(): void {
 					'key'          => 'field_severus_case_sections',
 					'label'        => __( 'Sections', 'severus-noir' ),
 					'name'         => 'case_sections',
-					'type'         => 'repeater',
-					'instructions' => __( 'The write-up, a section at a time: title on one side, text on the other, a line between sections. While this is empty the page shows the content editor instead.', 'severus-noir' ),
-					'layout'       => 'block',
-					'collapsed'    => 'field_severus_case_section_title',
-					'min'          => 0,
-					'max'          => 0,
+					'type'         => 'flexible_content',
+					'instructions' => __( 'The write-up, a section at a time, with a line between sections. While this is empty the page shows the content editor instead.', 'severus-noir' ),
 					'button_label' => __( 'Add section', 'severus-noir' ),
-					'sub_fields'   => array(
-						array(
-							'key'      => 'field_severus_case_section_title',
-							'label'    => __( 'Title', 'severus-noir' ),
-							'name'     => 'title',
-							'type'     => 'text',
-							'required' => 1,
-							'wrapper'  => array( 'width' => '75' ),
+					'layouts'      => array(
+						'layout_severus_case_title_text'  => array(
+							'key'        => 'layout_severus_case_title_text',
+							'name'       => 'title_text',
+							'label'      => __( 'Title + text', 'severus-noir' ),
+							'display'    => 'block',
+							'sub_fields' => array(
+								array(
+									'key'   => 'field_severus_case_tt_title',
+									'label' => __( 'Title', 'severus-noir' ),
+									'name'  => 'title',
+									'type'  => 'text',
+								),
+								$case_text( 'field_severus_case_tt_content' ),
+								$case_reverse( 'field_severus_case_tt_reverse', __( 'Text on the left, title on the right', 'severus-noir' ) ),
+							),
 						),
-						array(
-							'key'           => 'field_severus_case_section_reverse',
-							'label'         => __( 'Text on the left', 'severus-noir' ),
-							'name'          => 'is_reverse',
-							'type'          => 'true_false',
-							'instructions'  => __( 'Off: title left, text right.', 'severus-noir' ),
-							'ui'            => 1,
-							'default_value' => 0,
-							'wrapper'       => array( 'width' => '25' ),
+						'layout_severus_case_media_text'  => array(
+							'key'        => 'layout_severus_case_media_text',
+							'name'       => 'media_text',
+							'label'      => __( 'Image + text', 'severus-noir' ),
+							'display'    => 'block',
+							'sub_fields' => array(
+								$case_image( 'field_severus_case_mt_image' ),
+								$case_text( 'field_severus_case_mt_content' ),
+								$case_reverse( 'field_severus_case_mt_reverse', __( 'Text on the left, image on the right', 'severus-noir' ) ),
+							),
 						),
-						array(
-							'key'          => 'field_severus_case_section_content',
-							'label'        => __( 'Content', 'severus-noir' ),
-							'name'         => 'content',
-							'type'         => 'wysiwyg',
-							'tabs'         => 'all',
-							'toolbar'      => 'full',
-							'media_upload' => 1,
-							'delay'        => 1,
+						'layout_severus_case_text'        => array(
+							'key'        => 'layout_severus_case_text',
+							'name'       => 'text',
+							'label'      => __( 'Text, full width', 'severus-noir' ),
+							'display'    => 'block',
+							'sub_fields' => array(
+								$case_text( 'field_severus_case_text_content' ),
+							),
+						),
+						'layout_severus_case_image'       => array(
+							'key'        => 'layout_severus_case_image',
+							'name'       => 'image',
+							'label'      => __( 'Image', 'severus-noir' ),
+							'display'    => 'block',
+							'sub_fields' => array(
+								$case_image( 'field_severus_case_image_image' ),
+								array(
+									'key'           => 'field_severus_case_image_align',
+									'label'         => __( 'Alignment', 'severus-noir' ),
+									'name'          => 'align',
+									'type'          => 'button_group',
+									'choices'       => array(
+										'full'   => __( 'Full width', 'severus-noir' ),
+										'center' => __( 'Centre', 'severus-noir' ),
+										'left'   => __( 'Left', 'severus-noir' ),
+										'right'  => __( 'Right', 'severus-noir' ),
+									),
+									'default_value' => 'full',
+									'return_format' => 'value',
+								),
+							),
+						),
+						'layout_severus_case_cards'       => array(
+							'key'        => 'layout_severus_case_cards',
+							'name'       => 'cards',
+							'label'      => __( 'Title + text + cards', 'severus-noir' ),
+							'display'    => 'block',
+							'sub_fields' => array(
+								array(
+									'key'   => 'field_severus_case_cards_title',
+									'label' => __( 'Title', 'severus-noir' ),
+									'name'  => 'title',
+									'type'  => 'text',
+								),
+								$case_text( 'field_severus_case_cards_content' ),
+								array(
+									'key'          => 'field_severus_case_cards_items',
+									'label'        => __( 'Cards', 'severus-noir' ),
+									'name'         => 'cards',
+									'type'         => 'repeater',
+									'instructions' => __( 'Three to a row; more wrap onto new rows.', 'severus-noir' ),
+									'layout'       => 'block',
+									'button_label' => __( 'Add card', 'severus-noir' ),
+									'sub_fields'   => array(
+										$case_text( 'field_severus_case_card_content', __( 'Card', 'severus-noir' ) ),
+									),
+								),
+							),
 						),
 					),
 				),

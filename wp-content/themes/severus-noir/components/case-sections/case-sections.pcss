@@ -1,7 +1,8 @@
-/* A case study's write-up: title and text side by side, the columns of the
-   services' copy sections, and the footer's line between sections. */
+/* A case study's write-up: sections on the services' copy columns, with the
+   footer's line between them. */
 .case-sections {
   --gap-y: clamp(2.5rem, 5vw, 4.5rem);
+  --gap-x: clamp(1.25rem, 6vw, 6rem);
   position: relative;
   z-index: 2;
   padding-block: calc(var(--gap-y) * 0.5) var(--bay);
@@ -13,35 +14,66 @@
 
 .case-section__in {
   position: relative;
+}
+
+/* ── Two columns: the lead (title or image) and the text ─────────────────── */
+
+.case-section--title-text .case-section__in,
+.case-section--media-text .case-section__in,
+.case-section__head {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  grid-template-areas: "title text";
-  gap: clamp(1.25rem, 6vw, 6rem);
+  grid-template-areas: "lead text";
+  gap: var(--gap-x);
   align-items: start;
+}
 
-  @media (width <= 1024px) {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "title"
-      "text";
-  }
+.case-section--media-text .case-section__in {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
 }
 
 .case-section--reverse .case-section__in {
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  grid-template-areas: "text title";
+  grid-template-areas: "text lead";
+}
 
-  @media (width <= 1024px) {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "title"
-      "text";
+/* The title column stays the narrow one when it moves to the right. */
+@media (width > 1024px) {
+  .case-section--title-text.case-section--reverse:not(.case-section--single) .case-section__in {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   }
 }
 
-/* The footer's rule (.site-foot::before), across the shell, midway between
-   two sections. A reversed section mirrors it so it starts on its text
-   side. */
+/* Only one side filled: it takes the row. */
+.case-section--single .case-section__in {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "lead" "text";
+}
+
+@media (width <= 1024px) {
+  .case-section--title-text .case-section__in,
+  .case-section--media-text .case-section__in,
+  .case-section--reverse .case-section__in,
+  .case-section__head {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "lead" "text";
+    gap: clamp(1.25rem, 4vw, 2rem);
+  }
+}
+
+.case-section__title,
+.case-section__media {
+  grid-area: lead;
+}
+
+.case-section__text {
+  grid-area: text;
+}
+
+/* ── The line between sections (.site-foot::before) ─────────────────────── */
+
+/* Across the shell, midway between two sections. A reversed section mirrors
+   it so it starts on its text side. */
 .case-section + .case-section .case-section__in::before {
   content: "";
   position: absolute;
@@ -65,19 +97,84 @@
   );
 }
 
+/* ── Parts ──────────────────────────────────────────────────────────────── */
+
 .case-section__title {
-  grid-area: title;
   font-size: clamp(1.8rem, 3vw, 3rem);
   line-height: 1.12;
   color: var(--bone);
 }
 
 .case-section__text {
-  grid-area: text;
   font-size: clamp(1rem, 0.4vw + 1rem, 1.2rem);
 
-  /* The body's rhythm, without pushing the first line off the title. */
+  /* The body's rhythm, without pushing the first line off the column top. */
   & > :first-child {
     margin-block-start: 0;
+  }
+}
+
+.case-section__media,
+.case-section__figure {
+  margin: 0;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--slate);
+
+  & img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+/* An image alone: the full shell, or a narrower one placed in it. */
+.case-section__figure--center,
+.case-section__figure--left,
+.case-section__figure--right {
+  width: min(100%, 62%);
+
+  @media (width <= 640px) {
+    width: 100%;
+  }
+}
+
+.case-section__figure--center {
+  margin-inline: auto;
+}
+
+.case-section__figure--right {
+  margin-inline-start: auto;
+}
+
+/* Cards: three to a row, as many rows as there are cards. */
+.case-section__head + .case-cards {
+  margin-block-start: clamp(2rem, 4vw, 3.5rem);
+}
+
+.case-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.75rem);
+
+  @media (width <= 1024px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (width <= 640px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.case-card {
+  padding: clamp(1.4rem, 2.4vw, 2.2rem);
+  border-radius: var(--r-lg);
+
+  & .entry__body {
+    font-size: 1rem;
+
+    & > :first-child {
+      margin-block-start: 0;
+    }
   }
 }
