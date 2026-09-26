@@ -8,7 +8,8 @@
  *   text        text across the full width
  *   image       an image, full width or centred / left / right
  *   cards       title and text, then cards three to a row
- *   related     picked services, industries, cases or articles as link cards
+ *   related     picked services, industries, cases or articles as link cards,
+ *               each with up to three lines of its summary
  *   button      a link button, left, centred or right
  *
  * A section with nothing in it is skipped; a two-column one with only one
@@ -27,6 +28,29 @@ $filled = static fn( $html ): bool => is_string( $html )
 $image = static fn( $id, string $size, string $sizes ): string => $id
 	? wp_get_attachment_image( (int) $id, $size, false, array( 'loading' => 'lazy', 'sizes' => $sizes ) )
 	: '';
+
+/* A related card's summary: the short description the post type keeps for
+   its own cards, else the excerpt (which WordPress cuts from the content). */
+$summary = static function ( int $id ): string {
+	switch ( get_post_type( $id ) ) {
+		case 'case':
+			$fields = get_field( 'cases_fields', $id );
+			$text   = is_array( $fields ) ? ( $fields['short_description'] ?? '' ) : '';
+			break;
+		case 'service':
+			$text = get_field( 'service_short_descr', $id );
+			break;
+		case 'industry':
+			$text = get_field( 'industry_description', $id );
+			break;
+		default:
+			$text = '';
+	}
+
+	$text = trim( html_entity_decode( wp_strip_all_tags( (string) ( $text ?: get_the_excerpt( $id ) ) ), ENT_QUOTES ) );
+
+	return wp_trim_words( $text, 40, '…' );
+};
 
 $sections = array();
 
@@ -162,6 +186,10 @@ if ( ! $sections ) {
 									<a class="case-link edge" href="<?php echo esc_url( get_permalink( $item ) ); ?>" data-snake-arrow>
 										<span class="case-link__kind"><?php echo esc_html( $kind ); ?></span>
 										<span class="case-link__title"><?php echo esc_html( get_the_title( $item ) ); ?></span>
+										<?php $text = $summary( $item ); ?>
+										<?php if ( $text ) : ?>
+											<span class="case-link__text"><?php echo esc_html( $text ); ?></span>
+										<?php endif; ?>
 										<span class="case-link__go" aria-hidden="true"><?php severus_arrow(); ?></span>
 									</a>
 								</li>

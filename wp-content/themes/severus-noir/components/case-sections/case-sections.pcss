@@ -238,6 +238,18 @@
   line-height: 1.25;
 }
 
+/* At most three lines, then an ellipsis. */
+.case-link__text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  color: var(--ash);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
 .case-link__go {
   position: absolute;
   inset-block-end: clamp(1.25rem, 2.2vw, 1.75rem);
