@@ -296,3 +296,42 @@
 .case-section__button--right {
   justify-content: flex-end;
 }
+
+/* Numbered list: the services' "How we approach it" ledger (points--list),
+   a number and one line of text a row. The numbers share one column, sized
+   by the longest, so the text lines up whether they read 01 or Step 1. */
+.case-section__head + .case-list {
+  margin-block-start: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.case-list {
+  grid-template-columns: minmax(clamp(3rem, 6vw, 5.5rem), max-content) minmax(0, 1fr);
+  column-gap: clamp(1rem, 3vw, 2.5rem);
+
+  & .point {
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: baseline;
+    padding-block: clamp(1.25rem, 2.4vw, 2.25rem);
+  }
+
+  & .point__n {
+    white-space: nowrap;
+  }
+}
+
+/* One line a row, set like the services' point titles; .entry__body would
+   otherwise make it body copy. */
+.case-list .case-list__text {
+  color: var(--bone);
+  font-size: clamp(1.15rem, 1.5vw, 1.5rem);
+  line-height: 1.3;
+
+  & > :first-child {
+    margin-block-start: 0;
+  }
+
+  & > * + * {
+    margin-block-start: 0.5em;
+  }
+}

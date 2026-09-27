@@ -8,6 +8,8 @@
  *   text        text across the full width
  *   image       an image, full width or centred / left / right
  *   cards       title and text, then cards three to a row
+ *   list        title and text, then a numbered ledger like the services'
+ *               "How we approach it" (the number may be any text)
  *   related     picked services, industries, cases or articles as link cards,
  *               each with up to three lines of its summary
  *   button      a link button, left, centred or right
@@ -80,6 +82,10 @@ foreach ( (array) ( $data['sections'] ?? array() ) as $row ) {
 		case 'cards':
 			$row['cards'] = array_values( array_filter( (array) ( $row['cards'] ?? array() ), static fn( $card ) => is_array( $card ) && $filled( $card['content'] ?? '' ) ) );
 			$keep         = $title || $content || $row['cards'];
+			break;
+		case 'list':
+			$row['items'] = array_values( array_filter( (array) ( $row['items'] ?? array() ), static fn( $item ) => is_array( $item ) && $filled( $item['content'] ?? '' ) ) );
+			$keep         = $title || $content || $row['items'];
 			break;
 		case 'related':
 			$row['items'] = severus_ids( $row['items'] ?? array() );
@@ -171,6 +177,30 @@ if ( ! $sections ) {
 									</li>
 								<?php endforeach; ?>
 							</ul>
+						<?php endif; ?>
+						<?php break;
+
+					case 'list': ?>
+						<?php if ( $s['title'] || $s['content'] ) : ?>
+							<div class="case-section__head">
+								<?php if ( $s['title'] ) : ?>
+									<h2 class="case-section__title reveal"><?php echo esc_html( $s['title'] ); ?></h2>
+								<?php endif; ?>
+								<?php if ( $s['content'] ) : ?>
+									<div class="case-section__text entry__body reveal"><?php echo wp_kses_post( $s['content'] ); ?></div>
+								<?php endif; ?>
+							</div>
+						<?php endif; ?>
+						<?php if ( $s['items'] ) : ?>
+							<ol class="points__list case-list">
+								<?php foreach ( $s['items'] as $index => $item ) : ?>
+									<?php $number = trim( (string) ( $item['number'] ?? '' ) ); ?>
+									<li class="point rule reveal">
+										<span class="point__n"><?php echo esc_html( '' !== $number ? $number : str_pad( (string) ( $index + 1 ), 2, '0', STR_PAD_LEFT ) ); ?></span>
+										<div class="case-list__text entry__body"><?php echo wp_kses_post( $item['content'] ); ?></div>
+									</li>
+								<?php endforeach; ?>
+							</ol>
 						<?php endif; ?>
 						<?php break;
 
