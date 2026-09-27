@@ -68,24 +68,33 @@ function severus_enqueue_case_block_styles(): void {
 add_action( 'wp_enqueue_scripts', 'severus_enqueue_case_block_styles', 5 );
 
 /**
- * Hide the unused classic editor on pages built entirely from ACF fields: the
- * assigned front page, About Us and Contact Us.
+ * Hide the unused classic editor on screens built entirely from ACF fields:
+ * the assigned front page, About Us, Contact Us and every case study (its
+ * write-up is the Content tab's sections).
  */
 function severus_enqueue_front_page_admin_assets( string $hook ): void {
-	if ( 'post.php' !== $hook ) {
+	if ( ! in_array( $hook, array( 'post.php', 'post-new.php' ), true ) ) {
 		return;
 	}
 
-	$post_id = isset( $_GET['post'] ) ? absint( wp_unslash( $_GET['post'] ) ) : 0;
-	$post    = $post_id ? get_post( $post_id ) : null;
+	$screen = get_current_screen();
 
-	if ( ! $post || 'page' !== $post->post_type ) {
-		return;
-	}
+	if ( ! $screen || 'case' !== $screen->post_type ) {
+		if ( 'post.php' !== $hook ) {
+			return;
+		}
 
-	$front = $post_id === (int) get_option( 'page_on_front' );
-	if ( ! $front && ! in_array( $post->post_name, array( 'about-us', 'contact-us' ), true ) ) {
-		return;
+		$post_id = isset( $_GET['post'] ) ? absint( wp_unslash( $_GET['post'] ) ) : 0;
+		$post    = $post_id ? get_post( $post_id ) : null;
+
+		if ( ! $post || 'page' !== $post->post_type ) {
+			return;
+		}
+
+		$front = $post_id === (int) get_option( 'page_on_front' );
+		if ( ! $front && ! in_array( $post->post_name, array( 'about-us', 'contact-us' ), true ) ) {
+			return;
+		}
 	}
 
 	wp_enqueue_style(

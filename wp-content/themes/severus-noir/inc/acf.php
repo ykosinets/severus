@@ -30,7 +30,7 @@ function severus_register_fields(): void {
 		'tabs'         => 'all',
 		'toolbar'      => $toolbar,
 		'media_upload' => 0,
-		'delay'        => 1,
+		'delay'        => 0,
 	);
 	$case_tab  = static fn( string $key, string $label ): array => array(
 		'key'       => $key,
