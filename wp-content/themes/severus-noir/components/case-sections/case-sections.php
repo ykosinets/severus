@@ -1,22 +1,16 @@
 <?php
 /**
  * A case study's write-up, built from the case_sections flexible content
- * field, with the footer's line between sections:
+ * field:
  *
- *   title_text  title and text side by side (is_reverse: text on the left)
- *   media_text  image and text side by side (is_reverse: text on the left)
- *   text        text across the full width
- *   image       an image, full width or centred / left / right
- *   cards       title and text, then cards three to a row
- *   list        title and text, then a numbered ledger like the services'
- *               "How we approach it" (the number may be any text)
- *   related     picked services, industries, cases or articles as link cards,
- *               each with up to three lines of its summary
- *   button      a link button, left, centred or right
+ *   columns  two columns of editor text (one filled takes the full width)
+ *   divider  the footer's line (.site-foot::before) across the shell
+ *   steps    a numbered ledger like the services' "How we approach it";
+ *            the bullet is any text and counts up by itself when empty
+ *   button   a link button, left, centred or right
  *
- * A section with nothing in it is skipped; a two-column one with only one
- * side filled takes the full width. Titles stay first in the markup however
- * the columns are ordered.
+ * A section with nothing in it is skipped, and so is a divider with nothing
+ * to separate — at either end, or next to another divider.
  *
  * $data:
  *   sections  rows of case_sections
@@ -27,33 +21,6 @@ defined( 'ABSPATH' ) || exit;
 $filled = static fn( $html ): bool => is_string( $html )
 	&& ( '' !== trim( html_entity_decode( wp_strip_all_tags( $html ) ), " \t\n\r\0\x0B\xC2\xA0" ) || (bool) preg_match( '/<(img|iframe|video|table)\b/i', $html ) );
 
-$image = static fn( $id, string $size, string $sizes ): string => $id
-	? wp_get_attachment_image( (int) $id, $size, false, array( 'loading' => 'lazy', 'sizes' => $sizes ) )
-	: '';
-
-/* A related card's summary: the short description the post type keeps for
-   its own cards, else the excerpt (which WordPress cuts from the content). */
-$summary = static function ( int $id ): string {
-	switch ( get_post_type( $id ) ) {
-		case 'case':
-			$fields = get_field( 'cases_fields', $id );
-			$text   = is_array( $fields ) ? ( $fields['short_description'] ?? '' ) : '';
-			break;
-		case 'service':
-			$text = get_field( 'service_short_descr', $id );
-			break;
-		case 'industry':
-			$text = get_field( 'industry_description', $id );
-			break;
-		default:
-			$text = '';
-	}
-
-	$text = trim( html_entity_decode( wp_strip_all_tags( (string) ( $text ?: get_the_excerpt( $id ) ) ), ENT_QUOTES ) );
-
-	return wp_trim_words( $text, 40, '…' );
-};
-
 $sections = array();
 
 foreach ( (array) ( $data['sections'] ?? array() ) as $row ) {
@@ -61,54 +28,50 @@ foreach ( (array) ( $data['sections'] ?? array() ) as $row ) {
 		continue;
 	}
 
-	$layout  = $row['acf_fc_layout'] ?? '';
-	$title   = trim( (string) ( $row['title'] ?? '' ) );
-	$content = $filled( $row['content'] ?? '' ) ? $row['content'] : '';
-	$img     = $image( $row['image'] ?? 0, 'image' === $layout && 'full' === ( $row['align'] ?? 'full' ) ? 'full' : 'large', '(min-width: 1024px) 60vw, 100vw' );
+	switch ( $row['acf_fc_layout'] ?? '' ) {
+		case 'columns':
+			$columns = array_values( array_filter( array( $row['left'] ?? '', $row['right'] ?? '' ), $filled ) );
 
-	switch ( $layout ) {
-		case 'title_text':
-			$keep = $title || $content;
+			if ( $columns ) {
+				$sections[] = array( 'layout' => 'columns', 'columns' => $columns );
+			}
 			break;
-		case 'media_text':
-			$keep = $img || $content;
+
+		case 'divider':
+			$sections[] = array( 'layout' => 'divider' );
 			break;
-		case 'text':
-			$keep = (bool) $content;
+
+		case 'steps':
+			$items = array_values( array_filter( (array) ( $row['items'] ?? array() ), static fn( $item ) => is_array( $item ) && $filled( $item['content'] ?? '' ) ) );
+
+			if ( $items ) {
+				$sections[] = array( 'layout' => 'steps', 'items' => $items );
+			}
 			break;
-		case 'image':
-			$keep = (bool) $img;
-			break;
-		case 'cards':
-			$row['cards'] = array_values( array_filter( (array) ( $row['cards'] ?? array() ), static fn( $card ) => is_array( $card ) && $filled( $card['content'] ?? '' ) ) );
-			$keep         = $title || $content || $row['cards'];
-			break;
-		case 'list':
-			$row['items'] = array_values( array_filter( (array) ( $row['items'] ?? array() ), static fn( $item ) => is_array( $item ) && $filled( $item['content'] ?? '' ) ) );
-			$keep         = $title || $content || $row['items'];
-			break;
-		case 'related':
-			$row['items'] = severus_ids( $row['items'] ?? array() );
-			$title        = $title ?: __( 'Related', 'severus-noir' );
-			$keep         = (bool) $row['items'];
-			break;
+
 		case 'button':
-			$keep = is_array( $row['link'] ?? null ) && ! empty( $row['link']['url'] ) && '' !== trim( (string) ( $row['link']['title'] ?? '' ) );
-			break;
-		default:
-			$keep = false;
-	}
+			$link = $row['link'] ?? null;
 
-	if ( $keep ) {
-		$sections[] = compact( 'layout', 'title', 'content', 'img' ) + array(
-			'reverse' => ! empty( $row['is_reverse'] ),
-			'align'   => in_array( $row['align'] ?? '', array( 'full', 'center', 'left', 'right' ), true ) ? $row['align'] : ( 'button' === $layout ? 'left' : 'full' ),
-			'cards'   => $row['cards'] ?? array(),
-			'items'   => $row['items'] ?? array(),
-			'link'    => $row['link'] ?? null,
-		);
+			if ( is_array( $link ) && ! empty( $link['url'] ) && '' !== trim( (string) ( $link['title'] ?? '' ) ) ) {
+				$sections[] = array(
+					'layout' => 'button',
+					'link'   => $link,
+					'align'  => in_array( $row['align'] ?? '', array( 'left', 'center', 'right' ), true ) ? $row['align'] : 'left',
+				);
+			}
+			break;
 	}
 }
+
+/* A divider only separates: drop the ones at either end and doubled ones. */
+$sections = array_values(
+	array_filter(
+		$sections,
+		static fn( array $section, int $i ): bool => 'divider' !== $section['layout']
+			|| ( $i > 0 && isset( $sections[ $i + 1 ] ) && 'divider' !== $sections[ $i + 1 ]['layout'] ),
+		ARRAY_FILTER_USE_BOTH
+	)
+);
 
 if ( ! $sections ) {
 	return;
@@ -117,114 +80,35 @@ if ( ! $sections ) {
 <div class="case-sections is-narrow">
 	<?php foreach ( $sections as $s ) : ?>
 		<?php
-		$pair    = in_array( $s['layout'], array( 'title_text', 'media_text' ), true );
-		$lead    = 'media_text' === $s['layout'] ? $s['img'] : $s['title'];
-		$classes = array( 'case-section', 'case-section--' . str_replace( '_', '-', $s['layout'] ) );
+		$classes = array( 'case-section', 'case-section--' . $s['layout'] );
 
-		if ( $pair && $s['reverse'] ) {
-			$classes[] = 'case-section--reverse';
-		}
-
-		if ( $pair && ( ! $lead || ! $s['content'] ) ) {
+		if ( 'columns' === $s['layout'] && 1 === count( $s['columns'] ) ) {
 			$classes[] = 'case-section--single';
 		}
 		?>
-		<section class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>">
+		<section class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>"<?php echo 'divider' === $s['layout'] ? ' aria-hidden="true"' : ''; ?>>
 			<div class="shell case-section__in">
 				<?php switch ( $s['layout'] ) :
-					case 'title_text': ?>
-						<?php if ( $s['title'] ) : ?>
-							<h2 class="case-section__title reveal"><?php echo esc_html( $s['title'] ); ?></h2>
-						<?php endif; ?>
-						<?php if ( $s['content'] ) : ?>
-							<div class="case-section__text entry__body reveal"><?php echo wp_kses_post( $s['content'] ); ?></div>
-						<?php endif; ?>
+					case 'columns': ?>
+						<?php foreach ( $s['columns'] as $column ) : ?>
+							<div class="case-section__text entry__body reveal"><?php echo wp_kses_post( $column ); ?></div>
+						<?php endforeach; ?>
 						<?php break;
 
-					case 'media_text': ?>
-						<?php if ( $s['img'] ) : ?>
-							<figure class="case-section__media reveal"><?php echo $s['img']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — core markup. ?></figure>
-						<?php endif; ?>
-						<?php if ( $s['content'] ) : ?>
-							<div class="case-section__text entry__body reveal"><?php echo wp_kses_post( $s['content'] ); ?></div>
-						<?php endif; ?>
+					case 'divider': ?>
+						<hr class="case-divider">
 						<?php break;
 
-					case 'text': ?>
-						<div class="case-section__text entry__body reveal"><?php echo wp_kses_post( $s['content'] ); ?></div>
-						<?php break;
-
-					case 'image': ?>
-						<figure class="case-section__figure case-section__figure--<?php echo esc_attr( $s['align'] ); ?> reveal"><?php echo $s['img']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — core markup. ?></figure>
-						<?php break;
-
-					case 'cards': ?>
-						<?php if ( $s['title'] || $s['content'] ) : ?>
-							<div class="case-section__head">
-								<?php if ( $s['title'] ) : ?>
-									<h2 class="case-section__title reveal"><?php echo esc_html( $s['title'] ); ?></h2>
-								<?php endif; ?>
-								<?php if ( $s['content'] ) : ?>
-									<div class="case-section__text entry__body reveal"><?php echo wp_kses_post( $s['content'] ); ?></div>
-								<?php endif; ?>
-							</div>
-						<?php endif; ?>
-						<?php if ( $s['cards'] ) : ?>
-							<ul class="case-cards">
-								<?php foreach ( $s['cards'] as $card ) : ?>
-									<li class="case-card edge reveal">
-										<div class="entry__body"><?php echo wp_kses_post( $card['content'] ); ?></div>
-									</li>
-								<?php endforeach; ?>
-							</ul>
-						<?php endif; ?>
-						<?php break;
-
-					case 'list': ?>
-						<?php if ( $s['title'] || $s['content'] ) : ?>
-							<div class="case-section__head">
-								<?php if ( $s['title'] ) : ?>
-									<h2 class="case-section__title reveal"><?php echo esc_html( $s['title'] ); ?></h2>
-								<?php endif; ?>
-								<?php if ( $s['content'] ) : ?>
-									<div class="case-section__text entry__body reveal"><?php echo wp_kses_post( $s['content'] ); ?></div>
-								<?php endif; ?>
-							</div>
-						<?php endif; ?>
-						<?php if ( $s['items'] ) : ?>
-							<ol class="points__list case-list">
-								<?php foreach ( $s['items'] as $index => $item ) : ?>
-									<?php $number = trim( (string) ( $item['number'] ?? '' ) ); ?>
-									<li class="point rule reveal">
-										<span class="point__n"><?php echo esc_html( '' !== $number ? $number : str_pad( (string) ( $index + 1 ), 2, '0', STR_PAD_LEFT ) ); ?></span>
-										<div class="case-list__text entry__body"><?php echo wp_kses_post( $item['content'] ); ?></div>
-									</li>
-								<?php endforeach; ?>
-							</ol>
-						<?php endif; ?>
-						<?php break;
-
-					case 'related': ?>
-						<h2 class="case-section__title case-section__title--small reveal"><?php echo esc_html( $s['title'] ); ?></h2>
-						<ul class="case-links">
-							<?php foreach ( $s['items'] as $item ) : ?>
-								<?php
-								$type = get_post_type( $item );
-								$kind = 'post' === $type ? __( 'Article', 'severus-noir' ) : ( get_post_type_object( $type )->labels->singular_name ?? '' );
-								?>
-								<li class="reveal">
-									<a class="case-link edge" href="<?php echo esc_url( get_permalink( $item ) ); ?>" data-snake-arrow>
-										<span class="case-link__kind"><?php echo esc_html( $kind ); ?></span>
-										<span class="case-link__title"><?php echo esc_html( get_the_title( $item ) ); ?></span>
-										<?php $text = $summary( $item ); ?>
-										<?php if ( $text ) : ?>
-											<span class="case-link__text"><?php echo esc_html( $text ); ?></span>
-										<?php endif; ?>
-										<span class="case-link__go" aria-hidden="true"><?php severus_arrow(); ?></span>
-									</a>
+					case 'steps': ?>
+						<ol class="points__list case-steps">
+							<?php foreach ( $s['items'] as $index => $item ) : ?>
+								<?php $bullet = trim( (string) ( $item['bullet'] ?? '' ) ); ?>
+								<li class="point rule reveal">
+									<span class="point__n"><?php echo esc_html( '' !== $bullet ? $bullet : str_pad( (string) ( $index + 1 ), 2, '0', STR_PAD_LEFT ) ); ?></span>
+									<div class="case-steps__text entry__body"><?php echo wp_kses_post( $item['content'] ); ?></div>
 								</li>
 							<?php endforeach; ?>
-						</ul>
+						</ol>
 						<?php break;
 
 					case 'button': ?>
