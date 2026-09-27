@@ -43,6 +43,31 @@ function severus_enqueue(): void {
 add_action( 'wp_enqueue_scripts', 'severus_enqueue' );
 
 /**
+ * A case study's sections are editor HTML kept in a field, often pasted from
+ * the block editor (columns, buttons, images). WordPress only loads a block's
+ * styles when it finds the block in the post content, so load the ones the
+ * sections use. Queued before the theme's stylesheet, which stays on top.
+ */
+function severus_enqueue_case_block_styles(): void {
+	if ( ! is_singular( 'case' ) || ! function_exists( 'get_field' ) ) {
+		return;
+	}
+
+	$raw = wp_json_encode( get_field( 'case_sections', get_queried_object_id(), false ) );
+
+	if ( ! $raw || ! preg_match_all( '/wp-block-([a-z]+)\b/', $raw, $found ) ) {
+		return;
+	}
+
+	foreach ( array_unique( $found[1] ) as $block ) {
+		if ( wp_style_is( "wp-block-{$block}", 'registered' ) ) {
+			wp_enqueue_style( "wp-block-{$block}" );
+		}
+	}
+}
+add_action( 'wp_enqueue_scripts', 'severus_enqueue_case_block_styles', 5 );
+
+/**
  * Hide the unused classic editor on pages built entirely from ACF fields: the
  * assigned front page, About Us and Contact Us.
  */

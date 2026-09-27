@@ -38,11 +38,52 @@
     margin-block-start: 0;
   }
 
-  /* A heading in a column reads as the section title, as on the services. */
-  & h2 {
-    font-size: clamp(1.8rem, 3vw, 3rem);
-    line-height: 1.12;
+  /* Headings a step up from the body's: each reads as the one above it
+     (h2 as h1, h6 as h5), and h1 a third larger again. The sizes are the
+     default heading scale in em of this text (h1 2em … h5 0.83em); the
+     face, weight and tracking are the theme's heading ones for all six. */
+  & :is(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
     color: var(--bone);
+  }
+
+  & h1 {
+    font-size: calc(2em * 1.33);
+  }
+
+  & h2 {
+    font-size: 2em;
+  }
+
+  & h3 {
+    font-size: 1.5em;
+  }
+
+  & h4 {
+    font-size: 1.17em;
+  }
+
+  & h5 {
+    font-size: 1em;
+  }
+
+  & h6 {
+    font-size: 0.83em;
+  }
+
+  /* Text links; editor and theme buttons keep their own look (the block
+     styles they need are loaded in inc/assets.php). */
+  & a:not(.wp-block-button__link, .wp-element-button, .btn) {
+    text-decoration: underline;
+    color: var(--ice);
+
+    &:hover {
+      text-decoration: none;
+    }
   }
 }
 
