@@ -1,8 +1,9 @@
 <?php
 /**
- * The top of a case study: the featured image as a wide plate, with the
- * title and the client facts laid over its lower edge. Without an image the
- * plate keeps its shape on the lit background the blank case cards use.
+ * The top of a case study: the orbit mark at the top left, then the
+ * featured image as a wide plate with the title and the client facts laid
+ * over its lower edge. Without an image the plate keeps its shape on the lit
+ * background the blank case cards use.
  *
  * $data:
  *   facts  the cases_fields.case_info group (client, country)
@@ -13,6 +14,8 @@ defined( 'ABSPATH' ) || exit;
 $id = (int) ( $data['id'] ?? get_the_ID() );
 ?>
 <section class="case-hero">
+	<?php severus_orbit( 'orbit--deco orbit--left', 'page' ); ?>
+
 	<div class="shell case-hero__in">
 		<div class="case-hero__plate<?php echo has_post_thumbnail( $id ) ? '' : ' case-hero__plate--blank'; ?>">
 			<?php if ( has_post_thumbnail( $id ) ) : ?>
