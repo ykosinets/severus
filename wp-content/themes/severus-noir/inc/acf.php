@@ -65,6 +65,15 @@ function severus_register_fields(): void {
 								array_merge( $case_text( 'field_severus_case_columns_right', __( 'Right', 'severus-noir' ), 'right' ), array( 'wrapper' => array( 'width' => '50' ) ) ),
 							),
 						),
+						'layout_severus_case_text'    => array(
+							'key'        => 'layout_severus_case_text',
+							'name'       => 'text',
+							'label'      => __( 'Text, full width', 'severus-noir' ),
+							'display'    => 'block',
+							'sub_fields' => array(
+								$case_text( 'field_severus_case_text_content', __( 'Text', 'severus-noir' ) ),
+							),
+						),
 						'layout_severus_case_divider' => array(
 							'key'        => 'layout_severus_case_divider',
 							'name'       => 'divider',

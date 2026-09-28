@@ -4,6 +4,7 @@
  * field:
  *
  *   columns  two columns of editor text (one filled takes the full width)
+ *   text     one column of editor text across the full width
  *   divider  the footer's line (.site-foot::before) across the shell
  *   steps    a numbered ledger like the services' "How we approach it";
  *            the bullet is any text and counts up by itself when empty
@@ -34,6 +35,12 @@ foreach ( (array) ( $data['sections'] ?? array() ) as $row ) {
 
 			if ( $columns ) {
 				$sections[] = array( 'layout' => 'columns', 'columns' => $columns );
+			}
+			break;
+
+		case 'text':
+			if ( $filled( $row['content'] ?? '' ) ) {
+				$sections[] = array( 'layout' => 'text', 'content' => $row['content'] );
 			}
 			break;
 
@@ -93,6 +100,10 @@ if ( ! $sections ) {
 						<?php foreach ( $s['columns'] as $column ) : ?>
 							<div class="case-section__text entry__body reveal"><?php echo wp_kses_post( $column ); ?></div>
 						<?php endforeach; ?>
+						<?php break;
+
+					case 'text': ?>
+						<div class="case-section__text entry__body reveal"><?php echo wp_kses_post( $s['content'] ); ?></div>
 						<?php break;
 
 					case 'divider': ?>
