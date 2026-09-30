@@ -58,7 +58,7 @@ function severus_register_fields(): void {
 						'layout_severus_case_columns' => array(
 							'key'        => 'layout_severus_case_columns',
 							'name'       => 'columns',
-							'label'      => __( 'Text in two columns', 'severus-noir' ),
+							'label'      => __( 'Content (2 columns)', 'severus-noir' ),
 							'display'    => 'block',
 							'sub_fields' => array(
 								array_merge( $case_text( 'field_severus_case_columns_left', __( 'Left', 'severus-noir' ), 'left' ), array( 'wrapper' => array( 'width' => '50' ) ) ),
@@ -68,7 +68,7 @@ function severus_register_fields(): void {
 						'layout_severus_case_text'    => array(
 							'key'        => 'layout_severus_case_text',
 							'name'       => 'text',
-							'label'      => __( 'Text, full width', 'severus-noir' ),
+							'label'      => __( 'Content (full width)', 'severus-noir' ),
 							'display'    => 'block',
 							'sub_fields' => array(
 								$case_text( 'field_severus_case_text_content', __( 'Text', 'severus-noir' ) ),
@@ -84,7 +84,7 @@ function severus_register_fields(): void {
 						'layout_severus_case_steps'   => array(
 							'key'        => 'layout_severus_case_steps',
 							'name'       => 'steps',
-							'label'      => __( 'List of steps', 'severus-noir' ),
+							'label'      => __( 'Steps', 'severus-noir' ),
 							'display'    => 'block',
 							'sub_fields' => array(
 								array(
@@ -135,6 +135,21 @@ function severus_register_fields(): void {
 									'return_format' => 'value',
 								),
 							),
+						),
+						'layout_severus_case_ticks' => array(
+							'key' => 'layout_severus_case_ticks', 'name' => 'ticks', 'label' => __( 'Ticks', 'severus-noir' ), 'display' => 'block',
+							'sub_fields' => array(
+								array( 'key' => 'field_severus_case_ticks_title', 'label' => __( 'Title', 'severus-noir' ), 'name' => 'title', 'type' => 'text' ),
+								array( 'key' => 'field_severus_case_ticks_items', 'label' => __( 'Items', 'severus-noir' ), 'name' => 'items', 'type' => 'repeater', 'sub_fields' => array( array( 'key' => 'field_severus_case_ticks_item_title', 'label' => __( 'Title', 'severus-noir' ), 'name' => 'title', 'type' => 'text' ), $case_text( 'field_severus_case_ticks_item_text', __( 'Text', 'severus-noir' ), 'text', 'basic' ) ) ),
+							),
+						),
+						'layout_severus_case_table' => array(
+							'key' => 'layout_severus_case_table', 'name' => 'table', 'label' => __( 'Table', 'severus-noir' ), 'display' => 'block',
+							'sub_fields' => array( array( 'key' => 'field_severus_case_table_title', 'label' => __( 'Title', 'severus-noir' ), 'name' => 'title', 'type' => 'text' ), $case_text( 'field_severus_case_table_content', __( 'Table and note', 'severus-noir' ) ) ),
+						),
+						'layout_severus_case_media' => array(
+							'key' => 'layout_severus_case_media', 'name' => 'media', 'label' => __( 'Media', 'severus-noir' ), 'display' => 'block',
+							'sub_fields' => array( $case_text( 'field_severus_case_media_title', __( 'Title', 'severus-noir' ), 'title' ), array( 'key' => 'field_severus_case_media_asset', 'label' => __( 'Media', 'severus-noir' ), 'name' => 'media', 'type' => 'image', 'return_format' => 'array' ), array( 'key' => 'field_severus_case_media_align', 'label' => __( 'Alignment', 'severus-noir' ), 'name' => 'align', 'type' => 'button_group', 'choices' => array( 'left' => __( 'Left', 'severus-noir' ), 'right' => __( 'Right', 'severus-noir' ), 'center' => __( 'Centre', 'severus-noir' ) ), 'default_value' => 'center' ) ),
 						),
 					),
 				),

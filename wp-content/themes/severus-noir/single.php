@@ -25,9 +25,12 @@ while ( have_posts() ) :
 				<figure class="entry__art"><?php the_post_thumbnail( 'large' ); ?></figure>
 			<?php endif; ?>
 
-			<div class="entry__body">
-				<?php the_content(); ?>
-			</div>
+			<?php $sections = get_field( 'blog_sections' ); ?>
+			<?php if ( $sections ) : ?>
+				<?php severus_component( 'blog-sections', array( 'sections' => $sections ) ); ?>
+			<?php else : ?>
+				<div class="entry__body"><?php the_content(); ?></div>
+			<?php endif; ?>
 		</div>
 	</article>
 	<?php

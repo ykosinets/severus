@@ -67,6 +67,19 @@ foreach ( (array) ( $data['sections'] ?? array() ) as $row ) {
 				);
 			}
 			break;
+
+		case 'ticks':
+			$items = array_values( array_filter( (array) ( $row['items'] ?? array() ), static fn( $item ) => is_array( $item ) && ( ! empty( $item['title'] ) || $filled( $item['text'] ?? '' ) ) ) );
+			if ( $items ) { $sections[] = array( 'layout' => 'ticks', 'title' => $row['title'] ?? '', 'items' => $items ); }
+			break;
+
+		case 'table':
+			if ( $filled( $row['content'] ?? '' ) ) { $sections[] = array( 'layout' => 'table', 'title' => $row['title'] ?? '', 'content' => $row['content'] ); }
+			break;
+
+		case 'media':
+			if ( ! empty( $row['media'] ) ) { $sections[] = array( 'layout' => 'media', 'title' => $row['title'] ?? '', 'media' => severus_image( $row['media'] ), 'align' => $row['align'] ?? 'center' ); }
+			break;
 	}
 }
 
@@ -126,6 +139,19 @@ if ( ! $sections ) {
 						<div class="case-section__button case-section__button--<?php echo esc_attr( $s['align'] ); ?> reveal">
 							<?php severus_button( $s['link'], 'btn btn--solid' ); ?>
 						</div>
+						<?php break;
+
+					case 'ticks': ?>
+						<?php if ( $s['title'] ) : ?><h2><?php echo esc_html( $s['title'] ); ?></h2><?php endif; ?>
+						<ul class="gains__list"><?php foreach ( $s['items'] as $item ) : ?><li class="gain rule"><span class="gain__tick">✓</span><div><?php if ( ! empty( $item['title'] ) ) : ?><h3 class="gain__title"><?php echo esc_html( $item['title'] ); ?></h3><?php endif; ?><div class="gain__text entry__body"><?php echo wp_kses_post( $item['text'] ?? '' ); ?></div></div></li><?php endforeach; ?></ul>
+						<?php break;
+
+					case 'table': ?>
+						<?php if ( $s['title'] ) : ?><h2><?php echo esc_html( $s['title'] ); ?></h2><?php endif; ?><div class="case-section__text entry__body"><?php echo wp_kses_post( $s['content'] ); ?></div>
+						<?php break;
+
+					case 'media': ?>
+						<div class="case-section__media case-section__media--<?php echo esc_attr( $s['align'] ); ?>"><div class="entry__body"><?php echo wp_kses_post( $s['title'] ); ?></div><?php if ( $s['media'] ) : ?><img src="<?php echo esc_url( $s['media']['url'] ); ?>" alt="<?php echo esc_attr( $s['media']['alt'] ); ?>"><?php endif; ?></div>
 						<?php break;
 				endswitch; ?>
 			</div>

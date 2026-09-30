@@ -43,6 +43,17 @@ function severus_enqueue(): void {
 add_action( 'wp_enqueue_scripts', 'severus_enqueue' );
 
 /**
+ * Modern browsers implement Unicode emoji themselves. WordPress's fallback
+ * feature-detection runtime is legacy JavaScript on every public page, so it
+ * is unnecessary here and is omitted from the Lighthouse-critical path.
+ */
+function severus_disable_emoji_fallback(): void {
+	remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
+	remove_action( 'wp_print_styles', 'print_emoji_styles' );
+}
+add_action( 'init', 'severus_disable_emoji_fallback' );
+
+/**
  * A case study's sections are editor HTML kept in a field, often pasted from
  * the block editor (columns, buttons, images). WordPress only loads a block's
  * styles when it finds the block in the post content, so load the ones the
@@ -79,7 +90,7 @@ function severus_enqueue_front_page_admin_assets( string $hook ): void {
 
 	$screen = get_current_screen();
 
-	if ( ! $screen || 'case' !== $screen->post_type ) {
+	if ( ! $screen || ! in_array( $screen->post_type, array( 'case', 'post' ), true ) ) {
 		if ( 'post.php' !== $hook ) {
 			return;
 		}
