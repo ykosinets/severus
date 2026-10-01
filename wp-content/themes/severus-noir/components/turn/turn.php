@@ -18,7 +18,7 @@ $loop = get_theme_file_uri( 'assets/media/turn-loop.mp4' );
 
 		<div class="turn__reveal">
 			<div class="turn__glow" aria-hidden="true">
-				<video class="turn__video" src="<?php echo esc_url( $loop ); ?>" muted loop playsinline autoplay preload="auto"></video>
+				<video class="turn__video" data-src="<?php echo esc_url( $loop ); ?>" muted loop playsinline preload="none"></video>
 			</div>
 			<div class="shell">
 				<p class="turn__text is-quiet"><?php echo wp_kses_post( $title ); ?></p>

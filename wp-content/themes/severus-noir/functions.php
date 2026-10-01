@@ -22,3 +22,4 @@ require_once get_theme_file_path( 'inc/svg.php' );
 require_once get_theme_file_path( 'inc/blocks.php' );
 require_once get_theme_file_path( 'inc/contact.php' );
 require_once get_theme_file_path( 'inc/acf.php' );
+require_once get_theme_file_path( 'inc/blog-posts.php' );

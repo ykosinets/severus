@@ -9,13 +9,25 @@
 
 .point {
   display: grid;
-  gap: 1rem;
+  gap: 3rem;
   align-content: start;
+
+  &:first-child:before {
+    display: none;
+  }
+
+  @media (width <= 900px) {
+    display: block;
+  }
 }
 
 .points--cards .point {
   padding: clamp(1.5rem, 2.6vw, 2.5rem);
   border-radius: var(--r-lg);
+
+  @media (width <= 900px) {
+    display: block;
+  }
 }
 
 /* The list reads as a numbered ledger: number, title, text across the row. */
@@ -30,6 +42,11 @@
   line-height: 1;
   letter-spacing: -0.03em;
   color: color-mix(in oklab, var(--jade) 70%, var(--facet));
+
+  @media (width <= 900px) {
+    float: left;
+    margin: 0 24px 0 0;
+  }
 }
 
 .point__body {
