@@ -56,7 +56,7 @@ fi
 echo "→ WordPress root: ${REMOTE_WP}"
 
 # Screenshots and scratch images have reached staging this way before.
-STRAY="$(find "$LOCAL" -maxdepth 2 \( -name '*.png' -o -name '*.jpg' -o -name '*.jpeg' \) -not -path '*/assets/*' -not -path '*/node_modules/*')"
+STRAY="$(find "$LOCAL" -maxdepth 2 \( -name '*.png' -o -name '*.jpg' -o -name '*.jpeg' \) -not -path '*/assets/*' -not -path '*/node_modules/*' -not -name 'screenshot.png')"
 if [ -n "$STRAY" ]; then
   echo "Stray images in the theme — remove them or move them under assets/:" >&2
   echo "$STRAY" >&2
