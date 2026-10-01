@@ -70,15 +70,34 @@ if ( $feature ) {
  * One service card.
  */
 $card = static function ( int $id, string $modifier = '' ): void {
-	$glyph   = severus_inline_svg( get_field( 'service_icon', $id ) );
-	$art     = severus_image( get_field( 'service_card_image', $id ) );
+	$glyph     = severus_inline_svg( get_field( 'service_icon', $id ) );
+	$art_field = get_field( 'service_card_image', $id );
+	$art       = severus_image( $art_field );
+	$art_id    = is_array( $art_field ) ? (int) ( $art_field['ID'] ?? $art_field['id'] ?? 0 ) : (int) $art_field;
 	$points  = array_filter( wp_list_pluck( (array) get_field( 'service_card_points', $id ), 'text' ) );
 	$summary = get_field( 'service_short_descr', $id );
 	?>
 	<a class="<?php echo esc_attr( trim( 'card ' . $modifier ) ); ?>" href="<?php echo esc_url( get_permalink( $id ) ); ?>" data-snake-arrow>
 		<?php if ( $art ) : ?>
 			<span class="card__art" aria-hidden="true">
-				<img src="<?php echo esc_url( $art['url'] ); ?>" alt="" width="<?php echo esc_attr( $art['width'] ); ?>" height="<?php echo esc_attr( $art['height'] ); ?>" loading="lazy">
+				<?php
+				if ( $art_id ) {
+					echo wp_get_attachment_image(
+						$art_id,
+						'large',
+						false,
+						array(
+							'alt'     => '',
+							'loading' => 'lazy',
+							'sizes'   => '(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw',
+						)
+					);
+				} else {
+					?>
+					<img src="<?php echo esc_url( $art['url'] ); ?>" alt="" width="<?php echo esc_attr( $art['width'] ); ?>" height="<?php echo esc_attr( $art['height'] ); ?>" loading="lazy">
+					<?php
+				}
+				?>
 			</span>
 		<?php endif; ?>
 

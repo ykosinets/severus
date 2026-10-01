@@ -1,0 +1,33 @@
+<?php
+/** Structured blog-post ACF fields. @package Severus_Noir */
+defined( 'ABSPATH' ) || exit;
+
+function severus_register_blog_post_fields(): void {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+	$text = static fn( string $key, string $label, string $name ): array => array( 'key' => $key, 'label' => $label, 'name' => $name, 'type' => 'wysiwyg', 'tabs' => 'all', 'toolbar' => 'full', 'media_upload' => 1 );
+	$item = static fn( string $key, string $label, string $name ): array => array( 'key' => $key, 'label' => $label, 'name' => $name, 'type' => 'repeater', 'layout' => 'block', 'button_label' => __( 'Add item', 'severus-noir' ), 'sub_fields' => array( array( 'key' => $key . '_title', 'label' => __( 'Title', 'severus-noir' ), 'name' => 'title', 'type' => 'text' ), $text( $key . '_text', __( 'Text', 'severus-noir' ), 'text' ) ) );
+
+	acf_add_local_field_group( array(
+		'key' => 'group_severus_blog_post', 'title' => __( 'Blog post content', 'severus-noir' ),
+		'fields' => array(
+			array( 'key' => 'field_severus_blog_intro_tab', 'label' => __( 'Introduction', 'severus-noir' ), 'name' => '', 'type' => 'tab', 'placement' => 'left' ),
+			array( 'key' => 'field_severus_blog_eyebrow', 'label' => __( 'Eyebrow', 'severus-noir' ), 'name' => 'blog_eyebrow', 'type' => 'text' ),
+			array( 'key' => 'field_severus_blog_lead', 'label' => __( 'Lead', 'severus-noir' ), 'name' => 'blog_lead', 'type' => 'textarea', 'rows' => 4 ),
+			array( 'key' => 'field_severus_blog_sections_tab', 'label' => __( 'Sections', 'severus-noir' ), 'name' => '', 'type' => 'tab', 'placement' => 'left' ),
+			array( 'key' => 'field_severus_blog_sections', 'label' => __( 'Article sections', 'severus-noir' ), 'name' => 'blog_sections', 'type' => 'flexible_content', 'button_label' => __( 'Add section', 'severus-noir' ), 'layouts' => array(
+				'layout_severus_blog_copy' => array( 'key' => 'layout_severus_blog_copy', 'name' => 'copy', 'label' => __( 'Content (2 columns)', 'severus-noir' ), 'sub_fields' => array( array( 'key' => 'field_severus_blog_copy_title', 'label' => __( 'Title', 'severus-noir' ), 'name' => 'title', 'type' => 'text' ), $text( 'field_severus_blog_copy_content', __( 'Text', 'severus-noir' ), 'content' ) ) ),
+				'layout_severus_blog_full' => array( 'key' => 'layout_severus_blog_full', 'name' => 'full', 'label' => __( 'Content (full width)', 'severus-noir' ), 'sub_fields' => array( $text( 'field_severus_blog_full_content', __( 'Text', 'severus-noir' ), 'content' ) ) ),
+				'layout_severus_blog_numbered' => array( 'key' => 'layout_severus_blog_numbered', 'name' => 'numbered', 'label' => __( 'Steps', 'severus-noir' ), 'sub_fields' => array( array( 'key' => 'field_severus_blog_numbered_title', 'label' => __( 'Title', 'severus-noir' ), 'name' => 'title', 'type' => 'text' ), array( 'key' => 'field_severus_blog_numbered_bullet', 'label' => __( 'Bullet override', 'severus-noir' ), 'name' => 'bullet', 'type' => 'text', 'instructions' => __( 'Leave empty for automatic 01, 02 numbering.', 'severus-noir' ) ), $item( 'field_severus_blog_numbered_items', __( 'Items', 'severus-noir' ), 'items' ) ) ),
+				'layout_severus_blog_gains' => array( 'key' => 'layout_severus_blog_gains', 'name' => 'gains', 'label' => __( 'Ticks', 'severus-noir' ), 'sub_fields' => array( array( 'key' => 'field_severus_blog_gains_title', 'label' => __( 'Title', 'severus-noir' ), 'name' => 'title', 'type' => 'text' ), array( 'key' => 'field_severus_blog_gains_bullet', 'label' => __( 'Bullet', 'severus-noir' ), 'name' => 'bullet', 'type' => 'button_group', 'choices' => array( 'tick' => __( 'Tick', 'severus-noir' ), 'cross' => __( 'X', 'severus-noir' ), 'arrow' => __( 'Arrow', 'severus-noir' ), 'plus' => __( 'Plus', 'severus-noir' ), 'dash' => __( 'Dash', 'severus-noir' ), 'none' => __( 'None', 'severus-noir' ) ), 'default_value' => 'tick', 'return_format' => 'value' ), array( 'key' => 'field_severus_blog_gains_color', 'label' => __( 'Icon colour', 'severus-noir' ), 'name' => 'icon_color', 'type' => 'button_group', 'choices' => array( 'neutral' => __( 'Neutral', 'severus-noir' ), 'green' => __( 'Green', 'severus-noir' ), 'red' => __( 'Red', 'severus-noir' ) ), 'default_value' => 'green', 'return_format' => 'value' ), $item( 'field_severus_blog_gains_items', __( 'Items', 'severus-noir' ), 'items' ) ) ),
+				'layout_severus_blog_table' => array( 'key' => 'layout_severus_blog_table', 'name' => 'table', 'label' => __( 'Table', 'severus-noir' ), 'sub_fields' => array( array( 'key' => 'field_severus_blog_table_title', 'label' => __( 'Title', 'severus-noir' ), 'name' => 'title', 'type' => 'text' ), $text( 'field_severus_blog_table_content', __( 'Table and note', 'severus-noir' ), 'content' ) ) ),
+				'layout_severus_blog_media' => array( 'key' => 'layout_severus_blog_media', 'name' => 'media', 'label' => __( 'Media', 'severus-noir' ), 'sub_fields' => array( array( 'key' => 'field_severus_blog_media_title', 'label' => __( 'Title', 'severus-noir' ), 'name' => 'title', 'type' => 'wysiwyg', 'tabs' => 'all', 'toolbar' => 'full' ), array( 'key' => 'field_severus_blog_media_asset', 'label' => __( 'Media', 'severus-noir' ), 'name' => 'media', 'type' => 'image', 'return_format' => 'array' ), array( 'key' => 'field_severus_blog_media_align', 'label' => __( 'Alignment', 'severus-noir' ), 'name' => 'align', 'type' => 'button_group', 'choices' => array( 'left' => __( 'Left', 'severus-noir' ), 'right' => __( 'Right', 'severus-noir' ), 'center' => __( 'Centre', 'severus-noir' ) ), 'default_value' => 'center', 'return_format' => 'value' ) ) ),
+				'layout_severus_blog_button' => array( 'key' => 'layout_severus_blog_button', 'name' => 'button', 'label' => __( 'Button', 'severus-noir' ), 'sub_fields' => array( array( 'key' => 'field_severus_blog_button_link', 'label' => __( 'Link', 'severus-noir' ), 'name' => 'link', 'type' => 'link', 'return_format' => 'array' ), array( 'key' => 'field_severus_blog_button_align', 'label' => __( 'Alignment', 'severus-noir' ), 'name' => 'align', 'type' => 'button_group', 'choices' => array( 'left' => __( 'Left', 'severus-noir' ), 'right' => __( 'Right', 'severus-noir' ), 'center' => __( 'Centre', 'severus-noir' ) ), 'default_value' => 'left', 'return_format' => 'value' ) ) ),
+				'layout_severus_blog_divider' => array( 'key' => 'layout_severus_blog_divider', 'name' => 'divider', 'label' => __( 'Divider', 'severus-noir' ), 'sub_fields' => array() ),
+			) ),
+		),
+		'location' => array( array( array( 'param' => 'post_type', 'operator' => '==', 'value' => 'post' ) ) ), 'position' => 'normal', 'style' => 'default', 'active' => true,
+	) );
+}
+add_action( 'acf/include_fields', 'severus_register_blog_post_fields' );

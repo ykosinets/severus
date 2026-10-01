@@ -15,33 +15,27 @@ while ( have_posts() ) :
 
 	$fields      = get_field( 'cases_fields' );
 	$testimonial = get_field( 'case_testimonial' );
+	$sections    = get_field( 'case_sections' );
 
 	/* No lede: the short description is usually the write-up's first
 	   paragraph, and it would read twice. */
 	severus_component(
-		'page-hero',
+		'case-hero',
 		array(
+			'facts' => is_array( $fields ) ? ( $fields['case_info'] ?? array() ) : array(),
+			'id'    => get_the_ID(),
 		)
 	);
 	?>
 	<article <?php post_class( 'entry case' ); ?>>
-		<div class="shell is-narrow">
-			<?php if ( has_post_thumbnail() ) : ?>
-				<figure class="entry__art"><?php the_post_thumbnail( 'full' ); ?></figure>
-			<?php endif; ?>
-
-			<?php severus_component(
-				'case-facts',
-				array(
-					'facts' => is_array( $fields ) ? ( $fields['case_info'] ?? array() ) : array(),
-					'id'    => get_the_ID(),
-				)
-			); ?>
-
-			<?php if ( '' !== trim( get_the_content() ) ) : ?>
+		<?php if ( $sections ) : ?>
+			<?php severus_component( 'case-sections', array( 'sections' => $sections ) ); ?>
+		<?php elseif ( '' !== trim( get_the_content() ) ) : ?>
+			<?php /* Not split into sections yet: the editor content, as before. */ ?>
+			<div class="shell is-narrow">
 				<div class="entry__body"><?php the_content(); ?></div>
-			<?php endif; ?>
-		</div>
+			</div>
+		<?php endif; ?>
 	</article>
 	<?php
 	if ( is_array( $testimonial ) && ! empty( $testimonial['testimonial'] ) ) {

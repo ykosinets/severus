@@ -35,13 +35,16 @@
 
 /* Scroll-driven reveal. Never applied to sticky elements or their children — a
    view() timeline stalls while an element is pinned and the animation would
-   freeze half-way. Those sections measure scroll in JS instead. */
+   freeze half-way. Those sections measure scroll in JS instead.
+   The range is a share of the element's own height, so a tall block of text
+   would only finish rising a long way down; both ends are capped in vw, and
+   nothing takes more than 20vw of scrolling to appear. */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .reveal {
       animation: rise linear both;
       animation-timeline: view();
-      animation-range: entry 4% cover 26%;
+      animation-range: entry min(4%, 4vw) cover min(26%, 20vw);
     }
   }
 }
