@@ -4,6 +4,8 @@
 #
 #   ./deploy-staging-db.sh              back up staging, then replace its
 #                                       database with the local one
+#   ./deploy-staging-db.sh --no-backup  replace the database without keeping
+#                                       a staging backup
 #   ./deploy-staging-db.sh --no-uploads leave wp-content/uploads alone
 #   ./deploy-staging-db.sh --dry-run    show what it would do, change nothing
 #
@@ -21,9 +23,11 @@ ROOT="$(cd "$(dirname "$0")" && pwd)"
 
 UPLOADS="yes"
 DRY=""
+BACKUP="yes"
 for arg in "$@"; do
   case "$arg" in
     --no-uploads) UPLOADS="" ;;
+    --no-backup) BACKUP="" ;;
     --dry-run) DRY="yes" ;;
     *) echo "unknown option: $arg" >&2; exit 2 ;;
   esac
@@ -63,7 +67,8 @@ fi
 echo "→ local ${LOCAL_URL} → staging ${STAGING_URL} (${HOST}:${REMOTE_WP})"
 
 if [ -n "$DRY" ]; then
-  echo "→ dry run: would back up staging, import the local database,"
+  [ -n "$BACKUP" ] && echo "→ dry run: would back up staging first"
+  echo "→ dry run: would import the local database,"
   echo "  replace ${LOCAL_HOST} with ${STAGING_HOSTNAME}, and flush caches"
   [ -n "$UPLOADS" ] && rsync -az --dry-run --itemize-changes --exclude '.DS_Store' \
     "${ROOT}/wp-content/uploads/" "${HOST}:${REMOTE_WP}/wp-content/uploads/"
@@ -73,8 +78,12 @@ fi
 STAMP="$(date +%Y%m%d-%H%M%S)"
 DUMP="/tmp/severus-local-${STAMP}.sql.gz"
 
-echo "→ backing up staging to ~/backups/severus-staging-before-deploy-${STAMP}.sql.gz"
-ssh -o BatchMode=yes "$HOST" "mkdir -p ~/backups && cd ${REMOTE_WP} && wp db export - | gzip > ~/backups/severus-staging-before-deploy-${STAMP}.sql.gz"
+if [ -n "$BACKUP" ]; then
+  echo "→ backing up staging to ~/backups/severus-staging-before-deploy-${STAMP}.sql.gz"
+  ssh -o BatchMode=yes "$HOST" "mkdir -p ~/backups && cd ${REMOTE_WP} && wp db export - | gzip > ~/backups/severus-staging-before-deploy-${STAMP}.sql.gz"
+else
+  echo "→ replacing staging database without a backup"
+fi
 
 if [ -n "$UPLOADS" ]; then
   echo "→ syncing new uploads (nothing on the server is deleted)"
@@ -87,14 +96,14 @@ echo "→ exporting the local database"
 trap 'rm -f "$DUMP"' EXIT
 
 echo "→ importing it on staging"
-scp -q "$DUMP" "${HOST}:backups/"
+scp -q "$DUMP" "${HOST}:/tmp/"
 ssh -o BatchMode=yes "$HOST" "cd ${REMOTE_WP} \
-  && gunzip -c ~/backups/$(basename "$DUMP") | wp db import - \
+  && gunzip -c /tmp/$(basename "$DUMP") | wp db import - \
   && wp search-replace 'https://${LOCAL_HOST}' '${STAGING_URL}' --all-tables-with-prefix --precise --quiet \
   && wp search-replace 'http://${LOCAL_HOST}' '${STAGING_URL}' --all-tables-with-prefix --precise --quiet \
   && wp search-replace '${LOCAL_HOST}' '${STAGING_HOSTNAME}' --all-tables-with-prefix --precise --quiet \
   && wp rewrite flush && wp cache flush && wp transient delete --all >/dev/null \
-  && rm -f ~/backups/$(basename "$DUMP") \
+  && rm -f /tmp/$(basename "$DUMP") \
   && echo \"→ staging siteurl: \$(wp option get siteurl)\""
 
 echo "→ done"
