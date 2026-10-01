@@ -82,6 +82,17 @@
   }
 }
 
+.readbar.is-loading {
+  z-index: 100000;
+  height: 3px;
+
+  & i {
+    animation: none;
+    transform: scaleX(var(--request-progress, 0.12));
+    transition: transform 200ms linear;
+  }
+}
+
 /* The theme's arrow, printed on the side of a small drum. The faces sit a
    radius out from the axis, a quarter-turn apart; the drum is pulled back by
    the same radius so the front face rests exactly where a flat arrow would.

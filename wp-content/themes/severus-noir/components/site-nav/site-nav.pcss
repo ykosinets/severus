@@ -9,7 +9,6 @@
 .nav__list {
   display: flex;
   align-items: center;
-  gap: clamp(1rem, 2vw, 2.25rem);
 
   & > li {
     position: relative;
@@ -17,11 +16,18 @@
 
   & > li > a {
     display: inline-block;
-    padding-block: 0.5rem;
+    padding-block: clamp(0.9rem, 1.4vw, 1.5rem);
+    padding-inline: clamp(.5rem, 1vw, 1.125rem);
     font-size: 1rem;
     color: var(--ash);
     transition: color 0.3s var(--ease);
+
+    &[aria-current="page"],
+    &:has(+ ul [aria-current="page"]) {
+      color: var(--jade);
+    }
   }
+
 
   & > li:is(:hover, :focus-within) > a {
     color: var(--bone);
@@ -76,6 +82,10 @@
       color 0.25s var(--ease);
   }
 
+  & a[aria-current="page"] {
+    background: color-mix(in oklab, var(--jade) 3%, transparent);
+  }
+
   & a:hover {
     background: color-mix(in oklab, var(--jade) 12%, transparent);
     color: var(--bone);
@@ -85,9 +95,14 @@
   & li {
     opacity: 0;
     translate: 0 -0.4rem;
+    margin-bottom: 2px;
     transition:
       opacity 0.3s var(--ease),
       translate 0.35s var(--ease-out);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 

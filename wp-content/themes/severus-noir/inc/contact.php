@@ -1,10 +1,6 @@
 <?php
 /**
- * The contact form: storage, REST endpoint and notification.
- *
- * Replaces the form plugin the theme used to render. Everything here is core
- * WordPress — no jQuery on the page, and submissions stay in the database as a
- * private post type instead of a plugin's own tables.
+ * Forminator contact form and access to legacy enquiries.
  *
  * @package Severus_Noir
  */
@@ -72,125 +68,6 @@ function severus_lead_column( string $column, int $post_id ): void {
 add_action( 'manage_' . SEVERUS_LEAD_TYPE . '_posts_custom_column', 'severus_lead_column', 10, 2 );
 
 /**
- * The endpoint the form posts to.
- *
- * Left public: a page cache would serve a stale nonce and lock real people out,
- * and there is nothing to forge here. Spam is filtered by the honeypot, by how
- * fast the form came back, and by validation.
- */
-function severus_register_contact_route(): void {
-	register_rest_route(
-		'severus/v1',
-		'/contact',
-		array(
-			'methods'             => WP_REST_Server::CREATABLE,
-			'callback'            => 'severus_handle_contact',
-			'permission_callback' => '__return_true',
-		)
-	);
-}
-add_action( 'rest_api_init', 'severus_register_contact_route' );
-
-/**
- * Validate, store and notify.
- */
-function severus_handle_contact( WP_REST_Request $request ) {
-	// A bot filled the hidden field, or the form came back faster than a person
-	// could type. Answer as though it worked and drop it.
-	$opened = (int) $request->get_param( 'opened' );
-
-	if ( $request->get_param( 'website' ) || ( $opened && time() - $opened < 3 ) ) {
-		return new WP_REST_Response( array( 'message' => severus_contact_thanks() ), 200 );
-	}
-
-	$fields = array(
-		'name'    => sanitize_text_field( (string) $request->get_param( 'name' ) ),
-		'company' => sanitize_text_field( (string) $request->get_param( 'company' ) ),
-		'email'   => sanitize_email( (string) $request->get_param( 'email' ) ),
-		'details' => sanitize_textarea_field( (string) $request->get_param( 'details' ) ),
-	);
-
-	// A malformed address survives sanitize_email() as an empty string, so the
-	// address is judged on what was actually submitted.
-	if ( ! is_email( $fields['email'] ) ) {
-		return new WP_Error( 'severus_email', __( 'That email address does not look right.', 'severus-noir' ), array( 'status' => 422 ) );
-	}
-
-	foreach ( $fields as $value ) {
-		if ( '' === trim( $value ) ) {
-			return new WP_Error( 'severus_incomplete', __( 'Please fill in every field.', 'severus-noir' ), array( 'status' => 422 ) );
-		}
-	}
-
-	$fields['details'] = mb_substr( $fields['details'], 0, 180 );
-
-	$post_id = wp_insert_post(
-		array(
-			'post_type'    => SEVERUS_LEAD_TYPE,
-			'post_status'  => 'private',
-			'post_title'   => $fields['name'],
-			'post_content' => $fields['details'],
-			'meta_input'   => array(
-				'severus_company' => $fields['company'],
-				'severus_email'   => $fields['email'],
-			),
-		),
-		true
-	);
-
-	if ( is_wp_error( $post_id ) ) {
-		return new WP_Error( 'severus_store', __( 'We could not record that. Please email us instead.', 'severus-noir' ), array( 'status' => 500 ) );
-	}
-
-	severus_notify_contact( $fields );
-
-	return new WP_REST_Response( array( 'message' => severus_contact_thanks() ), 201 );
-}
-
-/**
- * Email the enquiry on, replying straight to the sender.
- *
- * @param array<string,string> $fields Sanitised submission.
- */
-function severus_notify_contact( array $fields ): void {
-	$to = severus_contact_email();
-
-	if ( ! is_email( $to ) ) {
-		return;
-	}
-
-	$body = array(
-		sprintf( /* translators: %s: sender name. */ __( 'Name: %s', 'severus-noir' ), $fields['name'] ),
-		sprintf( /* translators: %s: company. */ __( 'Company: %s', 'severus-noir' ), $fields['company'] ),
-		sprintf( /* translators: %s: email. */ __( 'Email: %s', 'severus-noir' ), $fields['email'] ),
-		'',
-		$fields['details'],
-	);
-
-	wp_mail(
-		$to,
-		sprintf(
-			/* translators: 1: site name, 2: sender name. */
-			__( '[%1$s] Enquiry from %2$s', 'severus-noir' ),
-			get_bloginfo( 'name' ),
-			$fields['name']
-		),
-		implode( "\n", $body ),
-		array(
-			'Content-Type: text/plain; charset=UTF-8',
-			'Reply-To: ' . $fields['name'] . ' <' . $fields['email'] . '>',
-		)
-	);
-}
-
-/**
- * What the form says once it has gone through.
- */
-function severus_contact_thanks(): string {
-	return __( 'Thank you — we will come back to you shortly.', 'severus-noir' );
-}
-
-/**
  * The form as a shortcode, so any page can carry it.
  */
 function severus_contact_form_shortcode_render(): string {
@@ -200,3 +77,38 @@ function severus_contact_form_shortcode_render(): string {
 	return (string) ob_get_clean();
 }
 add_shortcode( 'severus_contact_form', 'severus_contact_form_shortcode_render' );
+
+/** Apply Noir presentation without replacing Forminator's fields or handlers. */
+function severus_forminator_markup( string $html, $fields, $type, $settings ): string {
+	if ( '82' !== (string) ( $settings['form_id'] ?? '' ) ) {
+		return $html;
+	}
+
+	$tags = new WP_HTML_Tag_Processor( $html );
+	while ( $tags->next_tag() ) {
+		if ( $tags->has_class( 'forminator-field' ) ) {
+			$tags->add_class( 'field' );
+		}
+		if ( $tags->has_class( 'forminator-input' ) || $tags->has_class( 'forminator-textarea' ) ) {
+			$tags->set_attribute( 'placeholder', ' ' );
+		}
+		if ( $tags->has_class( 'forminator-description' ) ) {
+			$tags->add_class( 'field__count' );
+		}
+		if ( $tags->has_class( 'forminator-button-submit' ) ) {
+			$tags->add_class( 'btn--solid' );
+			$tags->add_class( 'btn--block' );
+			$tags->set_attribute( 'data-snake-arrow', '' );
+		}
+	}
+
+	ob_start();
+	severus_arrow();
+	$arrow = (string) ob_get_clean();
+	return preg_replace_callback(
+		'/(<button\b[^>]*class="[^"]*forminator-button-submit[^"]*"[^>]*>)(.*?)(<\/button>)/s',
+		static fn( $match ) => $match[1] . '<span>' . $match[2] . '</span>' . $arrow . $match[3],
+		$tags->get_updated_html()
+	);
+}
+add_filter( 'forminator_render_form_markup', 'severus_forminator_markup', 10, 4 );

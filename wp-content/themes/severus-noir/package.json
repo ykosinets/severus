@@ -1,6 +1,6 @@
 {
   "name": "severus-noir",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Severus \u2014 dark corporate WordPress theme. Component-based assets.",
   "type": "module",
@@ -11,7 +11,9 @@
     "package": "node package.mjs",
     "deploy": "npm run deploy:code && npm run deploy:db",
     "deploy:code": "../../../deploy-staging.sh",
-    "deploy:db": "../../../deploy-staging-db.sh"
+    "deploy:db": "../../../deploy-staging-db.sh",
+    "staging:pull:db": "../../../pull-staging-db.sh",
+    "staging:pull:data": "../../../pull-staging-uploads.sh"
   },
   "dependencies": {
     "gsap": "^3.12.5",

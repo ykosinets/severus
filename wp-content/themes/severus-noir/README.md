@@ -73,7 +73,8 @@ content.
 | `archive-case.php` | every case, or one `case_category`; heading copy from the ACF options page (`case-list-*`) |
 | `page-about-us.php` | `heading_h1/h2`, `description`, `services-section`, `faq-section`, `case-list` |
 | `page-contact-us.php` | the `contact_form` group beside the theme's form |
-| `page-industries.php` | `industries_text` and a tile per published industry |
+| `page-industries.php` | native page title/content and a tile per published industry, without a section heading or page-level ACF fields |
+| `page-services.php` | native page title/content and all published services, ordered by `menu_order`, then title; no page-level ACF fields |
 | `page.php` | the content, then any of `services_list`, `case-list`, `review_list`, `insights_list`, `contact_form` that are filled in |
 | `single.php` | block editor content only |
 
@@ -90,17 +91,15 @@ field of `cases_fields.case_info`; that field is hidden from the editor in
 Home components (`results`, `services`, `faq`, `voices`, `journal`, `talk`) take a `$data`
 array; anything left out falls back to the front page field, so the home page
 calls them with no arguments. `results` shows three cases; `services` shows
-the services marked important on the front page (in `services_list` order;
-the first three of that list if none is marked) and every service it is given elsewhere, with
+the top-level services in their native `menu_order` and every service it is given elsewhere, with
 `service_short_descr` as the excerpt, `service_card_points` as the ticked
 list and `service_card_image` behind the card. Those fields are
 registered in code (`inc/acf.php`), so they ship with the theme.
 
-On the Services page (`page.php` passes `feature`), services with the
-`service_important` switch on come first, three to a row with a lit border
-(two conic sweeps masked to the rim plus a blurred bloom, angles animated via
-the `--ring-a` / `--ring-b` registered properties); the rest follow four to a
-row. Below 1024px the usual two and one columns apply, important ones first. Inner pages add `page-hero`, `brief`, `points`,
+On the Services page (`page-services.php` passes `feature`), each top-level
+service gets a highlighted card with its children alongside it. Grouping reads
+WordPress `post_parent`; parent and order are edited in native Page Attributes.
+Inner pages add `page-hero`, `brief`, `points`,
 `gains`, `shift`, `tiles`, `callout` and `case-facts`, which only take `$data`.
 
 The field values mark accents with `<span>` (and `<b>` for weight) rather than
@@ -166,25 +165,20 @@ PhotoSwipe was removed along with its stylesheet and chunk.
 
 ## The contact form
 
-Plain markup, submitted with `fetch()` to `severus/v1/contact`. No form plugin,
-and **no jQuery anywhere on the site** — the theme ships zero jQuery-dependent
-code.
+The contact component renders Forminator form **82** with the existing Noir
+styling. Forminator must remain active; it loads its own frontend dependencies.
 
-- The template is `components/contact-form/`, and `[severus_contact_form]`
-  renders it on any page.
-- `inc/contact.php` validates, stores each submission as a private
-  `severus_lead` post (Enquiries in the admin menu, with company and email
-  columns) and sends a plain-text notification with `Reply-To` set to the sender.
-- The route is public on purpose: a page cache would serve a stale nonce and
-  lock real people out, and there is nothing here worth forging. Spam is caught
-  by a honeypot field, by rejecting anything returned in under three seconds,
-  and by validation. Both of those answer 200 with the normal thank-you so a bot
-  learns nothing, and neither writes a row.
-- The address it notifies is Customizer → Severus — contact → Public email.
-
-Forminator is still installed and still holds its old submissions; the theme no
-longer renders it. If other pages use `[forminator_form …]`, swap them for
-`[severus_contact_form]` before deactivating the plugin.
+- `[severus_contact_form]` renders the same component on any page.
+- Forminator owns field definitions, AJAX validation, reCAPTCHA, submissions
+  and email notifications. Edit recipients in Forminator, not the Customizer.
+- `inc/contact.php` adds theme presentation classes without replacing plugin
+  field names, nonces or submission handlers.
+- The former `severus/v1/contact` endpoint is removed. Existing `severus_lead`
+  records remain available under Enquiries; new submissions belong to Forminator.
+- If the plugin is unavailable, the component displays a contact email link.
+- The saved reCAPTCHA key rejects `severus.ddev.site`. Authorize that hostname
+  in the key settings before testing successful submissions locally; do not
+  disable production CAPTCHA protection to work around the local restriction.
 
 ## Fonts
 

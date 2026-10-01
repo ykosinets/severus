@@ -17,6 +17,7 @@ require_once get_theme_file_path( 'inc/setup.php' );
 require_once get_theme_file_path( 'inc/post-types.php' );
 require_once get_theme_file_path( 'inc/assets.php' );
 require_once get_theme_file_path( 'inc/helpers.php' );
+require_once get_theme_file_path( 'inc/cases.php' );
 require_once get_theme_file_path( 'inc/svg.php' );
 require_once get_theme_file_path( 'inc/blocks.php' );
 require_once get_theme_file_path( 'inc/contact.php' );

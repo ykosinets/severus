@@ -12,6 +12,7 @@ defined( 'ABSPATH' ) || exit;
 <head>
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="formcanary-verification" content="fc_verify_Q8cfEnLa9taYdNRt-fkSlEmPVCFoiTTV">
 	<?php wp_head(); ?>
 </head>
 

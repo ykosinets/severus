@@ -2,7 +2,7 @@
 /**
  * Template Name: Industries
  *
- * Every published industry as a picture tile.
+ * Native page title/content and every published industry as a picture tile.
  *
  * @package Severus_Noir
  */
@@ -17,13 +17,16 @@ while ( have_posts() ) :
 	severus_component(
 		'page-hero',
 		array(
-			'text'  => get_field( 'industries_text' ),
+			'title'  => get_the_title(),
+			'text'   => apply_filters( 'the_content', get_the_content() ),
+			'center' => true,
 		)
 	);
 
 	$industries = get_posts(
 		array(
 			'post_type'   => 'industry',
+			'post_status' => 'publish',
 			'numberposts' => -1,
 			'orderby'     => array( 'menu_order' => 'ASC', 'date' => 'ASC' ),
 		)
@@ -33,7 +36,7 @@ while ( have_posts() ) :
 		'tiles',
 		array(
 			'id'    => 'industries',
-			'title' => get_field( 'industries_section_title' ),
+			'title' => '',
 			'items' => array_map(
 				static function ( WP_Post $industry ): array {
 					$image = get_field( 'industry_hero_image', $industry->ID );
@@ -52,11 +55,7 @@ while ( have_posts() ) :
 		)
 	);
 
-	$group = get_field( 'home_group_fields' );
-
-	if ( is_array( $group ) && ! empty( $group['show_get_started'] ) ) {
-		severus_component( 'callout', severus_get_started() );
-	}
+	severus_component( 'callout', severus_get_started() );
 endwhile;
 
 get_footer();

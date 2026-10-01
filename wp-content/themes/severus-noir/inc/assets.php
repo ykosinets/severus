@@ -43,6 +43,47 @@ function severus_enqueue(): void {
 add_action( 'wp_enqueue_scripts', 'severus_enqueue' );
 
 /**
+ * Hide the unused classic editor on pages built entirely from ACF fields: the
+ * assigned front page, About Us and Contact Us.
+ */
+function severus_enqueue_front_page_admin_assets( string $hook ): void {
+	if ( 'post.php' !== $hook ) {
+		return;
+	}
+
+	$post_id = isset( $_GET['post'] ) ? absint( wp_unslash( $_GET['post'] ) ) : 0;
+	$post    = $post_id ? get_post( $post_id ) : null;
+
+	if ( ! $post || 'page' !== $post->post_type ) {
+		return;
+	}
+
+	$front = $post_id === (int) get_option( 'page_on_front' );
+	if ( ! $front && ! in_array( $post->post_name, array( 'about-us', 'contact-us' ), true ) ) {
+		return;
+	}
+
+	wp_enqueue_style(
+		'severus-front-page-admin',
+		get_theme_file_uri( 'assets/css/admin.css' ),
+		array(),
+		severus_asset_version( 'assets/css/admin.css' )
+	);
+}
+add_action( 'admin_enqueue_scripts', 'severus_enqueue_front_page_admin_assets' );
+
+/** Styles for every admin screen. */
+function severus_enqueue_admin_styles(): void {
+	wp_enqueue_style(
+		'severus-admin',
+		get_theme_file_uri( 'assets/css/admin-global.css' ),
+		array(),
+		severus_asset_version( 'assets/css/admin-global.css' )
+	);
+}
+add_action( 'admin_enqueue_scripts', 'severus_enqueue_admin_styles' );
+
+/**
  * The bundle is ESM; a classic script tag would fail on the import statements.
  */
 function severus_module_tag( string $tag, string $handle ): string {

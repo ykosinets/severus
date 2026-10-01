@@ -13,6 +13,35 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/** Expose native parent and order controls after ACF registers services. */
+add_action(
+	'init',
+	static function (): void {
+		add_post_type_support( 'service', 'page-attributes' );
+	},
+	20
+);
+
+/**
+ * Menu icons for the ACF-registered types, kept in code rather than in ACF's
+ * stored settings.
+ *
+ * @param array  $args      Post type registration arguments.
+ * @param string $post_type Post type key.
+ */
+function severus_post_type_icons( array $args, string $post_type ): array {
+	$icons = array(
+		'case'    => 'dashicons-portfolio',
+		'review'  => 'dashicons-testimonial',
+		'service' => 'dashicons-admin-tools',
+	);
+	if ( isset( $icons[ $post_type ] ) ) {
+		$args['menu_icon'] = $icons[ $post_type ];
+	}
+	return $args;
+}
+add_filter( 'register_post_type_args', 'severus_post_type_icons', 10, 2 );
+
 function severus_register_post_types(): void {
 	register_post_type(
 		'industry',
@@ -33,7 +62,7 @@ function severus_register_post_types(): void {
 			'show_in_rest'  => true,
 			'rewrite'       => array( 'slug' => 'industry' ),
 			'has_archive'   => false,
-			'menu_position' => 5,
+			'menu_position' => 29,
 			'menu_icon'     => 'dashicons-building',
 			'supports'      => array( 'title', 'editor', 'thumbnail', 'excerpt', 'page-attributes' ),
 		)

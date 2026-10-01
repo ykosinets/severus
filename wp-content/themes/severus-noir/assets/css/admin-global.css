@@ -1,0 +1,97 @@
+/* Styles for every admin screen, loaded by inc/assets.php. Plain CSS, not
+   built: edit this file directly. Screen-specific rules stay in admin.css. */
+
+#major-publishing-actions {
+    display: flex !important;
+    flex-direction: row-reverse !important;
+}
+
+#major-publishing-actions #cdp-copy-btn,
+#major-publishing-actions #delete-action {
+    border: 1px solid var(--wp-admin-theme-color);
+    line-height: 2.92307692;
+    background: var(--wp-admin-theme-color);
+    border-color: transparent;
+    border-radius: 2px;
+    color: #fff;
+    text-decoration: none;
+    text-shadow: none;
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-block;
+    box-sizing: border-box;
+    width: auto !important;
+
+    a {
+        min-height: 40px;
+        display: block;
+        padding: 0 16px;
+    }
+}
+
+#major-publishing-actions #cdp-copy-btn {
+    &:hover {
+        background: var(--wp-admin-theme-color-darker-10)
+    }
+
+    a {
+        color: white;
+        text-decoration: none;
+    }
+}
+
+#major-publishing-actions #delete-action {
+    background: #b32d2e;
+
+    &:hover {
+        background: #a21c1d;
+    }
+
+    a {
+        color: white;
+        text-decoration: none;
+    }
+}
+
+#major-publishing-actions #publishing-action {
+    position: relative !important;
+    right: auto !important;
+    bottom: auto !important;
+    float: right !important;
+    margin-top: 10px !important;
+
+    .spinner {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0 0 0 / .7);
+        margin: 0;
+
+        &:after {
+            content: '';
+            z-index: 1;
+            width: 20px;
+            height: 20px;
+            border-radius: 100%;
+            border-top: 3px solid #f00;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            translate: -50% -50%;
+            animation: 1s rotate-spinner linear infinite;
+        }
+    }
+}
+
+@keyframes rotate-spinner {
+    0% {
+        rotate: 0;
+    }
+    50% {
+        rotate: 180deg
+    }
+    100% {
+        rotate: 360deg;
+    }
+}

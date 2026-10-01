@@ -183,14 +183,14 @@ function severus_menu_title( string $location ): string {
  * @return array{url:string,width:int,height:int}
  */
 function severus_lightbox_still( ?array $poster ): array {
-	$path = get_theme_file_path( 'assets/media/hero-still.jpg' );
+	$path = get_theme_file_path( 'assets/media/hero-still.webp' );
 
 	if ( file_exists( $path ) ) {
 		$size = getimagesize( $path );
 
 		if ( $size ) {
 			return array(
-				'url'    => get_theme_file_uri( 'assets/media/hero-still.jpg' ),
+				'url'    => get_theme_file_uri( 'assets/media/hero-still.webp' ),
 				'width'  => (int) $size[0],
 				'height' => (int) $size[1],
 			);
@@ -289,6 +289,7 @@ function severus_ids( $field ): array {
  */
 function severus_get_started(): array {
 	return array(
+		'background' => get_theme_file_uri( 'assets/media/img-bg-make.webp' ),
 		'title'  => __( 'Get everything you need to start development', 'severus-noir' ),
 		'text'   => __( 'Make informed decisions to optimize your products, services, and projects in the context of your market, and add value by looking at the wider business picture.', 'severus-noir' ),
 		'button' => array(
@@ -344,37 +345,32 @@ function severus_orbit( string $class = '', string $scroll = 'section' ): void {
 		data-orbit="<?php echo esc_attr( $scroll ); ?>"
 		data-model="<?php echo esc_url( get_theme_file_uri( 'assets/media/orbit.glb' ) ); ?>"
 	>
-		<img class="orbit__still" src="<?php echo esc_url( get_theme_file_uri( 'assets/media/orbit-preview.png' ) ); ?>" alt="" width="1200" height="1200" loading="lazy">
+		<img class="orbit__still" src="<?php echo esc_url( get_theme_file_uri( 'assets/media/orbit-preview.webp' ) ); ?>" alt="" width="1200" height="1200" loading="lazy">
 	</div>
 	<?php
 }
 
 /**
- * The services to suggest beside one: those under the same parent
- * (service_parent), never a parent itself. On a parent's own page, its
- * children. Ordered by menu order, then title.
+ * The services to suggest beside one: the rest of its family. On a child's
+ * page that is its siblings, on a top-level service's page its children.
+ * Ordered by menu order, then title.
+ *
+ * The tree is two levels deep, so everything under a parent is a leaf and
+ * the family never includes a parent itself.
  *
  * @return int[]
  */
 function severus_service_siblings( int $id ): array {
-	$parent = get_field( 'service_important', $id ) ? $id : (int) get_field( 'service_parent', $id );
+	$parent = (int) wp_get_post_parent_id( $id );
 
-	if ( ! $parent ) {
-		return array();
-	}
-
-	$ids = get_posts(
+	return get_posts(
 		array(
 			'post_type'    => 'service',
 			'numberposts'  => -1,
 			'fields'       => 'ids',
+			'post_parent'  => $parent ? $parent : $id,
 			'post__not_in' => array( $id ),
 			'orderby'      => array( 'menu_order' => 'ASC', 'title' => 'ASC' ),
-			'meta_query'   => array( // phpcs:ignore WordPress.DB.SlowDBQuery
-				array( 'key' => 'service_parent', 'value' => (string) $parent ),
-			),
 		)
 	);
-
-	return array_values( array_filter( $ids, static fn( $sibling ) => ! get_field( 'service_important', $sibling ) ) );
 }

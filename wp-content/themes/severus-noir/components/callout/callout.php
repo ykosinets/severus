@@ -3,7 +3,7 @@
  * A closing call to action on a lit panel, with three faceted shapes turning
  * behind the copy (callout.js mounts them into one WebGL scene).
  *
- * $data: title, text, button (ACF link), id.
+ * $data: title, text, button (ACF link), id, background (image URL).
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -16,6 +16,9 @@ if ( ! $title && empty( $data['button'] ) ) {
 <section class="section is-narrow callout"<?php echo ! empty( $data['id'] ) ? ' id="' . esc_attr( $data['id'] ) . '"' : ''; ?>>
 	<div class="shell">
 		<div class="callout__panel edge reveal">
+			<?php if ( ! empty( $data['background'] ) ) : ?>
+				<img class="callout__background" src="<?php echo esc_url( $data['background'] ); ?>" alt="" aria-hidden="true" width="1440" height="574" loading="lazy">
+			<?php endif; ?>
 			<span class="callout__glow" aria-hidden="true"></span>
 			<span class="callout__shapes" aria-hidden="true" data-shapes></span>
 			<?php if ( $title ) : ?>
